@@ -1,4 +1,12 @@
 <?php
+/**
+Authored by Michael Dombrowski, http://mikedombrowski.com
+Original repository available at http://github.com/md100play/university-schedule-generator
+
+This class essentially holds many sections that represent a single schedule option.  It includes variables for ease of use like,
+$numberOfClasses, $numberOfUnits, $earliestTime, $latestTime, $firstTime, $lastTime, $fridayFree, and $score.
+**/
+
 class Schedule{
 	private $listOfSections;
 	private $numberOfClasses;
@@ -10,6 +18,9 @@ class Schedule{
 	private $fridayFree;
 	public $score;
 	
+	/**
+	Default constructor to initialize critical values
+	**/
 	public function __construct(){
 		$this->listOfSections = array();
 		$this->numberOfClasses = 0;
@@ -18,16 +29,26 @@ class Schedule{
 		$this->score = 0;
 	}
 	
+	/**
+	adds a single section to the list of sections and updates important variables, much like addTime in the Section class
+	**/
 	public function addSection($sec){
-		array_push($this->listOfSections, $sec);
+		array_push($this->listOfSections, $sec); //add the Section to the current list
 		$this->numberOfClasses += 1;
 		$this->numberOfUnits += $sec->getNumUnits();
 		
 		if(!isset($this->earliestTime)){
 			$this->earliestTime = $sec->getEarliestTime();
 		}
-		if($this->earliestTime[1] > $sec->getEarliestTime()[1]){
+		else if($this->earliestTime[1] > $sec->getEarliestTime()[1]){
 			$this->earliestTime = array($sec->getEarliestTime()[0], $sec->getEarliestTime()[1]);
+		}
+		
+		if(!isset($this->latestTime)){
+			$this->latestTime = $sec->getLatestTime();
+		}
+		else if($this->latestTime[1] < $sec->getLatestTime()[1]){
+			$this->latestTime = array($sec->getLatestTime()[0], $sec->getLatestTime()[1]);
 		}
 		
 		if(!isset($this->firstTime)){
@@ -36,10 +57,8 @@ class Schedule{
 		else if($this->firstTime[0] > $sec->getEarliestTime()[0]){
 			$this->firstTime = array($sec->getEarliestTime()[0], $sec->getEarliestTime()[1]);
 		}
-		else if($this->firstTime[0] == $sec->getEarliestTime()[0]){
-			if($this->firstTime[1] > $sec->getEarliestTime()[1]){
-				$this->firstTime = array($sec->getEarliestTime()[0], $sec->getEarliestTime()[1]);
-			}
+		else if($this->firstTime[0] == $sec->getEarliestTime()[0] && $this->firstTime[1] > $sec->getEarliestTime()[1]){
+			$this->firstTime = array($sec->getEarliestTime()[0], $sec->getEarliestTime()[1]);
 		}
 		
 		if(!isset($this->lastTime)){
@@ -48,120 +67,14 @@ class Schedule{
 		else if($this->lastTime[0] < $sec->getLastTime()[0]){
 			$this->lastTime = array($sec->getLastTime()[0], $sec->getLastTime()[1]);
 		}
-		else if($this->lastTime[0] == $sec->getLastTime()[0]){
-			if($this->lastTime[1] < $sec->getLastTime()[1]){
-				$this->lastTime = array($sec->getLastTime()[0], $sec->getLastTime()[1]);
-			}
-		}
-		
-		if(!isset($this->latestTime)){
-			$this->latestTime = $sec->getLatestTime();
-		}
-		if($this->latestTime[1] < $sec->getLatestTime()[1]){
-			$this->latestTime = array($sec->getLatestTime()[0], $sec->getLatestTime()[1]);
+		else if($this->lastTime[0] == $sec->getLastTime()[0] && $this->lastTime[1] < $sec->getLastTime()[1]){
+			$this->lastTime = array($sec->getLastTime()[0], $sec->getLastTime()[1]);
 		}
 		
 		if($sec->meetsFriday()){
 			$this->fridayFree = false;
 		}
 	}
-		
-	public function getSchedule(){
-		$arr = $this->listOfSections;
-		usort($arr, function($a, $b){
-				return (strtotime("+".($a->getEarliestTime()[0])." days", $a->getEarliestTime()[1]) < strtotime("+".($b->getEarliestTime()[0])." days", $b->getEarliestTime()[1])) ? -1 : 1;
-		});
-		return $arr;
-	}
-	
-	private function compCPD($a, $b){
-		
-	}
-	
-	public function getCPD(){
-		$arr = array();
-		$arr2 = array();
-		foreach($this->listOfSections as $v){
-			if(isset($v->meetingTime)){
-				foreach($v->meetingTime as $k=>$m){
-					if(!isset($arr[$k])){
-						$arr[$k] = 1;
-					}
-					else{
-							$arr[$k] +=1;
-					}
-				}
-			}
-		}
-		arsort($arr);
-		$i = reset($arr);
-		foreach($arr as $k=>$v){
-			if($i == $v){
-				$arr2[$this->dayToInt($k)]=$v;
-			}
-		}
-		ksort($arr2);
-		foreach($arr2 as $k=>$v){
-			unset($arr2[$k]);
-			$arr2[$this->intToDay($k)] = $v;
-		}
-		return $arr2;
-	}
-	
-	public function getCourses(){
-		$arr = array();
-		foreach($this->listOfSections as $v){
-			$tmp = ['title'=>$v->getCourseTitle(), 'fieldOfStudy'=>$v->getFieldOfStudy(), 'courseNum'=>$v->getCourseNumber(), 'time'=>date("g:i A", reset($v->meetingTime)['from']), 'day'=>key($v->meetingTime)];
-			$arr[$v->getCourseTitle()] = array();
-			array_push($arr[$v->getCourseTitle()], $tmp);
-		}
-		$arr['friday free'] = $this->fridayFree();
-		$arr['Number of Courses'] = $this->getNumClasses();
-		$arr['Earliest Time'] = date("g:i A", $this->earliestTime[1]);
-		$arr['Latest Time'] = date("g:i A", $this->latestTime[1]);
-		$arr['units']=$this->getNumUnits();
-		return $arr;
-	}
-		
-	public function getNumClasses(){
-        return $this->numberOfClasses;
-    }
-    
-    public function getEarliestTime(){
-        return $this->earliestTime;
-    }
-    
-    public function getlatestTime(){
-        return $this->latestTime;
-    }
-    
-    public function fridayFree(){
-        return $this->fridayFree;
-    }
-	
-	public function getNumUnits(){
-        return $this->numberOfUnits;
-    }
-	
-	public function getLastTime(){
-		return $this->lastTime;
-	}
-	
-	public function getFirstTime(){
-		return $this->firstTime;
-	}
-	
-	public function getScore(){
-		return $this->score;
-	}
-	
-	public function __toString() {
-        $me = "".$this->numberOfClasses.$this->fridayFree;
-		foreach($this->listOfSections as $a){
-			$me = $me.$a->getCourseTitle().$a->getLatestTime()[1].$a->getEarliestTime()[1].$a->getLatestTime()[0].$a->getEarliestTime()[0].$a->getCRN()[0];
-		}
-		return $me;
-    }
 	
 	public function setScore(){
 		$classes = $this->numberOfUnits+$this->numberOfClasses;
@@ -196,6 +109,71 @@ class Schedule{
 		}
 		
 		$this->score += ($timeScore/$this->numberOfClasses)*.1;
+	}
+	
+	public function getSchedule(){
+		return $this->listOfSections;
+	}
+	
+	public function getCPD(){
+		$arr = array();
+		$arr2 = array();
+		foreach($this->listOfSections as $v){
+			if(isset($v->meetingTime)){
+				foreach($v->meetingTime as $k=>$m){
+					if(!isset($arr[$k])){
+						$arr[$k] = 1;
+					}
+					else{
+							$arr[$k] +=1;
+					}
+				}
+			}
+		}
+		
+		arsort($arr);
+		$i = reset($arr);
+		foreach($arr as $k=>$v){
+			if($i == $v){
+				$arr2[$this->dayToInt($k)]=$v;
+			}
+		}
+		
+		ksort($arr2);
+		foreach($arr2 as $k=>$v){
+			unset($arr2[$k]);
+			$arr2[$this->intToDay($k)] = $v;
+		}
+		return $arr2;
+	}	
+	
+	//Generic Accessor Methods
+	public function getNumClasses(){
+        return $this->numberOfClasses;
+    }
+    
+    public function getEarliestTime(){
+        return $this->earliestTime;
+    }
+    
+    public function getlatestTime(){
+        return $this->latestTime;
+    }
+    
+    public function fridayFree(){
+        return $this->fridayFree;
+    }
+	
+	public function getNumUnits(){
+        return $this->numberOfUnits;
+    }
+	
+	public function getLastTime(){
+		return $this->lastTime;
+	}
+	
+	public function getFirstTime(){
+		return $this->firstTime;
 	}
 	
 	public function dayToInt($day){

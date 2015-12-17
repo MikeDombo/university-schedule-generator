@@ -7,6 +7,16 @@ spl_autoload_register(function ($class) {
 });
 
 ob_start();
+
+if(isset($_GET["i"])){
+	$inputData = json_decode(urldecode($_GET["i"]), true);
+	if(count($inputData)<1){
+		echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/sched/richmond/');</script>";
+	}
+}
+else{
+	echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/sched/richmond/');</script>";
+}
 ?>
 <html>
 	<head>
@@ -27,9 +37,48 @@ ob_start();
 			td{
 				color: #000000;
 			}
+			
+			.navbar-brand-name > img {
+				max-height:70px;
+				width:auto;
+				padding: 0 15px 0 0;
+			}
+			
+			.navbar {
+				min-height: 90px;
+				background-color: #4788c6;
+			}
+			
+			.navbar-collapse.in{
+				margin-top:20px;
+			}
 		</style>
 	</head>
 	<body>
+		<nav class="navbar navbar-default navbar-inverse">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" style="padding: 10 15px;" href="#">
+						<div class="navbar-brand-name">
+							<img src="http://www.richmond.edu/_KP4_assets/images/kp4/shield.png"/>
+							<span style="color:#ffffff">University of Richmond Scheduler</span>
+						</div>
+					</a>
+					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="navbar-collapse collapse" id="navbar-main">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a><button class="btn btn-default" type="button" onclick="window.location.href='/sched/richmond/?i=<?php echo urlencode(json_encode($inputData));?>'">Edit Sections</button></a></li>
+						<li><a><button class="btn btn-success btn-expand glyphicon glyphicon-collapse-down" type="button">&nbsp;Expand All Schedules</button></a></li>
+						<li><a><button class="btn-listview btn glyphicon glyphicon-list btn-default" type="button">&nbsp;List View</button></a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>
 	<script>
 		$(document).ready(function(){
 			$('[data-toggle="popover"]').popover();   
@@ -72,18 +121,14 @@ ob_start();
 			$('#calendar-view').addClass("hide");
 		});
 	</script>
-		<div class="container-fluid">
-			<div class="row col-md-12">				
-				<div class="row col-sm-12"><div class="col-sm-6">
-
 <?php
 ob_flush();
 flush();
 
-$database = "*************";
-$user = "*************";
-$pass = "**************";
-$link = mysqli_connect"localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
+$database = "*****";
+$user = "********";
+$pass = "**********";
+$link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 
 function generateColor($c){
@@ -109,100 +154,110 @@ if(isset($_GET["i"])){
 	$inputData = json_decode(urldecode($_GET["i"]), true);
 	$classCount = count($inputData);
 	foreach($inputData as $key=>$section){
-		if(preg_match("/\d{3}/", $section["CourseNum"]) && preg_match("/[a-zA-Z]{4}/", $section["FOS"])){
-			$subj = $section["FOS"];
-			$num = preg_split("/d{3}/", $section["CourseNum"])[0];
-			
-			$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE (`CRSE#` = '".$num."' AND `SUBJ` = '".$subj."' )");
+		$subj = $section["FOS"];
+		$num = $section["CourseNum"];
+		$title = $section["Title"];
+		
+		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE (`CRSE#` = '".$num."' AND `SUBJ` = '".$subj."')");
 
-			$tempSection = array();
-			$manyOptions = array();
-			$multipleOptions = false;
-			while($rows = mysqli_fetch_assoc($result)){
-				$sectionNum = $rows["SECTION"];
-				if(substr($sectionNum, 0, 1) == "L" || substr($sectionNum, 0, 1) == "P" || substr($sectionNum, 0, 1) == "D"){
-					$sectionNum = substr($sectionNum, 1);
-					if(substr($sectionNum, 1) == "A" || substr($sectionNum, 1) == "B" || substr($sectionNum, 1) == "C" || substr($sectionNum, 1) == "D"){
-						$sectionNum = "0".substr($sectionNum, 0, -2);
-						$multipleOptions = true;
-					}
-				}
-				
-				if(!isset($tempSection[$sectionNum]) && !$multipleOptions){
-					$data = jsonp_decode(file_get_contents('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2015&term=&catalogtype=ug&paginate=false&subj='.$rows["SUBJ"].'&level='.substr($rows["CRSE#"], 0, 1) .'00&keyword=&callback=?'), true)["courses"];
-					$initial = substr($data, strpos($data, "</span>".$rows["SUBJ"]." ".$rows["CRSE#"]));
-					$end = substr($initial, 0, strpos($initial, '<!--close inner-content-wrap'));
-					$title = substr($end, strlen($rows["SUBJ"])+9+strlen($rows["CRSE#"]), strpos($end, "</a>"));
-					$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
-					
-					foreach($rows as $k=>$v){
-						if($k == $v){
-							$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
-						}
-					}
-					$tempSection[$sectionNum] = $tempSec;
-				}
-				else if(!$multipleOptions){
-					$tempSec = $tempSection[$sectionNum];
-					foreach($rows as $k=>$v){
-						if($k == $v){
-							$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
-						}
-					}
-					if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
-						$tempSec->addCRN($rows["CRN"]);
-					}
-					$tempSection[$sectionNum] = $tempSec;
-				}
-				else if($multipleOptions){
-					$data = jsonp_decode(file_get_contents('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2015&term=&catalogtype=ug&paginate=false&subj='.$rows["SUBJ"].'&level='+$rows["CRSE#"].substr(0, 1) .'00&keyword=&callback=?'), true)["courses"];
-					$initial = $data.substr(strpos($data, "</span>".$rows["SUBJ"]." ".$rows["CRSE#"]), strlen($data));
-					$end = $initial.substr(0, strpos($initial, '<!--close inner-content-wrap'), strlen($initial));
-					$title = $end.substr($rows["SUBJ"].length+9+$rows["CRSE#"].length, strpos($end, "</a>"), strlen($end));
-					
-					$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
-					foreach($rows as $k=>$v){
-						if($k == $v){
-							$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
-						}
-					}
-					if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
-						$tempSec->addCRN($rows["CRN"]);
-					}
-					array_push($manyOptions, $tempSec);
+		$tempSection = array();
+		$manyOptions = array();
+		$multipleOptions = false;
+		while($rows = mysqli_fetch_assoc($result)){
+			if($rows["SUBJ"] == "FYS" && $rows["TITLE"] != $title){
+				continue;
+			}
+			$sectionNum = $rows["SECTION"];
+			if(substr($sectionNum, 0, 1) == "L" || substr($sectionNum, 0, 1) == "P" || substr($sectionNum, 0, 1) == "D"){
+				$sectionNum = substr($sectionNum, 1);
+				if(substr($sectionNum, 1) == "A" || substr($sectionNum, 1) == "B" || substr($sectionNum, 1) == "C" || substr($sectionNum, 1) == "D"){
+					$sectionNum = "0".substr($sectionNum, 0, -2);
+					$multipleOptions = true;
 				}
 			}
 			
-			foreach($tempSection as $k=>$v){
-				if($multipleOptions){
-					foreach($manyOptions as $optionalSection){
-						if($optionalSection->getCourseNumber() == $v->getCourseNumber() && $optionalSection->getFieldOfStudy() == $v->getFieldOfStudy() && !$v->conflictsWithTime($optionalSection)){
-							$newSec = new Section($v->getCourseTitle(), $v->getFieldOfStudy(), $v->getCourseNumber(), $v->getNumUnits(), $v->getCRN());
-							foreach($optionalSection->meetingTime as $day=>$times){
-								foreach($times as $timeKey=>$time){
-									$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
-									$newSec->setColor(generateColor(array(127, 127, 127)));
-									$newSec->setMultiples(true);
-								}
-							}
-							foreach($v->meetingTime as $day=>$times){
-								foreach($times as $timeKey=>$time){
-									$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
-								}
-							}
-							foreach($optionalSection->getCRN() as $crn){
-								if(!(array_search($crn, $newSec->getCRN()) > -1)){
-									$newSec->addCRN($crn);
-								}
-							}
-							array_push($allSections, $newSec);
-						}
+			if(!isset($tempSection[$sectionNum]) && !$multipleOptions){
+				$data = jsonp_decode(file_get_contents('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2015&term=&catalogtype=ug&paginate=false&subj='.$rows["SUBJ"].'&level='.substr($rows["CRSE#"], 0, 1) .'00&keyword=&callback=?'), true)["courses"];
+				$initial = substr($data, strpos($data, "</span>".$rows["SUBJ"]." ".$rows["CRSE#"]));
+				$end = substr($initial, 0, strpos($initial, '<!--close inner-content-wrap'));
+				
+				if($rows["SUBJ"] != "FYS"){
+					$title = substr($end, strlen($rows["SUBJ"])+9+strlen($rows["CRSE#"]), strpos($end, "</a>"));
+				}
+				
+				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
+				
+				foreach($rows as $k=>$v){
+					if($k == $v){
+						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
 					}
 				}
-				else{
-					$v->setColor(generateColor(array(127, 127, 127)));
-					array_push($allSections, $v);
+				$tempSection[$sectionNum] = $tempSec;
+			}
+			else if(!$multipleOptions){
+				$tempSec = $tempSection[$sectionNum];
+				foreach($rows as $k=>$v){
+					if($k == $v){
+						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
+					}
 				}
+				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
+					$tempSec->addCRN($rows["CRN"]);
+				}
+				$tempSection[$sectionNum] = $tempSec;
+			}
+			else if($multipleOptions){
+				$data = jsonp_decode(file_get_contents('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2015&term=&catalogtype=ug&paginate=false&subj='.$rows["SUBJ"].'&level='.substr($rows["CRSE#"], 0, 1) .'00&keyword=&callback=?'), true)["courses"];
+				$initial = substr($data, strpos($data, "</span>".$rows["SUBJ"]." ".$rows["CRSE#"]));
+				$end = substr($initial, 0, strpos($initial, '<!--close inner-content-wrap'));
+				
+				if($rows["SUBJ"] != "FYS"){
+					$title = substr($end, strlen($rows["SUBJ"])+9+strlen($rows["CRSE#"]), strpos($end, "</a>"));
+				}
+				
+				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
+				
+				foreach($rows as $k=>$v){
+					if($k == $v){
+						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
+					}
+				}
+				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
+					$tempSec->addCRN($rows["CRN"]);
+				}
+				array_push($manyOptions, $tempSec);
+			}
+		}
+		
+		foreach($tempSection as $k=>$v){
+			if($multipleOptions){
+				foreach($manyOptions as $optionalSection){
+					if($optionalSection->getCourseNumber() == $v->getCourseNumber() && $optionalSection->getFieldOfStudy() == $v->getFieldOfStudy() && !$v->conflictsWithTime($optionalSection)){
+						$newSec = new Section($v->getCourseTitle(), $v->getFieldOfStudy(), $v->getCourseNumber(), $v->getNumUnits(), $v->getCRN());
+						foreach($optionalSection->meetingTime as $day=>$times){
+							foreach($times as $timeKey=>$time){
+								$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
+								$newSec->setColor(generateColor(array(127, 127, 127)));
+								$newSec->setMultiples(true);
+							}
+						}
+						foreach($v->meetingTime as $day=>$times){
+							foreach($times as $timeKey=>$time){
+								$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
+							}
+						}
+						foreach($optionalSection->getCRN() as $crn){
+							if(!(array_search($crn, $newSec->getCRN()) > -1)){
+								$newSec->addCRN($crn);
+							}
+						}
+						array_push($allSections, $newSec);
+					}
+				}
+			}
+			else{
+				$v->setColor(generateColor(array(127, 127, 127)));
+				array_push($allSections, $v);
 			}
 		}
 	}
@@ -299,7 +354,7 @@ function printWeek($a){
 					$crns = $crns.", ".$crn;
 				}
 				
-				echo "<td class='has-data' style='background:rgba(".makeColorString($v[$a->intToDay($i)]->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".$v[$a->intToDay($i)]->getCourseNumber()."' data-fos='".$v[$a->intToDay($i)]->getFieldOfStudy()."' data-coursetitle='".$v[$a->intToDay($i)]->getCourseTitle()."'>";
+				echo "<td class='has-data' style='background:rgba(".makeColorString($v[$a->intToDay($i)]->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".$v[$a->intToDay($i)]->getCourseNumber()."' data-fos='".$v[$a->intToDay($i)]->getFieldOfStudy()."' data-coursetitle=\"".htmlentities($v[$a->intToDay($i)]->getCourseTitle())."\">";
 				echo $v[$a->intToDay($i)]->getCourseTitle();
 			}
 			else{
@@ -313,11 +368,12 @@ function printWeek($a){
 	echo "</table>";
 }
 ?>
-<?php echo "<h1><strong>".number_format($numSchedules)."</strong>&nbsp;Schedules Generated </h1><h2>from ".number_format($sectionCount)." Sections of ".number_format($classCount)." Courses</h2>";?>
-				</div><div class="col-sm-6"><h1 class="pull-right"><a style="color:black;" href="/sched/richmond/?i=<?php echo urlencode(json_encode($inputData));?>"><button class="btn btn-sucess" type="button">Edit Sections</button></a>
-				&nbsp;&nbsp;<button class="btn btn-success btn-expand glyphicon glyphicon-collapse-down" type="button"> Expand All Schedules</button>
-				&nbsp;&nbsp;<button class="btn-listview btn glyphicon glyphicon-list" type="button"> List View</button></h1></div></div>
-				<hr width="100%" />
+		<div class="container-fluid">
+			<div class="col-md-12">
+				<div class="page-header" style="margin-top:0px;">
+					<h2><strong><?php echo number_format($numSchedules);?></strong>&nbsp;Schedules Generated </h2>
+					<h3>from&nbsp;<?php echo number_format($sectionCount)." Sections of ".number_format($classCount);?>&nbsp;Courses</h3>
+				</div>
 				
 				<div class="panel-group" id="calendar-view">
 					<?php
@@ -332,10 +388,22 @@ function printWeek($a){
 						echo "<div class='col-md-6'>";
 						echo "<div class='panel panel-default' style='margin:4px;'>";
 						echo "<div class='panel-heading panel-title'>";
-						echo "<h4 style='color: #000000;'>".$a->getNumClasses()." classes, ".$a->getNumUnits()." units, with ".reset($a->getCPD())." classes every ".key($a->getCPD())." with score ".$a->score."</h4></div>";
+						echo "<h5 style='color: #000000;'>".$a->getNumClasses()." classes, ".$a->getNumUnits()." units, with ".reset($a->getCPD())." classes every ".key($a->getCPD());
+						if($classCount == $a->getNumClasses()){
+							echo '<span style="color:#4CAF50;" data-toggle="tooltip" title="Has all classes you asked for" class="glyphicon glyphicon-ok pull-right"></span>';
+						}
+						echo "</h5></div>";
 						echo "<div class='panel-body table-responsive' id='calendar".$num."'>";
 						
-						printWeek($a);						
+						printWeek($a);
+						echo "<h6>CRNS: ";
+						$crns = "";
+						foreach($a->getSchedule() as $v){
+							foreach($v->getCRN() as $crn){
+								$crns = $crns.", ".$crn;
+							}
+						}
+						echo substr($crns, 2)."</h6>";
 						
 						echo "</div></div></div>";
 						if($num%2==1){
@@ -367,7 +435,11 @@ function printWeek($a){
 					echo "<div class='col-md-3'>";
 					echo "<div class='panel panel-default'>";
 					echo "<div class='panel-heading panel-title' data-toggle='collapse' data-target='#collapse".$num."' style='cursor: pointer;'>";
-					echo "<a data-toggle='collapse' href='#collapse".$num."'>".$a->getNumClasses()." classes, ".$a->getNumUnits()." units, with ".reset($a->getCPD())." classes every ".key($a->getCPD())."</a></div>";
+					echo "<a data-toggle='collapse' href='#collapse".$num."'>".$a->getNumClasses()." classes, ".$a->getNumUnits()." units, with ".reset($a->getCPD())." classes every ".key($a->getCPD());
+					if($classCount == $a->getNumClasses()){
+						echo '<span style="color:#4CAF50;" data-toggle="tooltip" title="Has all classes you asked for" class="glyphicon glyphicon-ok pull-right"></span>';
+					}
+					echo "</a></div>";
 					echo "<div class='panel-collapse collapse panel-body".$in."' id='collapse".$num."'>";
 					echo "<table class='table table-condensed table-responsive'>";
 					foreach($a->getSchedule() as $b){
@@ -378,11 +450,19 @@ function printWeek($a){
 							}
 							$crns = $crns.", ".$crn;
 						}
-						echo "<tr><td class='has-data' style='background:rgba(".makeColorString($b->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".$b->getCourseNumber()."' data-fos='".$b->getFieldOfStudy()."' data-coursetitle='".$b->getCourseTitle()."'>";
+						echo "<tr><td class='has-data' style='background:rgba(".makeColorString($b->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".$b->getCourseNumber()."' data-fos='".$b->getFieldOfStudy()."' data-coursetitle=\"".htmlentities($b->getCourseTitle())."\">";
 						echo $b;
 						echo "</tr></td>";
 					}
-					echo "</table></div></div></div>";
+					echo "</table><h6>CRNS: ";
+					$crns = "";
+					foreach($a->getSchedule() as $v){
+						foreach($v->getCRN() as $crn){
+							$crns = $crns.", ".$crn;
+						}
+					}
+					echo substr($crns, 2)."</h6>";
+					echo "</div></div></div>";
 					if($num%4==3 || $k==count($GLOBALS['schedules'])){
 						echo "</div>";
 					}
@@ -453,6 +533,10 @@ function printWeek($a){
 			});
 			
 			$('td.has-data').each(popoverPlacementBottom);
+			
+			$(document).ready(function(){
+				$('[data-toggle="tooltip"]').tooltip(); 
+			});
 		</script>
 	</body>
 </html>

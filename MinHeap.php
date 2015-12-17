@@ -1,6 +1,17 @@
 <?php
+/**
+Authored by Michael Dombrowski, http://mikedombrowski.com
+Original repository available at http://github.com/md100play/university-schedule-generator
+
+This file contains 2 classes, LimitedMinHeap which drives MinHeap
+LimitedMinHeap is a min heap that has a maximum size in order to find the $maxSize number of highest values in the heap
+**/
+
 class MinHeap extends SplMinHeap
 {
+	/**
+	Custom comparison method to compare schedule scores
+	**/
     public function compare($item1, $item2) {
         if($item1->score == $item2->score){
 			return 0;
@@ -19,8 +30,8 @@ class LimitedMinHeap {
 	}
 	
 	public function insert($a){
-		if($this->minHeap->count() >= $this->maxSize){
-			if($this->minHeap->top()->score < $a->score){
+		if($this->minHeap->count() >= $this->maxSize){ //if heap is full
+			if($this->minHeap->top()->score < $a->score){ //if the minimum of the heap is less than $a's score, then remove the minimum and add $a to the heap
 				$this->minHeap->extract();
 			}
 			else{

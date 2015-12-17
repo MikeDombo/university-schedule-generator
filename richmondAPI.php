@@ -5,9 +5,9 @@ spl_autoload_register(function ($class) {
 	include "Section.php";
 });
 
-$database = "*********";
-$user = "***********";
-$pass = "**************";
+$database = "*******";
+$user = "********";
+$pass = "*******";
 $link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 header('Content-Type: text/javascript; charset=utf8');
@@ -54,7 +54,15 @@ if(isset($_GET['search'])){
 				$skip = false;
 				foreach($response as $k=>$v){
 					if($temp["Course Number"] == $v["Course Number"] && $temp["FOS"] == $v["FOS"]){
-						$skip = true;
+						if($v["FOS"] == "FYS" && $temp["Title"] == $v["Title"]){
+							$skip = true;
+						}
+						else if($v["FOS"] != "FYS"){
+							$skip = true;
+						}
+						else{
+							$skip = false;
+						}
 					}
 				}
 				if(!$skip){
