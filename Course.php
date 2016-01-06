@@ -11,6 +11,7 @@ class Course{
 	private $courseNumber;
 	private $fieldOfStudy;
 	private $numUnits;
+	private $color = array(0, 0, 0); //RGB color representing the course
 	
 	/**
 	Constructor accepting course title, field of study, course number, and number of units
@@ -25,6 +26,10 @@ class Course{
 	/**
 	Accessors of variables
 	**/
+	public function setColor($a){
+		$this->color = $a;
+	}
+	
 	public function getCourseTitle(){
 		return $this->courseName;
 	}
@@ -39,6 +44,10 @@ class Course{
 	
 	public function getNumUnits(){
 		return $this->numUnits;
+	}
+	
+	public function getColor(){
+		return $this->color;
 	}
 }
 ?>

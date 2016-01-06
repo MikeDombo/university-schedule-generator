@@ -17,7 +17,6 @@ class Section extends Course{
 	private $lastTime; //absolute last time the class meets in a week
 	private $crn = array(); //stores all registration numbers used in the section, ie. the main CRN and the CRN for a lab section
 	private $multiple = false; //true if there are multiple options of lab or drill sections for each lecture section
-	private $color = array(0, 0, 0); //RGB color representing the section
 	
 	/**
 	Constructor for Section that includes all the necessary parameters for the Course constructor as well as the CRN(s)
@@ -89,10 +88,7 @@ class Section extends Course{
 	**/
 	public function conflictsWith($other){
 		if($this->getFieldOfStudy() == $other->getFieldOfStudy() && $this->getCourseNumber() == $other->getCourseNumber()){ //check if the fields of study and course numbers are the same
-			if($this->getFieldOfStudy() != "FYS"){ //if the field of study is anything other than FYS, then the sections must conflict
-				return true;
-			}
-			else if($this->getCourseTitle() == $other->getCourseTitle()){//if the field of study is FYS and the course titles and the same, then the sections must conflict
+			if($this->getCourseTitle() == $other->getCourseTitle()){//if the field of study is FYS and the course titles and the same, then the sections must conflict
 				return true;
 			}
 		}
@@ -136,12 +132,12 @@ class Section extends Course{
 		return false;
 	}
 	
+	
+	/*
+	General accessor methods
+	*/
 	public function setMultiples($a){
 		$this->multiple = $a;
-	}
-	
-	public function setColor($a){
-		$this->color = $a;
 	}
 	
 	public function getEarliestTime(){
@@ -162,10 +158,6 @@ class Section extends Course{
 	
 	public function getCRN(){
 		return $this->crn;
-	}
-	
-	public function getColor(){
-		return $this->color;
 	}
 	
 	public function __toString(){

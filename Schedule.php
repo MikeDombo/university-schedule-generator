@@ -37,37 +37,37 @@ class Schedule{
 		$this->numberOfClasses += 1;
 		$this->numberOfUnits += $sec->getNumUnits();
 		
-		if(!isset($this->earliestTime)){
+		if(!isset($this->earliestTime)){//if there is no earliest time, just set it
 			$this->earliestTime = $sec->getEarliestTime();
 		}
-		else if($this->earliestTime[1] > $sec->getEarliestTime()[1]){
+		else if($this->earliestTime[1] > $sec->getEarliestTime()[1]){//if the current set time is later than the earliest time of the new section, change earliestTime
 			$this->earliestTime = array($sec->getEarliestTime()[0], $sec->getEarliestTime()[1]);
 		}
 		
-		if(!isset($this->latestTime)){
+		if(!isset($this->latestTime)){//if the latest time isn't set, just set it
 			$this->latestTime = $sec->getLatestTime();
 		}
-		else if($this->latestTime[1] < $sec->getLatestTime()[1]){
+		else if($this->latestTime[1] < $sec->getLatestTime()[1]){//if the current latest time is earlier than the latest time of the new section, change latestTime
 			$this->latestTime = array($sec->getLatestTime()[0], $sec->getLatestTime()[1]);
 		}
 		
-		if(!isset($this->firstTime)){
+		if(!isset($this->firstTime)){//if the first time isn't set, then set it
 			$this->firstTime = $sec->getEarliestTime();
 		}
-		else if($this->firstTime[0] > $sec->getEarliestTime()[0]){
+		else if($this->firstTime[0] > $sec->getEarliestTime()[0]){//if the current first time's day is later than the earliest time's day, then set the first time
 			$this->firstTime = array($sec->getEarliestTime()[0], $sec->getEarliestTime()[1]);
 		}
-		else if($this->firstTime[0] == $sec->getEarliestTime()[0] && $this->firstTime[1] > $sec->getEarliestTime()[1]){
+		else if($this->firstTime[0] == $sec->getEarliestTime()[0] && $this->firstTime[1] > $sec->getEarliestTime()[1]){//if the current first time's day is the same as the earliest time's day, and the time of firstTime is later than earliestTime, then set it
 			$this->firstTime = array($sec->getEarliestTime()[0], $sec->getEarliestTime()[1]);
 		}
 		
-		if(!isset($this->lastTime)){
+		if(!isset($this->lastTime)){//if the last time isn't set, then set it
 			$this->lastTime = $sec->getLastTime();
 		}
-		else if($this->lastTime[0] < $sec->getLastTime()[0]){
+		else if($this->lastTime[0] < $sec->getLastTime()[0]){//if the current last time's day is earlier than the last time's day, then set the last time
 			$this->lastTime = array($sec->getLastTime()[0], $sec->getLastTime()[1]);
 		}
-		else if($this->lastTime[0] == $sec->getLastTime()[0] && $this->lastTime[1] < $sec->getLastTime()[1]){
+		else if($this->lastTime[0] == $sec->getLastTime()[0] && $this->lastTime[1] < $sec->getLastTime()[1]){//if the current last time's day is the same as the latest time's day, and the time of lastTime is earlier than latestTime, then set it
 			$this->lastTime = array($sec->getLastTime()[0], $sec->getLastTime()[1]);
 		}
 		
@@ -76,14 +76,19 @@ class Schedule{
 		}
 	}
 	
-	public function setScore(){
+	/**
+	This function sets the score variable that is used to sort all schedules based on number of classes, number of units, classes per day, 
+	and the earliest time classes occur
+	**/
+	public function setScore($morning){
 		$classes = $this->numberOfUnits+$this->numberOfClasses;
-		$this->score = $classes*2;
-		$this->score += ($this->numberOfClasses - reset($this->getCPD()))*1.5;
+		$this->score = $classes*2;//set score to number of classes and units, then scale by a factor of 2
+		$this->score += ($this->numberOfClasses - reset($this->getCPD()))*1.5;//add then number of classes minus the greatest number of classes in a day and scale by 1.5
 		if($this->fridayFree){
 			$this->score += 4;
 		}
 		
+		//This section calculates the score to add due to classes being later than 10:00am
 		$earliest = array();
 		foreach($this->listOfSections as $k=>$v){
 			if(isset($v->meetingTime)){
@@ -107,14 +112,17 @@ class Schedule{
 		foreach($earliest as $k=>$v){
 			$timeScore += ($v - strtotime("10:00 AM"))/3600;
 		}
-		
-		$this->score += ($timeScore/$this->numberOfClasses)*.1;
+		if($morning){
+			$this->score -= ($timeScore/$this->numberOfClasses)*.1; //scale the timeScore by the number of classes and then only add 10% of that because it isn't very important
+		}
+		else{
+			$this->score += ($timeScore/$this->numberOfClasses)*.1; //scale the timeScore by the number of classes and then only add 10% of that because it isn't very important
+		}
 	}
 	
-	public function getSchedule(){
-		return $this->listOfSections;
-	}
-	
+	/**
+	This function calculates the number of classes on each day
+	**/
 	public function getCPD(){
 		$arr = array();
 		$arr2 = array();
@@ -145,9 +153,13 @@ class Schedule{
 			$arr2[$this->intToDay($k)] = $v;
 		}
 		return $arr2;
-	}	
+	}
 	
 	//Generic Accessor Methods
+	public function getSchedule(){
+		return $this->listOfSections;
+	}
+	
 	public function getNumClasses(){
         return $this->numberOfClasses;
     }

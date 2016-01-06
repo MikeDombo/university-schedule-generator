@@ -14,12 +14,15 @@ ob_start();
         <script type="text/javascript" src="js/jquery.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
 		<script src="//cdn.jsdelivr.net/jquery.scrollto/2.1.2/jquery.scrollTo.min.js"></script>
+		<link href="css/bootstrap-toggle.min.css" rel="stylesheet">
+		<script src="js/bootstrap-toggle.min.js"></script>
 		<script>
 		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-		  ga('create', 'UA-69105822-1', 'auto');
+		  ga('create', 'UA-69105822-1', 'mikedombrowski.com/sched');
+		  ga('require', 'linkid');
 		  ga('send', 'pageview');
 		</script>
 		<style>
@@ -38,6 +41,10 @@ ob_start();
 				min-height: 90px;
 				height:auto;
 				max-height: 120px;
+			}
+			
+			.bootstrap-switch .bootstrap-switch-handle-off, .bootstrap-switch .bootstrap-switch-handle-on, .bootstrap-switch .bootstrap-switch-label {
+				height:auto;
 			}
 		</style>
 		<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
@@ -60,7 +67,7 @@ ob_start();
 			<div class="col-md-12">
 				<div class="jumbotron">
 					<h1>Welcome to the University of Richmond Scheduler!</h1>
-					<p>Use the search below to find courses and then click the&nbsp;<button class="glyphicon glyphicon-plus btn btn-success" style="line-height:1em!important"></button>&nbsp;to add the course to your basket.</p>
+					<p>Use the search below to find courses and then click the&nbsp;<button class="glyphicon glyphicon-plus btn btn-success" style="line-height:1em!important; vertical-align:text-top;"></button>&nbsp;to add the course to your basket.</p>
 					<p>Then click "Create Schedule" to generate every possible schedule</p>
 					<p><a class="btn btn-primary btn-success btn-lg btn-jumbo-close" role="button">Okay!</a></p>
 				</div>
@@ -95,14 +102,7 @@ ob_start();
 							$get = false;
 							if(isset($_GET["i"])){
 								$get = $_GET["i"];
-								$get = json_decode($get, true);
-							}
-							
-							function jsonp_decode($jsonp, $assoc = false) { // PHP 5.3 adds depth as third parameter to json_decode
-								if($jsonp[0] !== '[' && $jsonp[0] !== '{') { // we have JSONP
-								   $jsonp = substr($jsonp, strpos($jsonp, '('));
-								}
-								return json_decode(trim($jsonp,'();'), $assoc);
+								$get = json_decode($get, true)["allCourses"];
 							}
 							
 							if($get != false){
@@ -115,8 +115,19 @@ ob_start();
 							}
 						?>
 						</ul>
-						<button type="submit" class="btn btn-success btn-generate">Create Schedule</button>
+						<label for="time-pref" class="control-label">Class Time Preference&nbsp;</label><input type="checkbox" id="time-pref" <?php if(isset($_GET["i"])){if(json_decode($_GET["i"], true)["timePref"]){echo "checked";}}?>></input>
+						<br/><br/><button type="submit" class="btn btn-success btn-generate">Create Schedule</button>
 					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="container-fluid" style="margin-top:30px;">
+			<div class="col-md-12">
+				<div class="well well-lg" style="text-align:center;">
+					<h4>Made by <a href="http://mikedombrowski.com" style="color:#444444;">Michael Dombrowski</a></h4>
+					<h5>Code Available on <a href="https://github.com/md100play/university-schedule-generator" style="color:#444444;">GitHub</a></h5>
+					<h5>Feel Free to Contact Me With Issues or Feature Requests at <a href="mailto:michael@mikedombrowski.com" style="color:#444444;">Michael@MikeDombrowski.com&nbsp;<span class="glyphicon glyphicon-envelope" style="vertical-align:top;"></span></a></h5>
 				</div>
 			</div>
 		</div>
@@ -136,12 +147,20 @@ ob_start();
 	<button class="hide btn btn-danger glyphicon glyphicon-minus btn-remove-course pull-right" type="button" style="line-height: 1!important;" id="basket-remove"></button>
 	
 	<script>
+		$(function() {
+			$('#time-pref').bootstrapToggle({
+				on: 'Morning',
+				off: 'Afternoon',
+				offstyle: 'warning'
+			});
+		});
 		var $defaultSearchResult = $("#searchResultTemplate");
 		var $addedTemplate = $("#addedTemplate");
 		var $buttonRemoveTemplate = $("#basket-remove");
 		
 		$("#searchField").autocomplete({source:function(request, response){var loc = request.term; $.getJSON('/sched/richmond/richmondAPI.php?search='+loc+'&callback=?', function(courseData){
 		courseData = eval(courseData.response);
+		console.log(courseData);
 		$("#search-results").empty();
 		$.each(courseData, function(i,v){
 			var $newPanel = $defaultSearchResult.clone();
@@ -161,7 +180,7 @@ ob_start();
 					 prereq = prereq.substring(0, prereq.indexOf("</div>"));
 				 }
 				 
-				 if(v["FOS"] != "FYS"){
+				 if(v["FOS"] != "FYS" && !(v["Title"].indexOf("ST:") > -1) && !(v["Title"].indexOf("SP:") > -1)){
 					v["Title"] = title;
 				 }
 				 
@@ -202,7 +221,6 @@ ob_start();
 				$("#search-results").append($newPanel);
 			 });
 		});
-		//response(data2);
 		});},
 		select: function(event, ui){
 			var index = event.target.id;
@@ -218,10 +236,12 @@ ob_start();
 				getCourses.push(temp);
 				count++;
 			});
+			getCourses = {allCourses: getCourses, timePref:$("#time-pref").prop('checked')}
 			var json = JSON.stringify(getCourses);
 			if(count>5){
 				window.alert("Trying to generate schedules with this many courses may take a long time, but I will try.  \n\nThe page will appear to be loading until it is finished, so do not refresh the page.  \n\nThe calculation is allowed take up to 5 minutes, if it takes longer, it will fail.");
 			}
+			console.log(getCourses);
 			window.location.assign("/sched/richmond/makeSchedule.php?i="+encodeURIComponent(json));
 		});
 		

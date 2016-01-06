@@ -1,16 +1,23 @@
 <?php
-spl_autoload_register(function ($class) {
+/**
+Authored by Michael Dombrowski, http://mikedombrowski.com
+Original repository available at http://github.com/md100play/university-schedule-generator
+
+This is the most important file. It accepts a GET request that contains all the requested courses and will generate all the non-conflicting schedules using the "run" function.
+**/
+
+spl_autoload_register(function ($class) { //load all external classes to run the algorithm
     include "Course.php";
 	include "Schedule.php";
 	include "Section.php";
 	include "MinHeap.php";
 });
 
-ob_start();
+ob_start(); //start output_buffer
 
-if(isset($_GET["i"])){
+if(isset($_GET["i"])){//check if we received the correct GET request, and redirect back to the input page if not
 	$inputData = json_decode(urldecode($_GET["i"]), true);
-	if(count($inputData)<1){
+	if(count($inputData["allCourses"])<1){
 		echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/sched/richmond/');</script>";
 	}
 }
@@ -30,7 +37,8 @@ else{
 		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-		  ga('create', 'UA-69105822-1', 'auto');
+		  ga('create', 'UA-69105822-1', 'mikedombrowski.com/sched');
+		  ga('require', 'linkid');
 		  ga('send', 'pageview');
 		</script>
 		<style>
@@ -58,7 +66,7 @@ else{
 		<nav class="navbar navbar-default navbar-inverse">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<a class="navbar-brand" style="padding: 10 15px;" href="#">
+					<a class="navbar-brand" style="padding: 10 15px;" href="/sched/richmond/">
 						<div class="navbar-brand-name">
 							<img src="http://www.richmond.edu/_KP4_assets/images/kp4/shield.png"/>
 							<span style="color:#ffffff">University of Richmond Scheduler</span>
@@ -124,11 +132,11 @@ else{
 <?php
 ob_flush();
 flush();
-
-$database = "*****";
-$user = "********";
+$starttime = microtime(true);
+$database = "**********";
+$user = "**********";
 $pass = "**********";
-$link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
+$link = mysqli_connect("just148.justhost.com", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 
 function generateColor($c){
@@ -151,12 +159,14 @@ function jsonp_decode($jsonp, $assoc = false) { // PHP 5.3 adds depth as third p
 
 $allSections = array();
 if(isset($_GET["i"])){
-	$inputData = json_decode(urldecode($_GET["i"]), true);
+	$inputData = json_decode(urldecode($_GET["i"]), true)["allCourses"];
+	$GLOBALS["morning"] = json_decode(urldecode($_GET["i"]), true)["timePref"];
 	$classCount = count($inputData);
 	foreach($inputData as $key=>$section){
 		$subj = $section["FOS"];
 		$num = $section["CourseNum"];
 		$title = $section["Title"];
+		$courseColor = generateColor(array(127, 127, 127));
 		
 		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE (`CRSE#` = '".$num."' AND `SUBJ` = '".$subj."')");
 
@@ -164,7 +174,7 @@ if(isset($_GET["i"])){
 		$manyOptions = array();
 		$multipleOptions = false;
 		while($rows = mysqli_fetch_assoc($result)){
-			if($rows["SUBJ"] == "FYS" && $rows["TITLE"] != $title){
+			if(($rows["SUBJ"] == "FYS" || strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1) && $rows["TITLE"] != $title){
 				continue;
 			}
 			$sectionNum = $rows["SECTION"];
@@ -177,14 +187,6 @@ if(isset($_GET["i"])){
 			}
 			
 			if(!isset($tempSection[$sectionNum]) && !$multipleOptions){
-				$data = jsonp_decode(file_get_contents('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2015&term=&catalogtype=ug&paginate=false&subj='.$rows["SUBJ"].'&level='.substr($rows["CRSE#"], 0, 1) .'00&keyword=&callback=?'), true)["courses"];
-				$initial = substr($data, strpos($data, "</span>".$rows["SUBJ"]." ".$rows["CRSE#"]));
-				$end = substr($initial, 0, strpos($initial, '<!--close inner-content-wrap'));
-				
-				if($rows["SUBJ"] != "FYS"){
-					$title = substr($end, strlen($rows["SUBJ"])+9+strlen($rows["CRSE#"]), strpos($end, "</a>"));
-				}
-				
 				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
 				
 				foreach($rows as $k=>$v){
@@ -207,16 +209,7 @@ if(isset($_GET["i"])){
 				$tempSection[$sectionNum] = $tempSec;
 			}
 			else if($multipleOptions){
-				$data = jsonp_decode(file_get_contents('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2015&term=&catalogtype=ug&paginate=false&subj='.$rows["SUBJ"].'&level='.substr($rows["CRSE#"], 0, 1) .'00&keyword=&callback=?'), true)["courses"];
-				$initial = substr($data, strpos($data, "</span>".$rows["SUBJ"]." ".$rows["CRSE#"]));
-				$end = substr($initial, 0, strpos($initial, '<!--close inner-content-wrap'));
-				
-				if($rows["SUBJ"] != "FYS"){
-					$title = substr($end, strlen($rows["SUBJ"])+9+strlen($rows["CRSE#"]), strpos($end, "</a>"));
-				}
-				
 				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
-				
 				foreach($rows as $k=>$v){
 					if($k == $v){
 						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
@@ -237,7 +230,6 @@ if(isset($_GET["i"])){
 						foreach($optionalSection->meetingTime as $day=>$times){
 							foreach($times as $timeKey=>$time){
 								$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
-								$newSec->setColor(generateColor(array(127, 127, 127)));
 								$newSec->setMultiples(true);
 							}
 						}
@@ -251,12 +243,13 @@ if(isset($_GET["i"])){
 								$newSec->addCRN($crn);
 							}
 						}
+						$newSec->setColor($courseColor);
 						array_push($allSections, $newSec);
 					}
 				}
 			}
 			else{
-				$v->setColor(generateColor(array(127, 127, 127)));
+				$v->setColor($courseColor);
 				array_push($allSections, $v);
 			}
 		}
@@ -288,6 +281,8 @@ $GLOBALS['schedules'] = $temp;
 unset($temp);
 $GLOBALS['schedules'] = array_reverse($GLOBALS['schedules']);
 
+$runTime = microtime(true)-$starttime;
+
 function run($sections, $curr, $pick){
 	array_push($curr, $pick);
 	$temp = $sections;
@@ -301,7 +296,7 @@ function run($sections, $curr, $pick){
 		foreach($curr as $b){
 			$a->addSection($b);
 		}
-		$a->setScore();
+		$a->setScore($GLOBALS["morning"]);
 		$GLOBALS['schedules']->insert($a);
 		$GLOBALS['numSchedules']++;
 	}
@@ -396,7 +391,7 @@ function printWeek($a){
 						echo "<div class='panel-body table-responsive' id='calendar".$num."'>";
 						
 						printWeek($a);
-						echo "<h6>CRNS: ";
+						echo "<h6>CRNs: ";
 						$crns = "";
 						foreach($a->getSchedule() as $v){
 							foreach($v->getCRN() as $crn){
@@ -454,7 +449,7 @@ function printWeek($a){
 						echo $b;
 						echo "</tr></td>";
 					}
-					echo "</table><h6>CRNS: ";
+					echo "</table><h6>CRNs: ";
 					$crns = "";
 					foreach($a->getSchedule() as $v){
 						foreach($v->getCRN() as $crn){
@@ -484,6 +479,7 @@ function printWeek($a){
 				</div>
 				<div class='col-md-4'></div>
 			</div>
+		</div>
 		</div>
 		<script>
 			function createPopover(element){
@@ -538,10 +534,36 @@ function printWeek($a){
 				$('[data-toggle="tooltip"]').tooltip(); 
 			});
 		</script>
+		<div class="container-fluid" style="margin-top:30px;">
+			<div class="col-md-12 well well-lg" style="text-align:center;">
+				<div class="col-md-6">
+					<h4>Made by <a href="http://mikedombrowski.com" style="color:#444444;">Michael Dombrowski</a></h4>
+					<h5>Code Available on <a href="https://github.com/md100play/university-schedule-generator" style="color:#444444;">GitHub</a></h5>
+					<h5>Feel Free to Contact Me With Issues or Feature Requests at <a href="mailto:michael@mikedombrowski.com" style="color:#444444;">Michael@MikeDombrowski.com&nbsp;<span class="glyphicon glyphicon-envelope" style="vertical-align:top;"></span></a></h5>
+				</div>
+				<style>
+					@media screen and (min-width: 992px){
+						div.vdivide {
+							border-left: 1px solid #A4A4A4;
+						}
+						hr.vdivide {
+							display:none;
+						}
+					}
+				</style>
+				<hr class="vdivide" style="border-top-color:#A4A4A4"></hr>
+				<div class="col-md-6 vdivide">
+					<h4>Stats For Nerds</h4>
+					<ul class="list-group">
+						<li class="list-group-item">Time to Compute: <?php echo number_format($runTime, 3); ?> ms</li>
+						<li class="list-group-item">Maximum Memory Used: <?php echo number_format(memory_get_peak_usage()/1024, 2);?> kilobytes</li>
+					</ul>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>
 <?php
-	echo memory_get_peak_usage()/1024 ."kb peak usage";
 	ob_flush();
 	flush();
 	ob_end_clean();

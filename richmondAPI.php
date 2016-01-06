@@ -5,10 +5,10 @@ spl_autoload_register(function ($class) {
 	include "Section.php";
 });
 
-$database = "*******";
-$user = "********";
-$pass = "*******";
-$link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
+$database = "**********";
+$user = "**********";
+$pass = "**********";
+$link = mysqli_connect("just148.justhost.com", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 header('Content-Type: text/javascript; charset=utf8');
 
@@ -54,10 +54,10 @@ if(isset($_GET['search'])){
 				$skip = false;
 				foreach($response as $k=>$v){
 					if($temp["Course Number"] == $v["Course Number"] && $temp["FOS"] == $v["FOS"]){
-						if($v["FOS"] == "FYS" && $temp["Title"] == $v["Title"]){
+						if(($v["FOS"] == "FYS" || (strpos($v["Title"], "ST:") > -1) || (strpos($v["Title"], "SP:") > -1)) && $temp["Title"] == $v["Title"]){
 							$skip = true;
 						}
-						else if($v["FOS"] != "FYS"){
+						else if($v["FOS"] != "FYS" && !(strpos($v["Title"], "ST:") > -1) && !(strpos($v["Title"], "SP:") > -1)){
 							$skip = true;
 						}
 						else{
@@ -93,7 +93,15 @@ if(isset($_GET['search'])){
 			$skip = false;
 			foreach($response as $k=>$v){
 				if($temp["Course Number"] == $v["Course Number"] && $temp["FOS"] == $v["FOS"]){
-					$skip = true;
+					if(($v["FOS"] == "FYS" || strpos($v["Title"], "ST:") > -1 || strpos($v["Title"], "SP:") > -1) && $temp["Title"] == $v["Title"]){
+						$skip = true;
+					}
+					else if($v["FOS"] != "FYS" && !(strpos($v["Title"], "ST:") > -1) && !(strpos($v["Title"], "SP:") > -1)){
+						$skip = true;
+					}
+					else{
+						$skip = false;
+					}
 				}
 			}
 			if(!$skip){
