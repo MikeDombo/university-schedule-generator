@@ -1,14 +1,8 @@
 <?php
-spl_autoload_register(function ($class) {
-    include "Course.php";
-	include "Schedule.php";
-	include "Section.php";
-});
-
-$database = "**********";
-$user = "**********";
-$pass = "**********";
-$link = mysqli_connect("just148.justhost.com", $user, $pass, $database) or die("Error " . mysqli_error($link));
+$database = "********";
+$user = "********";
+$pass = "********";
+$link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 header('Content-Type: text/javascript; charset=utf8');
 
@@ -54,10 +48,10 @@ if(isset($_GET['search'])){
 				$skip = false;
 				foreach($response as $k=>$v){
 					if($temp["Course Number"] == $v["Course Number"] && $temp["FOS"] == $v["FOS"]){
-						if(($v["FOS"] == "FYS" || (strpos($v["Title"], "ST:") > -1) || (strpos($v["Title"], "SP:") > -1)) && $temp["Title"] == $v["Title"]){
+						if(($v["FOS"] == "FYS" || (strpos($v["Title"], "ST:") > -1) || (strpos($v["Title"], "SP:") > -1) || ($v["FOS"] == "HIST" && $v["Course Number"] == "199")) && $temp["Title"] == $v["Title"]){
 							$skip = true;
 						}
-						else if($v["FOS"] != "FYS" && !(strpos($v["Title"], "ST:") > -1) && !(strpos($v["Title"], "SP:") > -1)){
+						else if($v["FOS"] != "FYS" && !(strpos($v["Title"], "ST:") > -1) && !(strpos($v["Title"], "SP:") > -1) && !($v["FOS"] == "HIST" && $v["Course Number"] == "199")){
 							$skip = true;
 						}
 						else{
@@ -66,17 +60,19 @@ if(isset($_GET['search'])){
 					}
 				}
 				if(!$skip){
+					$fys = getFYSDescr($rows["CRN"]);
+					if(isset($fys["displayTitle"])){
+						$temp["displayTitle"] = $fys["displayTitle"];
+						$temp["description"] = $fys["description"];
+					}
 					array_push($response, $temp);
 				}
 			}
 		}
 	}
 	else{
-		$searchStr = "";
-		foreach(explode(" ", $_GET['search']) as $a){
-			$searchStr = $searchStr."%".$a;
-		}
-		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE `TITLE` LIKE '".$searchStr."%' ");
+		$searchStr = $_GET['search'];
+		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE `TITLE` LIKE '%".$searchStr."%' ");
 		
 		$response = array();
 		while($rows = mysqli_fetch_assoc($result)){
@@ -89,14 +85,13 @@ if(isset($_GET['search'])){
 			if($rows["M"] == "" && $rows["T"] == "" && $rows["W"] == "" && $rows["R"] == "" && $rows["F"] == "" && $rows["S"] == ""){
 				$temp["Available"] = "false";
 			}
-			
 			$skip = false;
 			foreach($response as $k=>$v){
 				if($temp["Course Number"] == $v["Course Number"] && $temp["FOS"] == $v["FOS"]){
-					if(($v["FOS"] == "FYS" || strpos($v["Title"], "ST:") > -1 || strpos($v["Title"], "SP:") > -1) && $temp["Title"] == $v["Title"]){
+					if(($v["FOS"] == "FYS" || strpos($v["Title"], "ST:") > -1 || strpos($v["Title"], "SP:") > -1 || ($v["FOS"] == "HIST" && $v["Course Number"] == "199")) && $temp["Title"] == $v["Title"]){
 						$skip = true;
 					}
-					else if($v["FOS"] != "FYS" && !(strpos($v["Title"], "ST:") > -1) && !(strpos($v["Title"], "SP:") > -1)){
+					else if($v["FOS"] != "FYS" && !(strpos($v["Title"], "ST:") > -1) && !(strpos($v["Title"], "SP:") > -1) && !($v["FOS"] == "HIST" && $v["Course Number"] == "199")){
 						$skip = true;
 					}
 					else{
@@ -105,15 +100,40 @@ if(isset($_GET['search'])){
 				}
 			}
 			if(!$skip){
+				if($rows["SUBJ"] == "FYS"){
+					$fys = getFYSDescr($rows["CRN"]);
+					if(isset($fys["displayTitle"])){
+						$temp["displayTitle"] = $fys["displayTitle"];
+						$temp["description"] = $fys["description"];
+					}
+				}
 				array_push($response, $temp);
 			}
 		}
 	}
 	
-	
+	if(count($response>50)){
+		$response = array_slice($response, 0, 50);
+	}
 	$arr = ["response"=>$response, "error"=>$err];
 	echo $_GET['callback'].'('.json_encode($arr).');';
 }
 
 mysqli_close($link);
+
+function getFYSDescr($crn){
+	$fysFile = file_get_contents('Seminar.html');
+	if(strpos($fysFile, $crn)>-1){
+		$fysArr = explode("name=", $fysFile);
+		foreach($fysArr as $v){
+			if(strpos($v, $crn)>-1){
+				$title = substr($v, strpos($v, "name=")+1, strpos($v, "\">")-1);
+				$fysFile = substr($v, strpos($v, $crn));
+				$fysFile = substr($fysFile, strpos($fysFile, "<p>")+3);
+				$fysFile = substr($fysFile, 0, strpos($fysFile, "</p>"));
+				return ["displayTitle"=>$title, "description"=>$fysFile];
+			}
+		}
+	}
+}
 ?>

@@ -80,7 +80,7 @@ else{
 				</div>
 				<div class="navbar-collapse collapse" id="navbar-main">
 					<ul class="nav navbar-nav navbar-right">
-						<li><a><button class="btn btn-default" type="button" onclick="window.location.href='/sched/richmond/?i=<?php echo urlencode(json_encode($inputData));?>'">Edit Sections</button></a></li>
+						<li><a><button class="btn btn-default" type="button" onclick="window.location.href='/sched/richmond/?i=<?php echo urlencode(json_encode($inputData));?>'">Edit Courses</button></a></li>
 						<li><a><button class="btn btn-success btn-expand glyphicon glyphicon-collapse-down" type="button">&nbsp;Expand All Schedules</button></a></li>
 						<li><a><button class="btn-listview btn glyphicon glyphicon-list btn-default" type="button">&nbsp;List View</button></a></li>
 					</ul>
@@ -133,10 +133,10 @@ else{
 ob_flush();
 flush();
 $starttime = microtime(true);
-$database = "**********";
-$user = "**********";
-$pass = "**********";
-$link = mysqli_connect("just148.justhost.com", $user, $pass, $database) or die("Error " . mysqli_error($link));
+$database = "********";
+$user = "********";
+$pass = "********";
+$link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 
 function generateColor($c){
@@ -150,6 +150,23 @@ function generateColor($c){
 	return array(intval($red), intval($green), intval($blue));
 }
 
+function plural($word, $num){
+	if($num == 1){
+		return $word;
+	}
+	else{
+		if(substr($word, -1) == "y"){
+			return substr($word, 0, strlen($word)-1)."ies";
+		}
+		else if(substr($word, -1) == "s"){
+			return $word."es";
+		}
+		else{
+			return $word."s";
+		}
+	}
+}
+
 function jsonp_decode($jsonp, $assoc = false) { // PHP 5.3 adds depth as third parameter to json_decode
 	if($jsonp[0] !== '[' && $jsonp[0] !== '{') { // we have JSONP
 	   $jsonp = substr($jsonp, strpos($jsonp, '('));
@@ -161,12 +178,14 @@ $allSections = array();
 if(isset($_GET["i"])){
 	$inputData = json_decode(urldecode($_GET["i"]), true)["allCourses"];
 	$GLOBALS["morning"] = json_decode(urldecode($_GET["i"]), true)["timePref"];
+	$allowFull = json_decode(urldecode($_GET["i"]), true)["fullClasses"];
+	
 	$classCount = count($inputData);
 	foreach($inputData as $key=>$section){
 		$subj = $section["FOS"];
 		$num = $section["CourseNum"];
 		$title = $section["Title"];
-		$courseColor = generateColor(array(127, 127, 127));
+		$courseColor = generateColor(array(255, 255, 255));
 		
 		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE (`CRSE#` = '".$num."' AND `SUBJ` = '".$subj."')");
 
@@ -174,7 +193,13 @@ if(isset($_GET["i"])){
 		$manyOptions = array();
 		$multipleOptions = false;
 		while($rows = mysqli_fetch_assoc($result)){
-			if(($rows["SUBJ"] == "FYS" || strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1) && $rows["TITLE"] != $title){
+			if(!$allowFull){
+				if($rows["MAX"] <= $rows["ENROLLMENT"]){
+					continue;
+				}
+			}
+			
+			if(($rows["SUBJ"] == "FYS" || strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1 || ($rows["SUBJ"] == "HIST" && $rows["CRSE#"] == "199")) && $rows["TITLE"] != $title){
 				continue;
 			}
 			$sectionNum = $rows["SECTION"];
@@ -194,6 +219,7 @@ if(isset($_GET["i"])){
 						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
 					}
 				}
+				$tempSec->setProf($rows["INSTR FN"]." ".$rows["INSTR LN"]);
 				$tempSection[$sectionNum] = $tempSec;
 			}
 			else if(!$multipleOptions){
@@ -215,6 +241,7 @@ if(isset($_GET["i"])){
 						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
 					}
 				}
+				$tempSec->setProf($rows["INSTR FN"]." ".$rows["INSTR LN"]);
 				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
 					$tempSec->addCRN($rows["CRN"]);
 				}
@@ -349,7 +376,7 @@ function printWeek($a){
 					$crns = $crns.", ".$crn;
 				}
 				
-				echo "<td class='has-data' style='background:rgba(".makeColorString($v[$a->intToDay($i)]->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".$v[$a->intToDay($i)]->getCourseNumber()."' data-fos='".$v[$a->intToDay($i)]->getFieldOfStudy()."' data-coursetitle=\"".htmlentities($v[$a->intToDay($i)]->getCourseTitle())."\">";
+				echo "<td class='has-data' style='background:rgba(".makeColorString($v[$a->intToDay($i)]->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".$v[$a->intToDay($i)]->getCourseNumber()."' data-fos='".$v[$a->intToDay($i)]->getFieldOfStudy()."' data-coursetitle=\"".htmlentities($v[$a->intToDay($i)]->getCourseTitle())."\" data-prof='".$v[$a->intToDay($i)]->getProf()."'>";
 				echo $v[$a->intToDay($i)]->getCourseTitle();
 			}
 			else{
@@ -366,8 +393,8 @@ function printWeek($a){
 		<div class="container-fluid">
 			<div class="col-md-12">
 				<div class="page-header" style="margin-top:0px;">
-					<h2><strong><?php echo number_format($numSchedules);?></strong>&nbsp;Schedules Generated </h2>
-					<h3>from&nbsp;<?php echo number_format($sectionCount)." Sections of ".number_format($classCount);?>&nbsp;Courses</h3>
+					<h2><strong><?php echo number_format($numSchedules);?></strong>&nbsp;<?php echo plural("Schedule", $numSchedules);?> Generated </h2>
+					<h3>from&nbsp;<?php echo number_format($sectionCount)." ".plural('Section', $sectionCount)." of ".number_format($classCount);?>&nbsp;<?php echo plural("Course", $classCount);?></h3>
 				</div>
 				
 				<div class="panel-group" id="calendar-view">
@@ -383,7 +410,7 @@ function printWeek($a){
 						echo "<div class='col-md-6'>";
 						echo "<div class='panel panel-default' style='margin:4px;'>";
 						echo "<div class='panel-heading panel-title'>";
-						echo "<h5 style='color: #000000;'>".$a->getNumClasses()." classes, ".$a->getNumUnits()." units, with ".reset($a->getCPD())." classes every ".key($a->getCPD());
+						echo "<h5 style='color: #000000;'>".$a->getNumClasses()." ".plural("class", $a->getNumClasses()).", ".$a->getNumUnits()." ".plural("unit", $a->getNumUnits()).", with ".reset($a->getCPD())." ".plural("class", reset($a->getCPD()))." every ".key($a->getCPD());
 						if($classCount == $a->getNumClasses()){
 							echo '<span style="color:#4CAF50;" data-toggle="tooltip" title="Has all classes you asked for" class="glyphicon glyphicon-ok pull-right"></span>';
 						}
@@ -430,7 +457,7 @@ function printWeek($a){
 					echo "<div class='col-md-3'>";
 					echo "<div class='panel panel-default'>";
 					echo "<div class='panel-heading panel-title' data-toggle='collapse' data-target='#collapse".$num."' style='cursor: pointer;'>";
-					echo "<a data-toggle='collapse' href='#collapse".$num."'>".$a->getNumClasses()." classes, ".$a->getNumUnits()." units, with ".reset($a->getCPD())." classes every ".key($a->getCPD());
+					echo "<a data-toggle='collapse' href='#collapse".$num."'>".$a->getNumClasses()." ".plural("class", $a->getNumClasses()).", ".$a->getNumUnits()." ".plural("unit", $a->getNumUnits()).", with ".reset($a->getCPD())." ".plural("class", reset($a->getCPD()))." every ".key($a->getCPD());
 					if($classCount == $a->getNumClasses()){
 						echo '<span style="color:#4CAF50;" data-toggle="tooltip" title="Has all classes you asked for" class="glyphicon glyphicon-ok pull-right"></span>';
 					}
@@ -445,7 +472,7 @@ function printWeek($a){
 							}
 							$crns = $crns.", ".$crn;
 						}
-						echo "<tr><td class='has-data' style='background:rgba(".makeColorString($b->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".$b->getCourseNumber()."' data-fos='".$b->getFieldOfStudy()."' data-coursetitle=\"".htmlentities($b->getCourseTitle())."\">";
+						echo "<tr><td class='has-data' style='background:rgba(".makeColorString($b->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".$b->getCourseNumber()."' data-fos='".$b->getFieldOfStudy()."' data-coursetitle=\"".htmlentities($b->getCourseTitle())."\" data-prof='".$b->getProf()."'>";
 						echo $b;
 						echo "</tr></td>";
 					}
@@ -485,9 +512,10 @@ function printWeek($a){
 			function createPopover(element){
 				var coursenum = $(element).data('coursenum');
 				var fos = $(element).data('fos');
+				var prof = $(element).data('prof');
 				var crns = $(element).data('crns');
 				var coursetitle = $(element).data('coursetitle');
-				var html = '<p> '+fos+' '+coursenum+' with CRN: '+crns+'</p>';
+				var html = '<p> '+fos+' '+coursenum+' with CRN: '+crns+'</p><p>Professor: '+prof+'</p>';
 				var options = {placement: 'bottom', container: "body", trigger: 'manual', html: true, title: coursetitle};
 				
 				$(element).data('content', html).popover(options);
@@ -555,7 +583,7 @@ function printWeek($a){
 				<div class="col-md-6 vdivide">
 					<h4>Stats For Nerds</h4>
 					<ul class="list-group">
-						<li class="list-group-item">Time to Compute: <?php echo number_format($runTime, 3); ?> ms</li>
+						<li class="list-group-item">Time to Compute: <?php if($runTime*1000<1000){echo number_format($runTime*1000, 0)." ms";} else{echo number_format($runTime, 3)." s";}?></li>
 						<li class="list-group-item">Maximum Memory Used: <?php echo number_format(memory_get_peak_usage()/1024, 2);?> kilobytes</li>
 					</ul>
 				</div>

@@ -17,6 +17,7 @@ class Section extends Course{
 	private $lastTime; //absolute last time the class meets in a week
 	private $crn = array(); //stores all registration numbers used in the section, ie. the main CRN and the CRN for a lab section
 	private $multiple = false; //true if there are multiple options of lab or drill sections for each lecture section
+	private $prof;
 	
 	/**
 	Constructor for Section that includes all the necessary parameters for the Course constructor as well as the CRN(s)
@@ -140,6 +141,10 @@ class Section extends Course{
 		$this->multiple = $a;
 	}
 	
+	public function setProf($a){
+		$this->prof = $a;
+	}
+	
 	public function getEarliestTime(){
 		return $this->earliestTime;
 	}
@@ -158,6 +163,10 @@ class Section extends Course{
 	
 	public function getCRN(){
 		return $this->crn;
+	}
+	
+	public function getProf(){
+		return $this->prof;
 	}
 	
 	public function __toString(){

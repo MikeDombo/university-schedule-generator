@@ -107,14 +107,19 @@ ob_start();
 							
 							if($get != false){
 								foreach($get as $k=>$v){
-									echo '<li class="list-group-item" data-fos="'.$v["FOS"].'" data-coursenum="'.$v["CourseNum"].'" data-coursename="'.$v["Title"].'">';
-									echo $v["FOS"]." ".$v["CourseNum"]." | ".$v["Title"].'<button class="btn btn-danger glyphicon glyphicon-minus btn-remove-course pull-right" type="button" style="line-height: 1!important;" id="basket-remove" data-coursenum="'.$v["CourseNum"].'" data-fos="'.$v["FOS"].'" data-coursename="'.$v["Title"].'"></button></li>';
+									$display = $v["Title"];
+									if(isset($v["displayTitle"])){
+										$display = $v["displayTitle"];
+									}
+									echo '<li class="list-group-item" data-fos="'.$v["FOS"].'" data-coursenum="'.$v["CourseNum"].'" data-coursename="'.$v["Title"].'" data-displaytitle="'.$display.'">';
+									echo $v["FOS"]." ".$v["CourseNum"]." | ".$display.'<button class="btn btn-danger glyphicon glyphicon-minus btn-remove-course pull-right" type="button" style="line-height: 1!important;" id="basket-remove" data-coursenum="'.$v["CourseNum"].'" data-fos="'.$v["FOS"].'" data-coursename="'.$v["Title"].'"></button></li>';
 									ob_flush();
 									flush();
 								}
 							}
 						?>
 						</ul>
+						<label for="full-classes" class="control-label">Show Full Sections&nbsp;</label><input type="checkbox" id="full-classes" <?php if(isset($_GET["i"])){if(json_decode($_GET["i"], true)["fullClasses"]){echo "checked";}}else{echo "checked";}?>></input>
 						<label for="time-pref" class="control-label">Class Time Preference&nbsp;</label><input type="checkbox" id="time-pref" <?php if(isset($_GET["i"])){if(json_decode($_GET["i"], true)["timePref"]){echo "checked";}}?>></input>
 						<br/><br/><button type="submit" class="btn btn-success btn-generate">Create Schedule</button>
 					</div>
@@ -153,6 +158,12 @@ ob_start();
 				off: 'Afternoon',
 				offstyle: 'warning'
 			});
+			$('#full-classes').bootstrapToggle({
+				on: 'Yes',
+				off: 'No',
+				offstyle: 'danger',
+				onstyle:'success'
+			});
 		});
 		var $defaultSearchResult = $("#searchResultTemplate");
 		var $addedTemplate = $("#addedTemplate");
@@ -160,28 +171,41 @@ ob_start();
 		
 		$("#searchField").autocomplete({source:function(request, response){var loc = request.term; $.getJSON('/sched/richmond/richmondAPI.php?search='+loc+'&callback=?', function(courseData){
 		courseData = eval(courseData.response);
-		console.log(courseData);
 		$("#search-results").empty();
 		$.each(courseData, function(i,v){
 			var $newPanel = $defaultSearchResult.clone();
-			
-			 $.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2015&term=&catalogtype=ug&paginate=false&subj='+v["FOS"]+'&level='+v["Course Number"].substr(0, 1)+'00&keyword=&callback=?', function(data){
-				 data = data.courses;
+			var cn;
+			if(v["Course Number"] > 99){
+				cn = v["Course Number"].substr(0,1)+"00";
+			}
+			else{
+				cn = v["Course Number"];
+			}
+			 $.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2015&term=&catalogtype=ug&paginate=false&subj='+v["FOS"]+'&level='+cn+'&keyword=&callback=?', function(data){
+					 data = data.courses;
+					 
+					 var initial = data.substring(data.indexOf("</span>"+v["FOS"]+" "+v["Course Number"]));
+					 var end = initial.substring(0, initial.indexOf('<!--close inner-content-wrap'));
+					 var title = end.substring(v["FOS"].length+9+v["Course Number"].length, end.indexOf("</a>"));
+					 var descr = end.substring(end.indexOf("Description</div>")+17);
+					 descr = descr.substring(0, descr.indexOf("</div>"));
+					 var units = end.substring(end.indexOf("Units: ")+7, end.indexOf("</div>"));
+					 
+					 if(end.indexOf("Prerequisites</div>")>-1){
+						 var prereq = end.substring(end.indexOf("Prerequisites</div>")+19);
+						 prereq = prereq.substring(0, prereq.indexOf("</div>"));
+					 }
+					 
+					if(!(v["Title"].indexOf("ST:") > -1) && !(v["Title"].indexOf("SP:") > -1) && v["FOS"] != "FYS" && !(v["FOS"] == "HIST" && v["Course Number"] == "199")){
+						v["Title"] = title;
+					 }
 				 
-				 var initial = data.substring(data.indexOf("</span>"+v["FOS"]+" "+v["Course Number"]));
-				 var end = initial.substring(0, initial.indexOf('<!--close inner-content-wrap'));
-				 var title = end.substring(v["FOS"].length+9+v["Course Number"].length, end.indexOf("</a>"));
-				 var descr = end.substring(end.indexOf("Description</div>")+17);
-				 descr = descr.substring(0, descr.indexOf("</div>"));
-				 var units = end.substring(end.indexOf("Units: ")+7, end.indexOf("</div>"));
-				 
-				 if(end.indexOf("Prerequisites</div>")>-1){
-					 var prereq = end.substring(end.indexOf("Prerequisites</div>")+19);
-					 prereq = prereq.substring(0, prereq.indexOf("</div>"));
+				 if(v["FOS"] == "FYS" && v["description"] != null){
+					 title = v["displayTitle"];
+					 descr = v["description"];
 				 }
-				 
-				 if(v["FOS"] != "FYS" && !(v["Title"].indexOf("ST:") > -1) && !(v["Title"].indexOf("SP:") > -1)){
-					v["Title"] = title;
+				 else if(v["description"] == null){
+					 title = v["Title"];
 				 }
 				 
 				 var html = "<h4>"+title+"</h4><p>"+descr+"</p><p>Units: "+units+"</p>";
@@ -189,11 +213,12 @@ ob_start();
 					 html = html+"<p>Prerequisites: "+prereq+"</p>";
 				 }
 				 
-				$newPanel.find("#title").text(v["FOS"]+" "+v["Course Number"]+" | "+v["Title"]);
+				$newPanel.find("#title").text(v["FOS"]+" "+v["Course Number"]+" | "+title);
 				$newPanel.find(".panel-body").html(html);
 				$newPanel.find("#button").attr("data-fos", v["FOS"]);
 				$newPanel.find("#button").attr("data-coursenum", v["Course Number"]);
 				$newPanel.find("#button").attr("data-coursename", v["Title"]);
+				$newPanel.find("#button").attr("data-displayTitle", v["displayTitle"]);
 				
 				if(v["Available"] == "false"){
 					$newPanel.find("#button").removeClass("btn-success");
@@ -220,6 +245,7 @@ ob_start();
 				
 				$("#search-results").append($newPanel);
 			 });
+			 
 		});
 		});},
 		select: function(event, ui){
@@ -232,11 +258,11 @@ ob_start();
 			var getCourses = new Array();
 			var count = 0;
 			$courses.each(function(){
-				var temp = {CourseNum:$(this).data("coursenum"), FOS:$(this).data("fos"), Title:$(this).data("coursename")};
+				var temp = {CourseNum:$(this).data("coursenum"), FOS:$(this).data("fos"), Title:$(this).data("coursename"), displayTitle:$(this).data("displaytitle")};
 				getCourses.push(temp);
 				count++;
 			});
-			getCourses = {allCourses: getCourses, timePref:$("#time-pref").prop('checked')}
+			getCourses = {allCourses: getCourses, timePref:$("#time-pref").prop('checked'), fullClasses:$("#full-classes").prop('checked')}
 			var json = JSON.stringify(getCourses);
 			if(count>5){
 				window.alert("Trying to generate schedules with this many courses may take a long time, but I will try.  \n\nThe page will appear to be loading until it is finished, so do not refresh the page.  \n\nThe calculation is allowed take up to 5 minutes, if it takes longer, it will fail.");
@@ -251,6 +277,9 @@ ob_start();
 		
 		$(document).on("click", ".btn-remove-course", function (e) {
 			var $course = $(e.target);
+			if($course.data("fos") == undefined){
+				$course = $course.parent();
+			}
 			
 			var fos = $course.data("fos");
 			var num = $course.data("coursenum");
@@ -298,19 +327,21 @@ ob_start();
 			var num = $course.data("coursenum");
 			var name = $course.data("coursename");
 			
+			if($course.data("displaytitle") != null){
+				name = $course.data("displaytitle");
+			}
+			
 			var $add = $addedTemplate.clone();
 			var $button = $buttonRemoveTemplate.clone().removeClass("hide")
 			
-			$button.attr("data-fos", fos);
-			$button.attr("data-coursenum", num);
-			$button.attr("data-coursename", name);
 			$add.removeClass("hide");
 			$add.attr("id", "");
 			$add.text(fos+" "+num+" | "+name);
 			$add.append("&nbsp; &nbsp; &nbsp; &nbsp;", $button);
 			$add.attr("data-fos", fos);
 			$add.attr("data-coursenum", num);
-			$add.attr("data-coursename", name);
+			$add.attr("data-coursename", $course.data("coursename"));
+			$add.attr("data-displayTitle", $course.data("displaytitle"));
 			
 			$("#course-basket").append($add);
 		});
