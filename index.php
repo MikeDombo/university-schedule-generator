@@ -111,8 +111,8 @@ ob_start();
 									if(isset($v["displayTitle"])){
 										$display = $v["displayTitle"];
 									}
-									echo '<li class="list-group-item" data-fos="'.$v["FOS"].'" data-coursenum="'.$v["CourseNum"].'" data-coursename="'.$v["Title"].'" data-displaytitle="'.$display.'">';
-									echo $v["FOS"]." ".$v["CourseNum"]." | ".$display.'<button class="btn btn-danger glyphicon glyphicon-minus btn-remove-course pull-right" type="button" style="line-height: 1!important;" id="basket-remove" data-coursenum="'.$v["CourseNum"].'" data-fos="'.$v["FOS"].'" data-coursename="'.$v["Title"].'"></button></li>';
+									echo '<li class="list-group-item" data-fos="'.htmlspecialchars($v["FOS"]).'" data-coursenum="'.htmlspecialchars($v["CourseNum"]).'" data-coursename="'.htmlspecialchars($v["Title"]).'" data-displaytitle="'.htmlspecialchars($display).'">';
+									echo htmlspecialchars($v["FOS"])." ".htmlspecialchars($v["CourseNum"])." | ".htmlspecialchars($display).'<button class="btn btn-danger glyphicon glyphicon-minus btn-remove-course pull-right" type="button" style="line-height: 1!important;" id="basket-remove" data-coursenum="'.htmlspecialchars($v["CourseNum"]).'" data-fos="'.htmlspecialchars($v["FOS"]).'" data-coursename="'.htmlspecialchars($v["Title"]).'"></button></li>';
 									ob_flush();
 									flush();
 								}

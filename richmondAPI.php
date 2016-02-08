@@ -1,7 +1,7 @@
 <?php
-$database = "********";
-$user = "********";
-$pass = "********";
+$database = "***********";
+$user = "***********";
+$pass = "***********";
 $link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 header('Content-Type: text/javascript; charset=utf8');
@@ -26,6 +26,8 @@ if(isset($_GET['search'])){
 		else{
 			$num = $num[0];
 		}
+		$num = mysqli_real_escape_string($link, $num);
+		$subj = mysqli_real_escape_string($link, $subj);
 		
 		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE (`CRSE#` like '%".$num."%' AND `SUBJ` LIKE '%".$subj."%' )");
 		
@@ -72,6 +74,7 @@ if(isset($_GET['search'])){
 	}
 	else{
 		$searchStr = $_GET['search'];
+		$searchStr = mysqli_real_escape_string($link, $searchStr);
 		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE `TITLE` LIKE '%".$searchStr."%' ");
 		
 		$response = array();

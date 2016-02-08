@@ -133,9 +133,9 @@ else{
 ob_flush();
 flush();
 $starttime = microtime(true);
-$database = "********";
-$user = "********";
-$pass = "********";
+$database = "***********";
+$user = "***********";
+$pass = "***********";
 $link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 
@@ -182,8 +182,8 @@ if(isset($_GET["i"])){
 	
 	$classCount = count($inputData);
 	foreach($inputData as $key=>$section){
-		$subj = $section["FOS"];
-		$num = $section["CourseNum"];
+		$subj = mysqli_real_escape_string($link, $section["FOS"]);
+		$num = mysqli_real_escape_string($link, $section["CourseNum"]);
 		$title = $section["Title"];
 		$courseColor = generateColor(array(255, 255, 255));
 		
@@ -201,6 +201,9 @@ if(isset($_GET["i"])){
 			
 			if(($rows["SUBJ"] == "FYS" || strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1 || ($rows["SUBJ"] == "HIST" && $rows["CRSE#"] == "199")) && $rows["TITLE"] != $title){
 				continue;
+			}
+			if(isset($section["displayTitle"])){
+				$title = $section["displayTitle"];
 			}
 			$sectionNum = $rows["SECTION"];
 			if(substr($sectionNum, 0, 1) == "L" || substr($sectionNum, 0, 1) == "P" || substr($sectionNum, 0, 1) == "D"){
@@ -376,8 +379,8 @@ function printWeek($a){
 					$crns = $crns.", ".$crn;
 				}
 				
-				echo "<td class='has-data' style='background:rgba(".makeColorString($v[$a->intToDay($i)]->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".$v[$a->intToDay($i)]->getCourseNumber()."' data-fos='".$v[$a->intToDay($i)]->getFieldOfStudy()."' data-coursetitle=\"".htmlentities($v[$a->intToDay($i)]->getCourseTitle())."\" data-prof='".$v[$a->intToDay($i)]->getProf()."'>";
-				echo $v[$a->intToDay($i)]->getCourseTitle();
+				echo "<td class='has-data' style='background:rgba(".makeColorString($v[$a->intToDay($i)]->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".htmlspecialchars($v[$a->intToDay($i)]->getCourseNumber())."' data-fos='".htmlspecialchars($v[$a->intToDay($i)]->getFieldOfStudy())."' data-coursetitle=\"".htmlspecialchars($v[$a->intToDay($i)]->getCourseTitle())."\" data-prof='".htmlspecialchars($v[$a->intToDay($i)]->getProf())."'>";
+				echo htmlspecialchars($v[$a->intToDay($i)]->getCourseTitle());
 			}
 			else{
 				echo "<td>";
@@ -472,8 +475,8 @@ function printWeek($a){
 							}
 							$crns = $crns.", ".$crn;
 						}
-						echo "<tr><td class='has-data' style='background:rgba(".makeColorString($b->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".$b->getCourseNumber()."' data-fos='".$b->getFieldOfStudy()."' data-coursetitle=\"".htmlentities($b->getCourseTitle())."\" data-prof='".$b->getProf()."'>";
-						echo $b;
+						echo "<tr><td class='has-data' style='background:rgba(".makeColorString($b->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".htmlspecialchars($b->getCourseNumber())."' data-fos='".htmlspecialchars($b->getFieldOfStudy())."' data-coursetitle=\"".htmlspecialchars($b->getCourseTitle())."\" data-prof='".htmlspecialchars($b->getProf())."'>";
+						echo htmlspecialchars($b);
 						echo "</tr></td>";
 					}
 					echo "</table><h6>CRNs: ";
@@ -509,12 +512,15 @@ function printWeek($a){
 		</div>
 		</div>
 		<script>
+			function html_encode(value){
+				return $("<div/>").text(value).html();
+			}
 			function createPopover(element){
-				var coursenum = $(element).data('coursenum');
-				var fos = $(element).data('fos');
-				var prof = $(element).data('prof');
+				var coursenum = html_encode($(element).data('coursenum'));
+				var fos = html_encode($(element).data('fos'));
+				var prof = html_encode($(element).data('prof'));
 				var crns = $(element).data('crns');
-				var coursetitle = $(element).data('coursetitle');
+				var coursetitle = html_encode($(element).data('coursetitle'));
 				var html = '<p> '+fos+' '+coursenum+' with CRN: '+crns+'</p><p>Professor: '+prof+'</p>';
 				var options = {placement: 'bottom', container: "body", trigger: 'manual', html: true, title: coursetitle};
 				
