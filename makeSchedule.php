@@ -1,20 +1,4 @@
 <?php
-/**
-Authored by Michael Dombrowski, http://mikedombrowski.com
-Original repository available at http://github.com/md100play/university-schedule-generator
-
-This is the most important file. It accepts a GET request that contains all the requested courses and will generate all the non-conflicting schedules using the "run" function.
-**/
-
-spl_autoload_register(function ($class) { //load all external classes to run the algorithm
-    include "Course.php";
-	include "Schedule.php";
-	include "Section.php";
-	include "MinHeap.php";
-});
-
-ob_start(); //start output_buffer
-
 if(isset($_GET["i"])){//check if we received the correct GET request, and redirect back to the input page if not
 	$inputData = json_decode(urldecode($_GET["i"]), true);
 	if(count($inputData["allCourses"])<1){
@@ -32,6 +16,7 @@ else{
 		<link rel="stylesheet" href="css/bootstrap.min.css"></link>
         <script type="text/javascript" src="js/jquery.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="js/loadingoverlay.min.js"></script>
 		<script>
 		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -128,477 +113,87 @@ else{
 			$('#list-view').removeClass("hide");
 			$('#calendar-view').addClass("hide");
 		});
+		
+		function getParameterByName(name, url) {
+			if (!url) url = window.location.href;
+			name = name.replace(/[\[\]]/g, "\\$&");
+			var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+				results = regex.exec(url);
+			if (!results) return null;
+			if (!results[2]) return '';
+			return results[2].replace(/\+/g, " ");
+		}
 	</script>
-<?php
-ob_flush();
-flush();
-$starttime = microtime(true);
-$database = "***********";
-$user = "***********";
-$pass = "***********";
-$link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
-
-
-function generateColor($c){
-	$red = rand(0, 255);
-	$green = rand(0, 255);
-	$blue = rand(0, 255);
-	$red = ($red + $c[0]) / 2;
-	$green = ($green + $c[1]) / 2;
-	$blue = ($blue + $c[2]) / 2;
-		
-	return array(intval($red), intval($green), intval($blue));
-}
-
-function plural($word, $num){
-	if($num == 1){
-		return $word;
-	}
-	else{
-		if(substr($word, -1) == "y"){
-			return substr($word, 0, strlen($word)-1)."ies";
+	<div class="container-fluid" id="results" style="min-height:200px;"></div>
+	<script>
+		var count = <?php echo ini_get('max_execution_time');?>;
+		var ptr = 0;
+		var writer = '';
+		var sensible = ["Sending Data to Server", "Processing", "Making Schedules", "Wrangling Bits", "A Few Bits Tried to Escape, but We Caught Them", "It's Still Faster Than You Could Do It", "Counting Down from Inifinity", "Reticulating Splines", 
+		"Searching for the Answer to Life, the Universe, and Everything","Checking Gravitational Constant in Your Locale"];
+		var random = [["Recalibrating", "Excavating", "Acquiring", "Extracting", "Computing", "Deflummoxing", "Binding", "Serving","Routing","Distributing","Sampling","Servicing","Repairing","Discombobulating", "Processing", "Preprocessing"],
+		["Flux", "Data", "Spline", "Storage", "Plasma", "Cache", "Laser","Extra Large","Ethernet","WiFi","Wireless","Sample", "Computational", "Local", "Integral"],
+		["Capacitor", "Conductor", "Assembler", "Detector", "Post-processor", "Integrator", "Computer", "Disk", "Server","Router","Calculator"]];
+		var customElement = $("<img src='/sched/richmond/loading-spinner.gif'></img><h3>", {
+			id : "countdown",
+			text : ""
+		});
+		function makeFunnyWord(){
+			var verb = random[0][Math.floor(Math.random()*random[0].length)];
+			var adjective = random[1][Math.floor(Math.random()*random[1].length)];
+			var noun = random[2][Math.floor(Math.random()*random[2].length)];
+			return verb+" "+adjective+" "+noun;
 		}
-		else if(substr($word, -1) == "s"){
-			return $word."es";
-		}
-		else{
-			return $word."s";
-		}
-	}
-}
-
-function jsonp_decode($jsonp, $assoc = false) { // PHP 5.3 adds depth as third parameter to json_decode
-	if($jsonp[0] !== '[' && $jsonp[0] !== '{') { // we have JSONP
-	   $jsonp = substr($jsonp, strpos($jsonp, '('));
-	}
-	return json_decode(trim($jsonp,'();'), $assoc);
-}
-
-$allSections = array();
-if(isset($_GET["i"])){
-	$inputData = json_decode(urldecode($_GET["i"]), true)["allCourses"];
-	$GLOBALS["morning"] = json_decode(urldecode($_GET["i"]), true)["timePref"];
-	$allowFull = json_decode(urldecode($_GET["i"]), true)["fullClasses"];
-	
-	$classCount = count($inputData);
-	foreach($inputData as $key=>$section){
-		$subj = mysqli_real_escape_string($link, $section["FOS"]);
-		$num = mysqli_real_escape_string($link, $section["CourseNum"]);
-		$title = $section["Title"];
-		$courseColor = generateColor(array(255, 255, 255));
-		
-		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE (`CRSE#` = '".$num."' AND `SUBJ` = '".$subj."')");
-
-		$tempSection = array();
-		$manyOptions = array();
-		$multipleOptions = false;
-		while($rows = mysqli_fetch_assoc($result)){
-			if(!$allowFull){
-				if($rows["MAX"] <= $rows["ENROLLMENT"]){
-					continue;
+		var interval = setInterval(function(){
+			count--;
+			if(count > 10 && count%5 == 4 && ptr < sensible.length){
+				writer = sensible[ptr++];
+				customElement.text(writer);
+			}
+			else if(count > 10 && count%5 == 4 && ptr >= sensible.length){
+				writer = makeFunnyWord();
+				customElement.text(writer);
+			}
+			else if(count <= 10 && count > 0){
+				writer = "Maximum Execution Time Almost Complete "+count+" Seconds Remain";
+				customElement.text(writer);
+			}
+			else if (count <= 0) {
+				clearInterval(interval);
+				return;
+			}
+		}, 1000);
+		customElement.text(sensible[0]);
+		$("#results").LoadingOverlay("show", {
+			minSize:"200px",
+			size:"100%",
+			custom:customElement,
+			image:""
+		});
+		$.ajax({
+			url: 'newSched.php',
+			type: 'GET',
+			data: {"i":getParameterByName("i")},
+			dataType: 'html',
+			timeout: (count*1000)+5000,
+			cache: false,
+			success: function(data) {
+				$('#results').html(data);
+				$("#results").LoadingOverlay("hide");
+				clearInterval(interval);
+			},
+			error: function(e) {
+				console.log(e);
+				clearInterval(interval);
+				if(e.status == 404 || e.status == 500 || e.statusText == "timeout"){
+					$("#results").LoadingOverlay("hide");
+					$('#results').html("<center><h2>Execution Time Exceeded</h2><h3>Try Again with Fewer Courses</h3></center>");
+				}
+				else{
+					alert("Something went wrong!");
 				}
 			}
-			
-			if(($rows["SUBJ"] == "FYS" || strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1 || ($rows["SUBJ"] == "HIST" && $rows["CRSE#"] == "199")) && $rows["TITLE"] != $title){
-				continue;
-			}
-			if(isset($section["displayTitle"])){
-				$title = $section["displayTitle"];
-			}
-			$sectionNum = $rows["SECTION"];
-			if(substr($sectionNum, 0, 1) == "L" || substr($sectionNum, 0, 1) == "P" || substr($sectionNum, 0, 1) == "D"){
-				$sectionNum = substr($sectionNum, 1);
-				if(substr($sectionNum, 1) == "A" || substr($sectionNum, 1) == "B" || substr($sectionNum, 1) == "C" || substr($sectionNum, 1) == "D"){
-					$sectionNum = "0".substr($sectionNum, 0, -2);
-					$multipleOptions = true;
-				}
-			}
-			
-			if(!isset($tempSection[$sectionNum]) && !$multipleOptions){
-				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
-				
-				foreach($rows as $k=>$v){
-					if($k == $v){
-						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
-					}
-				}
-				$tempSec->setProf($rows["INSTR FN"]." ".$rows["INSTR LN"]);
-				$tempSection[$sectionNum] = $tempSec;
-			}
-			else if(!$multipleOptions){
-				$tempSec = $tempSection[$sectionNum];
-				foreach($rows as $k=>$v){
-					if($k == $v){
-						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
-					}
-				}
-				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
-					$tempSec->addCRN($rows["CRN"]);
-				}
-				$tempSection[$sectionNum] = $tempSec;
-			}
-			else if($multipleOptions){
-				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
-				foreach($rows as $k=>$v){
-					if($k == $v){
-						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
-					}
-				}
-				$tempSec->setProf($rows["INSTR FN"]." ".$rows["INSTR LN"]);
-				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
-					$tempSec->addCRN($rows["CRN"]);
-				}
-				array_push($manyOptions, $tempSec);
-			}
-		}
-		
-		foreach($tempSection as $k=>$v){
-			if($multipleOptions){
-				foreach($manyOptions as $optionalSection){
-					if($optionalSection->getCourseNumber() == $v->getCourseNumber() && $optionalSection->getFieldOfStudy() == $v->getFieldOfStudy() && !$v->conflictsWithTime($optionalSection)){
-						$newSec = new Section($v->getCourseTitle(), $v->getFieldOfStudy(), $v->getCourseNumber(), $v->getNumUnits(), $v->getCRN());
-						foreach($optionalSection->meetingTime as $day=>$times){
-							foreach($times as $timeKey=>$time){
-								$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
-								$newSec->setMultiples(true);
-							}
-						}
-						foreach($v->meetingTime as $day=>$times){
-							foreach($times as $timeKey=>$time){
-								$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
-							}
-						}
-						foreach($optionalSection->getCRN() as $crn){
-							if(!(array_search($crn, $newSec->getCRN()) > -1)){
-								$newSec->addCRN($crn);
-							}
-						}
-						$newSec->setColor($courseColor);
-						array_push($allSections, $newSec);
-					}
-				}
-			}
-			else{
-				$v->setColor($courseColor);
-				array_push($allSections, $v);
-			}
-		}
-	}
-}
-mysqli_close($link);
-
-$GLOBALS['schedules'] = new LimitedMinHeap(100);
-$GLOBALS['numSchedules'] = 0;
-$sectionCount = count($allSections);
-
-foreach($allSections as $k=>$v){
-	unset($allSections[$k]);
-	if(!isset($v->meetingTime)){
-		continue;
-	}
-	$curr = array();
-	run($allSections, $curr, $v);
-}
-
-$numSchedules = $GLOBALS['numSchedules'];
-$temp = array();
-$schedCount = $GLOBALS['schedules']->count();
-for($i=0; $i<$schedCount; $i++){
-	array_push($temp, $GLOBALS['schedules']->pop());
-}
-
-$GLOBALS['schedules'] = $temp;
-unset($temp);
-$GLOBALS['schedules'] = array_reverse($GLOBALS['schedules']);
-
-$runTime = microtime(true)-$starttime;
-
-function run($sections, $curr, $pick){
-	array_push($curr, $pick);
-	$temp = $sections;
-	foreach($temp as $k=>$v){
-		if($v->conflictsWith($pick)){
-			unset($temp[$k]);
-		}
-	}
-	if(count($temp)==0){
-		$a = new Schedule();
-		foreach($curr as $b){
-			$a->addSection($b);
-		}
-		$a->setScore($GLOBALS["morning"]);
-		$GLOBALS['schedules']->insert($a);
-		$GLOBALS['numSchedules']++;
-	}
-	else{
-		foreach($temp as $k=>$v){
-			unset($temp[$k]);
-			run($temp, $curr, $v);
-		}
-	}
-}
-
-function makeColorString($color){
-	 return $color[0].", ".$color[1].", ".$color[2];
-}
-
-function printWeek($a){
-	$numDays = $a->getLastTime()[0] - $a->getFirstTime()[0] + 1;
-	echo "<table class='table table-condensed table-bordered'>";
-	echo "<tr>";
-	echo "<td></td>";
-		for($i = $a->getFirstTime()[0]; $i<($numDays+$a->getFirstTime()[0]); $i++){
-			echo "<td>";
-			echo $a->intToDay($i);
-			echo "</td>";
-		}
-	echo "</tr>";
-	
-	$timeArray = array();
-	foreach($a->getSchedule() as $k=>$b){
-		foreach($b->meetingTime as $day=>$times){
-			foreach($times as $key=>$time){
-				$timeArray[$time["from"]][$day] = $b;
-			}
-		}
-	}
-	ksort($timeArray);
-	
-	foreach($timeArray as $k=>$v){
-		echo "<tr>";
-		echo "<td>";
-		echo date("g:i a", $k);
-		echo "</td>";
-		for($i = $a->getFirstTime()[0]; $i<($numDays+$a->getFirstTime()[0]); $i++){
-			if(isset($v[$a->intToDay($i)])){
-				$crns = $v[$a->intToDay($i)]->getCRN()[0];
-				foreach($v[$a->intToDay($i)]->getCRN() as $j=>$crn){
-					if($j==0){
-						continue;
-					}
-					$crns = $crns.", ".$crn;
-				}
-				
-				echo "<td class='has-data' style='background:rgba(".makeColorString($v[$a->intToDay($i)]->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".htmlspecialchars($v[$a->intToDay($i)]->getCourseNumber())."' data-fos='".htmlspecialchars($v[$a->intToDay($i)]->getFieldOfStudy())."' data-coursetitle=\"".htmlspecialchars($v[$a->intToDay($i)]->getCourseTitle())."\" data-prof='".htmlspecialchars($v[$a->intToDay($i)]->getProf())."'>";
-				echo htmlspecialchars($v[$a->intToDay($i)]->getCourseTitle());
-			}
-			else{
-				echo "<td>";
-			}
-			echo "</td>";
-		}
-		echo "</tr>";
-	}
-	
-	echo "</table>";
-}
-?>
-		<div class="container-fluid">
-			<div class="col-md-12">
-				<div class="page-header" style="margin-top:0px;">
-					<h2><strong><?php echo number_format($numSchedules);?></strong>&nbsp;<?php echo plural("Schedule", $numSchedules);?> Generated </h2>
-					<h3>from&nbsp;<?php echo number_format($sectionCount)." ".plural('Section', $sectionCount)." of ".number_format($classCount);?>&nbsp;<?php echo plural("Course", $classCount);?></h3>
-				</div>
-				
-				<div class="panel-group" id="calendar-view">
-					<?php
-					$num = 0;
-					foreach($GLOBALS['schedules'] as $k=>$a){
-						if($num == 100){
-							break;
-						}
-						if($num%2==0){
-							echo "<div class='row' style='margin:2px;'>";
-						}
-						echo "<div class='col-md-6'>";
-						echo "<div class='panel panel-default' style='margin:4px;'>";
-						echo "<div class='panel-heading panel-title'>";
-						echo "<h5 style='color: #000000;'>".$a->getNumClasses()." ".plural("class", $a->getNumClasses()).", ".$a->getNumUnits()." ".plural("unit", $a->getNumUnits()).", with ".reset($a->getCPD())." ".plural("class", reset($a->getCPD()))." every ".key($a->getCPD());
-						if($classCount == $a->getNumClasses()){
-							echo '<span style="color:#4CAF50;" data-toggle="tooltip" title="Has all classes you asked for" class="glyphicon glyphicon-ok pull-right"></span>';
-						}
-						echo "</h5></div>";
-						echo "<div class='panel-body table-responsive' id='calendar".$num."'>";
-						
-						printWeek($a);
-						echo "<h6>CRNs: ";
-						$crns = "";
-						foreach($a->getSchedule() as $v){
-							foreach($v->getCRN() as $crn){
-								$crns = $crns.", ".$crn;
-							}
-						}
-						echo substr($crns, 2)."</h6>";
-						
-						echo "</div></div></div>";
-						if($num%2==1){
-							echo "</div>";
-						}
-						$num+=1;
-						
-						ob_flush();
-						flush();
-					}
-					?>
-				</div>
-			</div>
-				
-			<div class="panel-group hide" id="list-view">
-				<?php 
-				$num = 0;
-				foreach($GLOBALS['schedules'] as $k=>$a){
-					if($num == 100){
-						break;
-					}
-					if($num%4==0){
-						echo "<div class='row' style='margin:2px;'>";
-					}
-					$in = "";
-					if($num<4){
-						$in = " in";
-					}
-					echo "<div class='col-md-3'>";
-					echo "<div class='panel panel-default'>";
-					echo "<div class='panel-heading panel-title' data-toggle='collapse' data-target='#collapse".$num."' style='cursor: pointer;'>";
-					echo "<a data-toggle='collapse' href='#collapse".$num."'>".$a->getNumClasses()." ".plural("class", $a->getNumClasses()).", ".$a->getNumUnits()." ".plural("unit", $a->getNumUnits()).", with ".reset($a->getCPD())." ".plural("class", reset($a->getCPD()))." every ".key($a->getCPD());
-					if($classCount == $a->getNumClasses()){
-						echo '<span style="color:#4CAF50;" data-toggle="tooltip" title="Has all classes you asked for" class="glyphicon glyphicon-ok pull-right"></span>';
-					}
-					echo "</a></div>";
-					echo "<div class='panel-collapse collapse panel-body".$in."' id='collapse".$num."'>";
-					echo "<table class='table table-condensed table-responsive'>";
-					foreach($a->getSchedule() as $b){
-						$crns = $b->getCRN()[0];
-						foreach($b->getCRN() as $j=>$crn){
-							if($j==0){
-								continue;
-							}
-							$crns = $crns.", ".$crn;
-						}
-						echo "<tr><td class='has-data' style='background:rgba(".makeColorString($b->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".htmlspecialchars($b->getCourseNumber())."' data-fos='".htmlspecialchars($b->getFieldOfStudy())."' data-coursetitle=\"".htmlspecialchars($b->getCourseTitle())."\" data-prof='".htmlspecialchars($b->getProf())."'>";
-						echo htmlspecialchars($b);
-						echo "</tr></td>";
-					}
-					echo "</table><h6>CRNs: ";
-					$crns = "";
-					foreach($a->getSchedule() as $v){
-						foreach($v->getCRN() as $crn){
-							$crns = $crns.", ".$crn;
-						}
-					}
-					echo substr($crns, 2)."</h6>";
-					echo "</div></div></div>";
-					if($num%4==3 || $k==count($GLOBALS['schedules'])){
-						echo "</div>";
-					}
-					$num += 1;
-					
-					ob_flush();
-					flush();
-				}
-				?>
-			</div>
-			<div class='col-md-12'>
-				<div class='col-md-4'></div>
-				<div class='col-md-4'>
-				<?php
-					if($num == 100){
-						echo "<h1 style='text-align:center;'>View Truncated to Best 100 Schedules</h1>";
-					}
-				?>
-				</div>
-				<div class='col-md-4'></div>
-			</div>
-		</div>
-		</div>
-		<script>
-			function html_encode(value){
-				return $("<div/>").text(value).html();
-			}
-			function createPopover(element){
-				var coursenum = html_encode($(element).data('coursenum'));
-				var fos = html_encode($(element).data('fos'));
-				var prof = html_encode($(element).data('prof'));
-				var crns = $(element).data('crns');
-				var coursetitle = html_encode($(element).data('coursetitle'));
-				var html = '<p> '+fos+' '+coursenum+' with CRN: '+crns+'</p><p>Professor: '+prof+'</p>';
-				var options = {placement: 'bottom', container: "body", trigger: 'manual', html: true, title: coursetitle};
-				
-				$(element).data('content', html).popover(options);
-			}
-			
-			function popoverPlacementBottom(){
-				createPopover($(this));
-			}
-			
-			var insidePopover=false;
-			
-			function attachEvents(td) {
-				$('.popover').on('mouseenter', function() {
-					insidePopover=true;
-				});
-				$('.popover').on('mouseleave', function() {
-					insidePopover=false;
-					$(td).popover('hide');
-				});
-			}
-
-			$('table').on('mouseenter', 'td.has-data', function() {
-				var td=$(this);
-				setTimeout(function(){
-					if (!insidePopover){
-						$(td).popover('show');
-						attachEvents(td);
-					}
-				}, 200);
-			});
-
-			$('table').on('mouseleave', 'td.has-data', function() {
-				var td=$(this);
-				setTimeout(function() {
-					if (!insidePopover){
-						$(td).popover('hide');
-					}
-				}, 200);
-			});
-			
-			$('td.has-data').each(popoverPlacementBottom);
-			
-			$(document).ready(function(){
-				$('[data-toggle="tooltip"]').tooltip(); 
-			});
-		</script>
-		<div class="container-fluid" style="margin-top:30px;">
-			<div class="col-md-12 well well-lg" style="text-align:center;">
-				<div class="col-md-6">
-					<h4>Made by <a href="http://mikedombrowski.com" style="color:#444444;">Michael Dombrowski</a></h4>
-					<h5>Code Available on <a href="https://github.com/md100play/university-schedule-generator" style="color:#444444;">GitHub</a></h5>
-					<h5>Feel Free to Contact Me With Issues or Feature Requests at <a href="mailto:michael@mikedombrowski.com" style="color:#444444;">Michael@MikeDombrowski.com&nbsp;<span class="glyphicon glyphicon-envelope" style="vertical-align:top;"></span></a></h5>
-				</div>
-				<style>
-					@media screen and (min-width: 992px){
-						div.vdivide {
-							border-left: 1px solid #A4A4A4;
-						}
-						hr.vdivide {
-							display:none;
-						}
-					}
-				</style>
-				<hr class="vdivide" style="border-top-color:#A4A4A4"></hr>
-				<div class="col-md-6 vdivide">
-					<h4>Stats For Nerds</h4>
-					<ul class="list-group">
-						<li class="list-group-item">Time to Compute: <?php if($runTime*1000<1000){echo number_format($runTime*1000, 0)." ms";} else{echo number_format($runTime, 3)." s";}?></li>
-						<li class="list-group-item">Maximum Memory Used: <?php echo number_format(memory_get_peak_usage()/1024, 2);?> kilobytes</li>
-					</ul>
-				</div>
-			</div>
-		</div>
+		});
+	</script>
 	</body>
 </html>
-<?php
-	ob_flush();
-	flush();
-	ob_end_clean();
-?>
