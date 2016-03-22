@@ -5,7 +5,7 @@ Our app accepts as many courses as a student may want to take along with all the
 our algorithm, generates all possible non-conflicting schedules.
 
 ##Where It Is
-Right now the PHP version is available at http://mikedombrowski.com/sched/richmond.
+Right now the PHP version is available at http://mikedombrowski.com/ur/.
 We are currently still developing the Java version which will then be used to make the Android version.
 
 ##Theory of Operation
