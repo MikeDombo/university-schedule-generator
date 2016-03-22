@@ -1,27 +1,25 @@
-<?php
-ob_start();
-?>
 <html>
 	<head>
 		<title>Student Schedule Creator</title>
-		<link href="http://kp4assets.richmond.edu/images/kp4/static/favicon.ico" rel="shortcut icon"/>
-		<link href="http://d2r44v0ubjhg6i.cloudfront.net/images/kp4/apple-touch-icon.png" rel="apple-touch-icon" />
-        <link href="http://d2r44v0ubjhg6i.cloudfront.net/images/kp4/apple-touch-icon-76x76.png" rel="apple-touch-icon" sizes="76x76" />
-        <link href="http://d2r44v0ubjhg6i.cloudfront.net/images/kp4/apple-touch-icon-120x120.png" rel="apple-touch-icon" sizes="120x120" />
-        <link href="http://d2r44v0ubjhg6i.cloudfront.net/images/kp4/apple-touch-icon-152x152.png" rel="apple-touch-icon" sizes="152x152" />
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+		<link href="css/bootstrap-tour-standalone.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="css/bootstrap.min.css"></link>
-        <script type="text/javascript" src="js/jquery.min.js"></script>
-        <script type="text/javascript" src="js/bootstrap.min.js"></script>
-		<script src="//cdn.jsdelivr.net/jquery.scrollto/2.1.2/jquery.scrollTo.min.js"></script>
-		<link href="css/bootstrap-toggle.min.css" rel="stylesheet">
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/bootstrap.min.js"></script>
+		<script src="js/jquery-ui.min.js" type="text/javascript"></script>
+		<script src="js/jquery.ui.touch.min.js" type="text/javascript"></script>
+		<link href="css/bootstrap-toggle.min.css" rel="stylesheet"></link>
+		<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"></link>
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js"></script>
 		<script src="js/bootstrap-toggle.min.js"></script>
+		<script src="js/bootstrap-tour-standalone.min.js"></script>
 		<script>
 		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-		  ga('create', 'UA-69105822-1', 'mikedombrowski.com/sched');
+		  ga('create', 'UA-69105822-1', 'mikedombrowski.com/ur');
 		  ga('require', 'linkid');
 		  ga('send', 'pageview');
 		</script>
@@ -31,44 +29,51 @@ ob_start();
 				width:auto;
 				padding: 0 15px 0 0;
 			}
-			
 			.navbar {
 				min-height: 90px;
 				background-color: #4788c6;
 			}
-			
 			.navbar-brand{
 				min-height: 90px;
 				height:auto;
 				max-height: 120px;
 			}
-			
 			.bootstrap-switch .bootstrap-switch-handle-off, .bootstrap-switch .bootstrap-switch-handle-on, .bootstrap-switch .bootstrap-switch-label {
 				height:auto;
 			}
+			.row{
+				margin-left:0px;
+				margin-right:0px;
+			}
+			label{
+				font-weight:bold;
+			}
 		</style>
-		<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
-		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
 	</head>
 	<body>
 		<nav class="navbar navbar-default navbar-inverse">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<a class="navbar-brand" style="padding: 10 15px;" href="#">
+					<a class="navbar-brand" href="#">
 						<div class="navbar-brand-name">
-							<img src="http://www.richmond.edu/_KP4_assets/images/kp4/shield.png"/>
-							<span style="color:#ffffff">University of Richmond Scheduler</span>
+							<span style="color:#ffffff">Unofficial University of Richmond Scheduler</span>
 						</div>
 					</a>
 				</div>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a><button class="btn btn-default glyphicon glyphicon-list" type="button" data-toggle="offcanvas" data-target="#history">&nbsp;Schedule History</button></a></li>
+				</ul>
 			</div>
 		</nav>
-		<div class="container-fluid">
+		<div class="container-fluid" id="content">
+			<nav id="history" class="navmenu navmenu-default navmenu-fixed-left offcanvas">
+			</nav>
 			<div class="col-md-12">
-				<div class="jumbotron">
-					<h1>Welcome to the University of Richmond Scheduler!</h1>
+				<div class="jumbotron hide">
+					<h1>Welcome to the Unofficial University of Richmond Scheduler!</h1>
 					<p>Use the search below to find courses and then click the&nbsp;<button class="glyphicon glyphicon-plus btn btn-success" style="line-height:1em!important; vertical-align:text-top;"></button>&nbsp;to add the course to your basket.</p>
 					<p>Then click "Create Schedule" to generate every possible schedule</p>
+					<p>Disclaimer: This product has been developed by Michael Dombrowski it is not owned or operated by the University of Richmond. Accuracy cannot be guaranteed, please contact me if you find any inaccuracies.</p>
 					<p><a class="btn btn-primary btn-success btn-lg btn-jumbo-close" role="button">Okay!</a></p>
 				</div>
 				<div class="page-header" style="margin-top:0px;">
@@ -76,29 +81,49 @@ ob_start();
 				</div>
 			</div>
 			<div class="col-md-8">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h1 class="panel-title">Search for Courses</h1>
+				<div class="row">
+					<div class="panel panel-default" id="searchDiv">
+						<div class="panel-heading">
+							<h1 class="panel-title">Search for Courses</h1>
+						</div>
+						<div class="panel-body">
+							<h5>If searching by course title fails, try field of study and course number, ex CMSC 315</h5>
+							<input id="searchField" class="form-control search" name="fields[]" type="text" placeholder="Search by name or subject area and course number"></input>
+							<hr width="100%"/>
+							<div id="search-results">
+							</div>
+						</div>
 					</div>
-					<div class="panel-body">
-						<h5>If searching by course title fails, try field of study and course number, ex CMSC 315</h5>
-						<input id="searchField" class="form-control search" name="fields[]" type="text" placeholder="Search by name or subject area and course number"></input>
-						<hr width="100%"/>
-						<div id="search-results">
+				</div>
+				
+				<div class="row hidden-sm hidden-xs">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h1 class="panel-title">Browse Courses</h1>
+						</div>
+						<div class="panel-body">
+							<div id="subj-list">
+								<div class="panel panel-default hide" id="subj-list-template">
+									<div class="panel-heading collapse-btn">
+										<h1 class="panel-title">Accounting (ACCT)</h1>
+									</div>
+									<div class="panel-collapse panel-body collapse main-body">
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class= "col-md-4">
+			
+			<div class="col-md-4">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<h1 class="panel-title">Selected Courses</h1>
 					</div>
 					<div class="panel-body">
-						<ul class="list-group" id="course-basket">
+						<ul class="list-group row" id="course-basket">
 						<?php
-							ob_flush();
-							flush();
 							$get = false;
 							if(isset($_GET["i"])){
 								$get = $_GET["i"];
@@ -112,16 +137,373 @@ ob_start();
 										$display = $v["displayTitle"];
 									}
 									echo '<li class="list-group-item" data-fos="'.htmlspecialchars($v["FOS"]).'" data-coursenum="'.htmlspecialchars($v["CourseNum"]).'" data-coursename="'.htmlspecialchars($v["Title"]).'" data-displaytitle="'.htmlspecialchars($display).'">';
-									echo htmlspecialchars($v["FOS"])." ".htmlspecialchars($v["CourseNum"])." | ".htmlspecialchars($display).'<button class="btn btn-danger glyphicon glyphicon-minus btn-remove-course pull-right" type="button" style="line-height: 1!important;" id="basket-remove" data-coursenum="'.htmlspecialchars($v["CourseNum"]).'" data-fos="'.htmlspecialchars($v["FOS"]).'" data-coursename="'.htmlspecialchars($v["Title"]).'"></button></li>';
-									ob_flush();
-									flush();
+									echo htmlspecialchars($v["FOS"])." ".htmlspecialchars($v["CourseNum"])." | ".htmlspecialchars($display).
+									'<button class="btn btn-danger glyphicon glyphicon-minus btn-remove-course pull-right" type="button" style="line-height: 1!important;" id="basket-remove" data-coursenum="'.
+									htmlspecialchars($v["CourseNum"]).'" data-fos="'.htmlspecialchars($v["FOS"]).'" data-coursename="'.htmlspecialchars($v["Title"]).'"></button></li>';
 								}
 							}
 						?>
 						</ul>
-						<label for="full-classes" class="control-label">Show Full Sections&nbsp;</label><input type="checkbox" id="full-classes" <?php if(isset($_GET["i"])){if(json_decode($_GET["i"], true)["fullClasses"]){echo "checked";}}else{echo "checked";}?>></input>
-						<label for="time-pref" class="control-label">Class Time Preference&nbsp;</label><input type="checkbox" id="time-pref" <?php if(isset($_GET["i"])){if(json_decode($_GET["i"], true)["timePref"]){echo "checked";}}?>></input>
-						<br/><br/><button type="submit" class="btn btn-success btn-generate">Create Schedule</button>
+						<div class="form-inline">
+							<div class="form-group">
+							<label for="full-classes" class="control-label">Show Sections at Capacity&nbsp;</label><input class="form-control" type="checkbox" id="full-classes" <?php if(isset($_GET["i"])){if(json_decode($_GET["i"], true)["fullClasses"]){echo "checked";}}else{echo "checked";}?>></input>
+							</div>
+							<div class="form-group">
+							<label for="time-pref" class="control-label">Class Time Preference&nbsp;</label><input class="form-control" type="checkbox" id="time-pref" <?php if(isset($_GET["i"])){if(json_decode($_GET["i"], true)["timePref"]){echo "checked";}}?>></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="crns" class="control-label">Preregistered Courses</label>
+							<input class="form-control" type="text" id="crns" name="crns" placeholder="CRNs of Courses Already Registered" value="<?php if(isset($_GET["i"])){$print = ""; foreach(json_decode($_GET["i"], true)["preregistered"] as $v){$print = $print.$v.", ";} echo substr($print, 0, -2);}?>"></input>
+						</div>
+						<div class="form-group"><span id="arrow" class="glyphicon glyphicon-chevron-right"></span><a id="adv" onclick="advOptions()">Show Advanced Options</a></div>
+						<div id="advanced">
+							<div class="form-group">
+								<label for="slider-range" class="control-label">Only Allow Courses Between</label>
+								<div id="slider-range"></div>
+								<span id="restrict-slider"></span>
+							</div>
+							<div class="form-group">
+							</div>
+							<div id="block">
+								<div class="form-group">
+									<div class="form-inline">
+										<div class="form-group">
+											<label for="block-time-template" class="control-label">Times You Don't Want</label>
+										</div>
+										<div class="form-group pull-right">
+											<button class='form-control btn btn-success glyphicon glyphicon-plus' id="add-block-time"></button>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="hide blocked-time" id="block-time-template">
+								<hr/>
+								<div class="form-group">
+									<div class="time-slider"></div>
+									<span class="time-display"></span>
+								</div>
+								<div class="form-inline">
+									<div class="form-group">
+										<div class="btn-group" data-toggle="buttons">
+										  <label class="btn btn-primary">
+											<input type="checkbox" name="Su">Su
+										  </label>
+										  <label class="btn btn-primary">
+											<input type="checkbox" name="M">Mo
+										  </label>
+										  <label class="btn btn-primary">
+											<input type="checkbox" name="T">Tu
+										  </label>
+										  <label class="btn btn-primary">
+											<input type="checkbox" name="W">We
+										  </label>
+										  <label class="btn btn-primary">
+											<input type="checkbox" name="R">Th
+										  </label>
+										  <label class="btn btn-primary">
+											<input type="checkbox" name="F">Fr
+										  </label>
+										  <label class="btn btn-primary">
+											<input type="checkbox" name="S">Sa
+										  </label>
+										</div>
+									</div>
+									<div class="form-group">
+										<button class='form-control btn btn-danger glyphicon glyphicon-minus btn-remove-block-time'></button>
+									</div>
+								</div>
+							</div>
+							
+							<div class="panel panel-default hide" id="history-template">
+								<div class="panel-heading">
+									<h1 class="panel-title"></h1>
+									<button class="btn btn-success glyphicon glyphicon-repeat pull-right btn-load-history" type="button" style="line-height: 1!important; margin-top:-22px;"></button>
+								</div>
+								<div class="panel-body">
+								</div>
+							</div>
+						</div>
+						<script>
+							$('.btn').button();
+							$("#advanced").hide();
+							
+							if(getCookie("history").length > 0){
+								var c = getCookie("history");
+								c = JSON.parse(decodeURIComponent(c));
+								console.log(c);
+								$.each(c, function(i,v){
+									var $cloned = $("#history-template").clone().removeClass("hide").removeAttr('id');
+									$cloned.find(".panel-title").text(v["schedules"]+" Schedules");
+									var courses = "<ul class='list-group'>";
+									$.each(v, function(i2, v2){
+										if(v2["Title"] != undefined){
+											courses = courses+"<li class='list-group-item'>"+v2["Title"].replace(/\+/g, " ")+"</li>";
+										}
+									});
+									courses = courses+"</ul>";
+									$cloned.find(".panel-body").html(courses);
+									$cloned.find(".btn-load-history").attr('data-history-id', i);
+									$("#history").prepend($cloned);
+								});
+							}
+							
+							if(!getCookie("jumbotron").length > 0){
+								$(".jumbotron").removeClass("hide");
+							}
+						
+							var tour = new Tour({
+								backdrop: true,
+								debug: false,
+								onEnd: function(tour){
+									$("#course-basket .btn-remove-course").trigger("click");
+								},
+								steps: [
+								{
+									element: "#searchDiv",
+									title: "Search for Courses Here",
+									content: "Use the search field to find courses by title or by subject and course number",
+									
+									onNext: function(tour){
+										$(".collapse-btn:eq(1)").trigger("click");
+									}
+								},
+								{
+									element: "#subj-list",
+									title: "Browse for Courses",
+									content: "Click on a subject to see what courses are offered",
+									placement: "top",
+									onNext: function(tour){
+										$(".collapse-btn-subj:eq(0)").trigger("click");
+									}
+								},
+								{
+									element: ".collapse-btn-subj:eq(0)",
+									title: "View Course Descriptions",
+									content: "Click the title to view the course description",
+									
+								},
+								{
+									element: ".btn-add-course:eq(0)",
+									title: "Add Course to Selected Courses",
+									content: "Once you like a course, click the + button to add it to your selected courses",
+									onNext: function(tour){
+										$(".btn-add-course:eq(0)").trigger("click");
+									}
+								},
+								{
+									element: "#course-basket",
+									title: "View Selected Courses",
+									content: "Click the - button to remove any courses",
+									placement: "left"
+								},
+								{
+									element: ".btn-generate",
+									title: "Now Generate Schedules!",
+									content: "Click 'Create Schedule' to make every possible schedule",
+									placement: "left"
+								},
+								{
+									element: "body",
+									title: "Tour Complete",
+									content: "Go forth and make your perfect schedule!",
+									placement: "top"
+								}
+								]});
+
+								tour.init();
+								tour.start();
+							
+							$(document).on("click", ".btn-load-history", function(e){
+								var c = getCookie("history");
+								c = JSON.parse(decodeURIComponent(c));
+								c = c[$(e.target).data('history-id')];
+								$.each(c, function(i, v){
+									if(v["Title"] != undefined){
+										if(v["displayTitle"] != undefined){
+											v["displayTitle"] = v["displayTitle"].replace(/\+/g, " ");
+										}
+										addCourse(v["FOS"], v["CourseNum"], v["Title"].replace(/\+/g, " "), v["displayTitle"]);
+									}
+								});
+							});
+							
+							function getCookie(cname) {
+								var name = cname + "=";
+								var ca = document.cookie.split(';');
+								for(var i=0; i<ca.length; i++) {
+									var c = ca[i];
+									while (c.charAt(0)==' ') c = c.substring(1);
+									if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+								}
+								return "";
+							}
+							
+							function getParameterByName(name, url) {
+								if (!url) url = window.location.href;
+								name = name.replace(/[\[\]]/g, "\\$&");
+								var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+									results = regex.exec(url);
+								if (!results) return null;
+								if (!results[2]) return '';
+								return decodeURIComponent(results[2].replace(/\+/g, " "));
+							}
+							
+							if(getParameterByName('i') != undefined){
+								var importFromURL = JSON.parse(getParameterByName('i'))['unwantedTimes'];
+								
+								$.each(importFromURL, function(){
+									var $cloned = $("#block-time-template").clone().removeClass("hide").removeAttr('id');
+									var d = new Date();
+									var now = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0,0,0);
+									
+									var time = this["startTime"].split(" ")[0].split(":");
+									var ampm = this["startTime"].split(" ")[1];
+									d.setHours(parseInt(time[0]) + (ampm=="PM" ? 12 : 0));
+									d.setMinutes(parseInt(time[1]) || 0 );
+									this["startTime"] = parseInt((d-now)/60000);
+									
+									var time = this["endTime"].split(" ")[0].split(":");
+									var ampm = this["endTime"].split(" ")[1];
+									d.setHours(parseInt(time[0]) + (ampm=="PM" ? 12 : 0));
+									d.setMinutes(parseInt(time[1]) || 0 );
+									this["endTime"] = parseInt((d-now)/60000);
+									
+									$cloned.find(".time-slider").slider({
+										range: true,
+										min: 480,
+										max: 1320,
+										step:15,
+										values:[this["startTime"], this["endTime"]],
+										slide: slideTime
+									});
+									setSpanTime($cloned.find(".time-slider"));
+									
+									if(this["Su"] != undefined){
+										$cloned.find("input[name='Su']").parent().addClass("active");
+										$cloned.find("input[name='Su']").prop('checked', true);
+									}
+									if(this["M"] != undefined){
+										$cloned.find("input[name='M']").parent().addClass("active");
+										$cloned.find("input[name='M']").prop('checked', true);
+									}
+									if(this["T"] != undefined){
+										$cloned.find("input[name='T']").parent().addClass("active");
+										$cloned.find("input[name='T']").prop('checked', true);
+									}
+									if(this["W"] != undefined){
+										$cloned.find("input[name='W']").parent().addClass("active");
+										$cloned.find("input[name='W']").prop('checked', true);
+									}
+									if(this["R"] != undefined){
+										$cloned.find("input[name='R']").parent().addClass("active");
+										$cloned.find("input[name='R']").prop('checked', true);
+									}
+									if(this["F"] != undefined){
+										$cloned.find("input[name='F']").parent().addClass("active");
+										$cloned.find("input[name='F']").prop('checked', true);
+									}
+									if(this["S"] != undefined){
+										$cloned.find("input[name='S']").parent().addClass("active");
+										$cloned.find("input[name='S']").prop('checked', true);
+									}
+									
+									$("#block").append($cloned);
+								});
+							}
+							
+							$(document).on("click", "#add-block-time", function(){
+								var $cloned = $("#block-time-template").clone().removeClass("hide").removeAttr('id');
+								$cloned.find(".time-slider").slider({
+									range: true,
+									min: 480,
+									max: 1320,
+									step:15,
+									values:[480, 600],
+									slide: slideTime
+								});
+								setSpanTime($cloned.find(".time-slider"));
+								$("#block").append($cloned);
+							});
+							
+							$(document).on("click", ".btn-remove-block-time", function(){
+								$(this).parent().parent().parent().remove();
+							});
+							
+							function advOptions(){
+								if(!$('#advanced').is(':visible')){
+									$('#advanced').show(500); $('#adv').text('Hide Advanced Options');
+									$('#arrow').removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+								}
+								else{
+									$('#advanced').hide(500); $('#adv').text('Show Advanced Options');
+									$('#arrow').removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+								}
+							}
+							
+							$("#slider-range").slider({
+								range: true,
+								min: 480,
+								max: 1320,
+								step:15,
+								values: [<?php if(isset($_GET["i"]) && isset(json_decode($_GET["i"], true)["startTime"])){echo (strtotime(json_decode($_GET["i"], true)["startTime"])-strtotime("today"))/60;}else{echo "480";}?>, 
+								<?php if(isset($_GET["i"]) && isset(json_decode($_GET["i"], true)["endTime"])){echo (strtotime(json_decode($_GET["i"], true)["endTime"])-strtotime("today"))/60;}else{echo "1320";}?>],
+								slide: slideTime
+							});
+							setSpanTime($("#slider-range"));
+							
+							function slideTime(event, ui){
+								var val0 = $(event.target).slider("values", 0),
+								val1 = $(event.target).slider("values", 1),
+								minutes0 = parseInt(val0 % 60, 10),
+								hours0 = parseInt(val0 / 60 % 24, 10),
+								minutes1 = parseInt(val1 % 60, 10),
+								hours1 = parseInt(val1 / 60 % 24, 10);
+									
+								startTime = getTime(hours0, minutes0);
+								endTime = getTime(hours1, minutes1);
+								$(event.target).parent().children().last().text(startTime + ' - ' + endTime);
+							}
+							
+							function setSpanTime($id){
+								var val0 = $id.slider("values", 0),
+								val1 = $id.slider("values", 1),
+								minutes0 = parseInt(val0 % 60, 10),
+								hours0 = parseInt(val0 / 60 % 24, 10),
+								minutes1 = parseInt(val1 % 60, 10),
+								hours1 = parseInt(val1 / 60 % 24, 10);
+									
+								startTime = getTime(hours0, minutes0);
+								endTime = getTime(hours1, minutes1);
+								$id.parent().children().last().text(startTime + ' - ' + endTime);
+							}
+							
+							function getTime(hours, minutes) {
+								var time = null;
+								minutes = minutes + "";
+								if (hours < 12) {
+									time = "AM";
+								}
+								else {
+									time = "PM";
+								}
+								if (hours == 0) {
+									hours = 12;
+								}
+								if (hours > 12) {
+									hours = hours - 12;
+								}
+								if (minutes.length == 1) {
+									minutes = "0" + minutes;
+								}
+								return hours + ":" + minutes + " " + time;
+							}
+						</script>
+						<div class="form-group"></div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-success btn-generate">Create Schedule</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -133,6 +515,8 @@ ob_start();
 					<h4>Made by <a href="http://mikedombrowski.com" style="color:#444444;">Michael Dombrowski</a></h4>
 					<h5>Code Available on <a href="https://github.com/md100play/university-schedule-generator" style="color:#444444;">GitHub</a></h5>
 					<h5>Feel Free to Contact Me With Issues or Feature Requests at <a href="mailto:michael@mikedombrowski.com" style="color:#444444;">Michael@MikeDombrowski.com&nbsp;<span class="glyphicon glyphicon-envelope" style="vertical-align:top;"></span></a></h5>
+					<p>Disclaimer: This product has been developed by Michael Dombrowski it is not owned or operated by the University of Richmond.  I will always try to have the data be kept up to date and accuate, but I cannot guarantee effectiveness. Please contact me
+					if you find any issues.</p>
 				</div>
 			</div>
 		</div>
@@ -148,10 +532,87 @@ ob_start();
 		</div>
 	</div>
 	
+	<div class="hide panel panel-default" id="subj-list-template2">
+		<div class="panel-heading">
+			<h1 class="panel-title pull-left collapse-btn-subj" id="title"></h1>
+			<button class="btn btn-success glyphicon glyphicon-plus pull-right btn-add-course" type="button" style="line-height: 1!important;" id="button" data-search="true"></button>
+			<div class="clearfix collapse-btn-subj"></div>
+		</div>
+		<div class="panel-collapse collapse panel-body subj-list-collapse">
+		</div>
+	</div>
+	
 	<li class="hide list-group-item" id="addedTemplate"></li>
 	<button class="hide btn btn-danger glyphicon glyphicon-minus btn-remove-course pull-right" type="button" style="line-height: 1!important;" id="basket-remove"></button>
 	
 	<script>
+		var crns = "";
+		if($("#crns").val() != undefined && $("#crns").val().length > 0){
+			crns = $("#crns").val().replace(/[,]+/g, '').replace(/ +(?= )/g,'').split(" ");
+		}
+		
+		var subjects = {"ACCT":"Accounting", "AMST":"American Studies","ANTH":"Anthropology","ARAB":"Arabic",
+			"ARTH":"Art History","ARTS":"Studio Art","BIOL":"Biology","BMB":"Biochemistry","BUAD":"Business Administration",
+			"CHEM":"Chemistry","CHIN":"Chinese Program","CJ":"Criminal Justice","CLAC":"Cultures and Languages Across the Curriculum",
+			"CLCV":"Classical Studies","CLSC":"Classical Studies","CMSC":"Computer Science","DANC":"Dance","ECON":"Economics",
+			"EDUC":"Education","ENGL":"English","ENVR":"Environmental Studies","FIN":"Finance","FMST":"Film Studies",
+			"FREN":"French Program","FYS":"First Year Seminar","GEOG":"Geography","GERM":"German Studies Program",
+			"GREK":"Greek","HCS":"Healthcare Studies","HIST":"History","IBUS":"International Business","IDST":"Interdisciplinary Studies",
+			"IS":"International Studies","ITAL":"Italian Studies Program","JAPN":"Japanese Program","JOUR":"Journalism",
+			"JWST":"Jewish Studies","LAIS":"Latin American, Latino and Iberian Studies","LATN":"Latin","LDST":"Leadership Studies",
+			"MATH":"Mathematics","MGMT":"Management","MKT":"Marketing","MLC":"Languages, Literatures and Cultures",
+			"MSAP":"Music-Applied","MSCL":"Military Science and Leadership","MSEN":"Music-Ensemble","MUS":"Music",
+			"PHIL":"Philosophy", "PHYS":"Physics","PLSC":"Political Science","PPEL":"Philosophy Politics Economics and Law",
+			"PSYC":"Psychology","RELG":"Religious Studies","RHCS":"Rhetoric and Communication Studies", 
+			"RUSN":"Russian Studies Program","SDLC":"Languages, Literatures and Cultures","SOC":"Sociology",
+			"SPCS":"School of Professional and Continuing Studies", "SWAH":"Languages, Literatures and Cultures",
+			"THTR":"Theatre","UNIV":"University Seminar","WELL":"Wellness Program","WGSS":"Women, Gender and Sexuality Studies"};
+			
+		
+		function browse(){
+			$.each(subjects, function(k,subjFullName){
+				var $subjPanel = $("#subj-list-template").clone().removeClass("hide").removeAttr('id').addClass("subj-"+k);									
+				$subjPanel.find(".panel-title").text(subjFullName+" ("+k+")");
+				$("#subj-list").append($subjPanel);
+			});
+		}
+		
+		function fetchBySubj(k){
+			$.getJSON('/ur/richmondAPI.php?subj='+k+'&callback=?', function(courseData){
+				courseData = eval(courseData.response);
+				
+				$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2016&term=&catalogtype=ug&paginate=false&subj='+k+'&level=&keyword=&callback=?', function(data){
+					data = data.courses;
+					$.each(courseData, function(i,v){
+						var $newPanel = $("#subj-list-template2").clone().removeAttr('id');
+						var num = v["Course Number"];
+						if(v["Course Number"] <= 99){
+							num = "0"+v["Course Number"];
+						}
+						$newPanel = loadCourses($newPanel, data, v, num).removeClass("hide");
+						$("#subj-list .subj-"+k).find('.main-body').append($newPanel);
+					});
+				});
+			});
+		}
+		
+		browse();
+		var alreadyFetched = new Array();
+		
+		$(document).on("click", ".collapse-btn", function(){
+			var cls = $(this).parent().attr("class").split(" ");
+			var cls = cls[cls.length-1].split("-")[1];
+			if(alreadyFetched.indexOf(cls) == -1){
+				fetchBySubj(cls);
+				alreadyFetched.push(cls);
+			}
+			$(this).parent().find('.panel-collapse:not(.subj-list-collapse)').collapse('toggle');
+		});
+		
+		$(document).on("click", ".collapse-btn-subj", function(){
+			$(this).parent().parent().find('.panel-collapse').collapse('toggle');
+		});
+		
 		$(function() {
 			$('#time-pref').bootstrapToggle({
 				on: 'Morning',
@@ -169,89 +630,124 @@ ob_start();
 		var $addedTemplate = $("#addedTemplate");
 		var $buttonRemoveTemplate = $("#basket-remove");
 		
-		$("#searchField").autocomplete({source:function(request, response){var loc = request.term; $.getJSON('/sched/richmond/richmondAPI.php?search='+loc+'&callback=?', function(courseData){
-		courseData = eval(courseData.response);
-		$("#search-results").empty();
-		$.each(courseData, function(i,v){
-			var $newPanel = $defaultSearchResult.clone();
-			var cn;
-			if(v["Course Number"] > 99){
-				cn = v["Course Number"].substr(0,1)+"00";
+		$(document).on("keyup", "#searchField", function(){
+			var loc = $("#searchField").val();
+			if(loc==""){
+				$("#search-results").empty();
 			}
-			else{
-				cn = v["Course Number"];
+			if(loc.length < 3){
+				return;
 			}
-			 $.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2015&term=&catalogtype=ug&paginate=false&subj='+v["FOS"]+'&level='+cn+'&keyword=&callback=?', function(data){
-					 data = data.courses;
+			$.getJSON('/ur/richmondAPI.php?search='+loc+'&callback=?', function(courseData){
+				courseData = eval(courseData.response);
+				var crns = $("#crns").val().replace(/[,]+/g, '').replace(/ +(?= )/g,'').split(" ");
+				$("#search-results").empty();
+				$.each(courseData, function(i,v){
+					var $newPanel = $defaultSearchResult.clone();
+					var cn;
+					var num = v["Course Number"];
+					if(v["Course Number"] <= 99){
+						num = "0"+v["Course Number"];
+					}
+					if(v["Course Number"] > 99){
+						cn = v["Course Number"].substr(0,1)+"00";
+					}
+					else{
+						cn = v["Course Number"];
+					}
+					$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2016&term=&catalogtype=ug&paginate=false&subj='+v["FOS"]+'&level='+cn+'&keyword=&callback=?', function(data){
+						data = data.courses;
+						$newPanel = loadCourses($newPanel, data, v, num).removeAttr('id').removeClass("hide");
+						$("#search-results").append($newPanel);
+					});
 					 
-					 var initial = data.substring(data.indexOf("</span>"+v["FOS"]+" "+v["Course Number"]));
-					 var end = initial.substring(0, initial.indexOf('<!--close inner-content-wrap'));
-					 var title = end.substring(v["FOS"].length+9+v["Course Number"].length, end.indexOf("</a>"));
-					 var descr = end.substring(end.indexOf("Description</div>")+17);
-					 descr = descr.substring(0, descr.indexOf("</div>"));
-					 var units = end.substring(end.indexOf("Units: ")+7, end.indexOf("</div>"));
-					 
-					 if(end.indexOf("Prerequisites</div>")>-1){
-						 var prereq = end.substring(end.indexOf("Prerequisites</div>")+19);
-						 prereq = prereq.substring(0, prereq.indexOf("</div>"));
-					 }
-					 
-					if(!(v["Title"].indexOf("ST:") > -1) && !(v["Title"].indexOf("SP:") > -1) && v["FOS"] != "FYS" && !(v["FOS"] == "HIST" && v["Course Number"] == "199")){
-						v["Title"] = title;
-					 }
-				 
-				 if(v["FOS"] == "FYS" && v["description"] != null){
-					 title = v["displayTitle"];
-					 descr = v["description"];
-				 }
-				 else if(v["description"] == null){
-					 title = v["Title"];
-				 }
-				 
-				 var html = "<h4>"+title+"</h4><p>"+descr+"</p><p>Units: "+units+"</p>";
-				 if(prereq != undefined){
-					 html = html+"<p>Prerequisites: "+prereq+"</p>";
-				 }
-				 
-				$newPanel.find("#title").text(v["FOS"]+" "+v["Course Number"]+" | "+title);
-				$newPanel.find(".panel-body").html(html);
-				$newPanel.find("#button").attr("data-fos", v["FOS"]);
-				$newPanel.find("#button").attr("data-coursenum", v["Course Number"]);
-				$newPanel.find("#button").attr("data-coursename", v["Title"]);
-				$newPanel.find("#button").attr("data-displayTitle", v["displayTitle"]);
-				
-				if(v["Available"] == "false"){
+				});
+			});
+		});
+		
+		function loadCourses($newPanel, data, v, num){
+			var initial = data.substring(data.indexOf("</span>"+v["FOS"]+" "+num));
+			var end = initial.substring(0, initial.indexOf('<!--close inner-content-wrap'));
+			var title = end.substring(v["FOS"].length+9+v["Course Number"].length, end.indexOf("</a>"));
+			var descr = end.substring(end.indexOf("Description</div>")+17);
+			descr = descr.substring(0, descr.indexOf("</div>"));
+			var units = end.substring(end.indexOf("Units: ")+7, end.indexOf("</div>"));
+			
+			var hasDescr = true;
+			if(title.indexOf('Print Courses')>-1){
+				hasDescr = false;
+				title = v["Title"];
+				descr = "Course has no description";
+				units = "units are unknown";
+			}
+			
+			if(end.indexOf("Prerequisites</div>")>-1){
+				var prereq = end.substring(end.indexOf("Prerequisites</div>")+19);
+				prereq = prereq.substring(0, prereq.indexOf("</div>"));
+			}
+
+			if(!(v["Title"].indexOf("ST:") > -1) && !(v["Title"].indexOf("SP:") > -1) && v["FOS"] != "FYS" && v["FOS"] != "WELL" && !(v["FOS"] == "HIST" && v["Course Number"] == "199") && !(v["FOS"] == "HIST" && v["Course Number"] == "299") && !(v["FOS"] == "ENGL" && v["Course Number"] == "299") && !(v["FOS"] == "BIOL" && v["Course Number"] == "199")){
+				if(hasDescr){
+					v["Title"] = title;
+				}
+			}
+
+			if(v["FOS"] == "FYS" && v["description"] != null){
+				title = v["displayTitle"];
+				descr = v["description"];
+			}
+			else if(v["description"] == null){
+				title = v["Title"];
+			}
+
+			var html = "<h4>"+title+"</h4><p>"+descr+"</p><p>Units: "+units+"</p>";
+			if(prereq != undefined){
+				html = html+"<p>Prerequisites: "+prereq+"</p>";
+			}
+
+			$newPanel.find("#title").text(v["FOS"]+" "+v["Course Number"]+" | "+title);
+			$newPanel.find(".panel-body").html(html);
+			$newPanel.find("#button").attr("data-fos", v["FOS"]);
+			$newPanel.find("#button").attr("data-coursenum", v["Course Number"]);
+			$newPanel.find("#button").attr("data-coursename", v["Title"]);
+			$newPanel.find("#button").attr("data-displayTitle", v["displayTitle"]);
+
+			var inCRN = false;
+			$.each(v["crns"], function(i, v2){
+				if(crns.indexOf(v2) > -1){
+					inCRN = true;
+				}
+			});
+
+			if(!v["Available"]){
+				$newPanel.find("#button").removeClass("btn-success");
+				$newPanel.find("#button").removeClass("btn-add-course");
+				$newPanel.find("#button").removeClass("glyphicon-plus");
+				$newPanel.find("#button").addClass("btn-disable");
+				$newPanel.find("#button").text("Course Not Available");
+			}
+			else if(inCRN){
+				$newPanel.find("#button").removeClass("btn-success");
+				$newPanel.find("#button").removeClass("btn-add-course");
+				$newPanel.find("#button").removeClass("glyphicon-plus");
+				$newPanel.find("#button").addClass("btn-disable");
+				$newPanel.find("#button").text("Preregistered");
+			}
+
+			var $list = $("#course-basket").find("li");
+			$list.each(function(){
+				if($(this).data("fos") == v["FOS"] && $(this).data("coursenum") == v["Course Number"] && $(this).data("coursename") == v["Title"]){
+					$newPanel.find("#button").removeClass("glyphicon-plus");
 					$newPanel.find("#button").removeClass("btn-success");
 					$newPanel.find("#button").removeClass("btn-add-course");
-					$newPanel.find("#button").removeClass("glyphicon-plus");
-					$newPanel.find("#button").addClass("btn-disable");
-					$newPanel.find("#button").text("Course Not Available");
+					$newPanel.find("#button").addClass("btn-danger");
+					$newPanel.find("#button").addClass("glyphicon-minus");
+					$newPanel.find("#button").addClass("btn-remove-course");
 				}
-				
-				$newPanel.removeClass("hide");
-				$newPanel.attr("id", "");
-				
-				var $list = $("#course-basket").find("li");
-				$list.each(function(){
-					if($(this).data("fos") == v["FOS"] && $(this).data("coursenum") == v["Course Number"] && $(this).data("coursename") == v["Title"]){
-						$newPanel.find("#button").removeClass("glyphicon-plus");
-						$newPanel.find("#button").removeClass("btn-success");
-						$newPanel.find("#button").removeClass("btn-add-course");
-						$newPanel.find("#button").addClass("btn-danger");
-						$newPanel.find("#button").addClass("glyphicon-minus");
-						$newPanel.find("#button").addClass("btn-remove-course");
-					}
-				});
-				
-				$("#search-results").append($newPanel);
-			 });
-			 
-		});
-		});},
-		select: function(event, ui){
-			var index = event.target.id;
-			}
-		});
+			});
+			return $newPanel;
+		}
+		
 		
 		$(document).on("click", ".btn-generate", function (e) {
 			var $courses = $("#course-basket li");
@@ -262,17 +758,36 @@ ob_start();
 				getCourses.push(temp);
 				count++;
 			});
-			getCourses = {allCourses: getCourses, timePref:$("#time-pref").prop('checked'), fullClasses:$("#full-classes").prop('checked')}
+			
+			var unwantedTimes = new Array();
+			$("#block").find(".blocked-time").each(function(){
+				var tempTime = {};
+				$(this).find("input, .time-display").each(function(){
+					if($(this).text() != "" && $(this).text() != undefined){
+						var times = $(this).text().split(" - ");
+						tempTime["startTime"]=times[0];
+						tempTime["endTime"]=times[1];
+					}
+					if($(this).is(':checked')){
+						tempTime[$(this).attr('name')]=$(this).attr('name');
+					}
+				});
+				unwantedTimes.push(tempTime);
+			});
+			
+			var crns = $("#crns").val().replace(/[,]+/g, '').replace(/ +(?= )/g,'').split(" ");
+			getCourses = {allCourses: getCourses, timePref:$("#time-pref").prop('checked'), fullClasses:$("#full-classes").prop('checked'), preregistered: crns, startTime:$("#restrict-slider").text().split(" - ")[0], endTime:$("#restrict-slider").text().split(" - ")[1], unwantedTimes:unwantedTimes};
 			var json = JSON.stringify(getCourses);
 			if(count>5){
 				window.alert("Trying to generate schedules with this many courses may take a long time, but I will try.  \n\nThe page will appear to be loading until it is finished, so do not refresh the page.  \n\nThe calculation is allowed take up to 5 minutes, if it takes longer, it will fail.");
 			}
-			console.log(getCourses);
-			window.location.assign("/sched/richmond/makeSchedule.php?i="+encodeURIComponent(json));
+			console.log(json);
+			window.location.assign("/ur/makeSchedule.php?i="+encodeURIComponent(json));
 		});
 		
 		$(document).on("click", ".btn-jumbo-close", function(){
 			$(this).parent().parent().hide();
+			document.cookie="jumbotron=false";
 		});
 		
 		$(document).on("click", ".btn-remove-course", function (e) {
@@ -285,27 +800,27 @@ ob_start();
 			var num = $course.data("coursenum");
 			var name = $course.data("coursename");
 			
-			if($course.data("search")){
-				$course.addClass("glyphicon-plus");
-				$course.addClass("btn-success");
-				$course.addClass("btn-add-course");
-				$course.removeClass("btn-danger");
-				$course.removeClass("glyphicon-minus");
-				$course.removeClass("btn-remove-course");
-			}
-			else{
-				var $list = $("#search-results button");
-				$list.each(function(){
-					if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
-						$(this).addClass("glyphicon-plus");
-						$(this).addClass("btn-success");
-						$(this).addClass("btn-add-course");
-						$(this).removeClass("btn-danger");
-						$(this).removeClass("glyphicon-minus");
-						$(this).removeClass("btn-remove-course");
-					}
-				});
-			}
+			$("#search-results button").each(function(){
+				if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+					$(this).addClass("glyphicon-plus");
+					$(this).addClass("btn-success");
+					$(this).addClass("btn-add-course");
+					$(this).removeClass("btn-danger");
+					$(this).removeClass("glyphicon-minus");
+					$(this).removeClass("btn-remove-course");
+				}
+			});
+			$(".panel .panel-default button").each(function(){
+				if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+					$(this).addClass("glyphicon-plus");
+					$(this).addClass("btn-success");
+					$(this).addClass("btn-add-course");
+					$(this).removeClass("btn-danger");
+					$(this).removeClass("glyphicon-minus");
+					$(this).removeClass("btn-remove-course");
+				}
+			});
+				
 			var $list = $("#course-basket").find("li");
 			$list.each(function(){
 				if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
@@ -314,25 +829,45 @@ ob_start();
 			});
 		});
 		
-		$(document).on("click", ".btn-add-course", function (e) {
-			var $course = $(e.target);
-			$course.removeClass("glyphicon-plus");
-			$course.removeClass("btn-success");
-			$course.removeClass("btn-add-course");
-			$course.addClass("btn-danger");
-			$course.addClass("glyphicon-minus");
-			$course.addClass("btn-remove-course");
+		function addCourse(fos, num, name, displaytitle) {
+			var continuing = true;
+			var $list = $("#course-basket").find("li");
+			$list.each(function(){
+				if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+					continuing = false;
+				}
+			});
 			
-			var fos = $course.data("fos");
-			var num = $course.data("coursenum");
-			var name = $course.data("coursename");
+			if(continuing){
 			
-			if($course.data("displaytitle") != null){
-				name = $course.data("displaytitle");
-			}
+			$("#search-results button").each(function(){
+				if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+					$(this).removeClass("glyphicon-plus");
+					$(this).removeClass("btn-success");
+					$(this).removeClass("btn-add-course");
+					$(this).addClass("btn-danger");
+					$(this).addClass("glyphicon-minus");
+					$(this).addClass("btn-remove-course");
+				}
+			});
+			
+			$(".panel .panel-default button").each(function(){
+				if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+					$(this).removeClass("glyphicon-plus");
+					$(this).removeClass("btn-success");
+					$(this).removeClass("btn-add-course");
+					$(this).addClass("btn-danger");
+					$(this).addClass("glyphicon-minus");
+					$(this).addClass("btn-remove-course");
+				}
+			});
 			
 			var $add = $addedTemplate.clone();
-			var $button = $buttonRemoveTemplate.clone().removeClass("hide")
+			var $button = $buttonRemoveTemplate.clone().removeClass("hide");
+			
+			if(displaytitle != null){
+				name = displaytitle;
+			}
 			
 			$add.removeClass("hide");
 			$add.attr("id", "");
@@ -340,15 +875,20 @@ ob_start();
 			$add.append("&nbsp; &nbsp; &nbsp; &nbsp;", $button);
 			$add.attr("data-fos", fos);
 			$add.attr("data-coursenum", num);
-			$add.attr("data-coursename", $course.data("coursename"));
-			$add.attr("data-displayTitle", $course.data("displaytitle"));
+			$add.attr("data-coursename", name);
+			$add.attr("data-displayTitle", displaytitle);
 			
 			$("#course-basket").append($add);
+			}
+		}
+		
+		$(document).on("click", ".btn-add-course", function(e){
+			var $course = $(e.target);			
+			var fos = $course.data("fos");
+			var num = $course.data("coursenum");
+			var name = $course.data("coursename");
+			var displaytitle = $course.data("displaytitle");
+			addCourse(fos, num, name, displaytitle);
 		});
 	</script>
 </html>
-<?php
-	ob_flush();
-	flush();
-	ob_end_clean();
-?>

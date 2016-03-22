@@ -2,11 +2,11 @@
 if(isset($_GET["i"])){//check if we received the correct GET request, and redirect back to the input page if not
 	$inputData = json_decode(urldecode($_GET["i"]), true);
 	if(count($inputData["allCourses"])<1){
-		echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/sched/richmond/');</script>";
+		echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/ur');</script>";
 	}
 }
 else{
-	echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/sched/richmond/');</script>";
+	echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/ur');</script>";
 }
 ?>
 <html>
@@ -51,10 +51,9 @@ else{
 		<nav class="navbar navbar-default navbar-inverse">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<a class="navbar-brand" style="padding: 10 15px;" href="/sched/richmond/">
+					<a class="navbar-brand" href="/ur">
 						<div class="navbar-brand-name">
-							<img src="http://www.richmond.edu/_KP4_assets/images/kp4/shield.png"/>
-							<span style="color:#ffffff">University of Richmond Scheduler</span>
+							<span style="color:#ffffff">Unofficial University of Richmond Scheduler</span>
 						</div>
 					</a>
 					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
@@ -65,7 +64,7 @@ else{
 				</div>
 				<div class="navbar-collapse collapse" id="navbar-main">
 					<ul class="nav navbar-nav navbar-right">
-						<li><a><button class="btn btn-default" type="button" onclick="window.location.href='/sched/richmond/?i=<?php echo urlencode(json_encode($inputData));?>'">Edit Courses</button></a></li>
+						<li><a><button class="btn btn-default" type="button" onclick="window.location.href='/ur/?i=<?php echo urlencode(json_encode($inputData));?>'">Edit Courses</button></a></li>
 						<li><a><button class="btn btn-success btn-expand glyphicon glyphicon-collapse-down" type="button">&nbsp;Expand All Schedules</button></a></li>
 						<li><a><button class="btn-listview btn glyphicon glyphicon-list btn-default" type="button">&nbsp;List View</button></a></li>
 					</ul>
@@ -134,7 +133,7 @@ else{
 		var random = [["Recalibrating", "Excavating", "Acquiring", "Extracting", "Computing", "Deflummoxing", "Binding", "Serving","Routing","Distributing","Sampling","Servicing","Repairing","Discombobulating", "Processing", "Preprocessing"],
 		["Flux", "Data", "Spline", "Storage", "Plasma", "Cache", "Laser","Extra Large","Ethernet","WiFi","Wireless","Sample", "Computational", "Local", "Integral"],
 		["Capacitor", "Conductor", "Assembler", "Detector", "Post-processor", "Integrator", "Computer", "Disk", "Server","Router","Calculator"]];
-		var customElement = $("<img src='/sched/richmond/loading-spinner.gif'></img><h3>", {
+		var customElement = $("<img src='/ur/loading-spinner.gif'></img><h3>", {
 			id : "countdown",
 			text : ""
 		});

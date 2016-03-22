@@ -16,18 +16,18 @@ spl_autoload_register(function ($class) { //load all external classes to run the
 if(isset($_GET["i"])){//check if we received the correct GET request, and redirect back to the input page if not
 	$inputData = json_decode(urldecode($_GET["i"]), true);
 	if(count($inputData["allCourses"])<1){
-		echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/sched/richmond/');</script>";
+		echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/ur');</script>";
 	}
 }
 else{
-	echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/sched/richmond/');</script>";
+	echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/ur');</script>";
 }
 
 $starttime = microtime(true);
-$database = "**********";
-$user = "**********";
-$pass = "**********";
-$link = mysqli_connect("**********", $user, $pass, $database) or die("Error " . mysqli_error($link));
+$database = "*******";
+$user = "*******";
+$pass = "*******";
+$link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 
 function generateColor($c){
@@ -68,10 +68,24 @@ function jsonp_decode($jsonp, $assoc = false) { // PHP 5.3 adds depth as third p
 $allSections = array();
 if(isset($_GET["i"])){
 	$inputData = json_decode(urldecode($_GET["i"]), true)["allCourses"];
+	$preregistered = json_decode(urldecode($_GET["i"]), true)["preregistered"];
 	$GLOBALS["morning"] = json_decode(urldecode($_GET["i"]), true)["timePref"];
 	$allowFull = json_decode(urldecode($_GET["i"]), true)["fullClasses"];
+	$startTime = strtotime(json_decode(urldecode($_GET["i"]), true)["startTime"]);
+	$endTime = strtotime(json_decode(urldecode($_GET["i"]), true)["endTime"]);
+	$unwantedTimes = json_decode(urldecode($_GET["i"]), true)["unwantedTimes"];
+	$daysWithUnwantedTimes = array();
 	
-	$classCount = count($inputData);
+	$t = new Schedule();
+	foreach($unwantedTimes as $k=>$v){
+		foreach($v as $k2=>$v2){
+			if(!in_array($k2, $daysWithUnwantedTimes)){
+				array_push($daysWithUnwantedTimes, $t->intToDay($t->dayToInt($k2)));
+			}
+		}
+	}
+	unset($t);
+	
 	foreach($inputData as $key=>$section){
 		$subj = mysqli_real_escape_string($link, $section["FOS"]);
 		$num = mysqli_real_escape_string($link, $section["CourseNum"]);
@@ -89,14 +103,21 @@ if(isset($_GET["i"])){
 					continue;
 				}
 			}
-			
-			if(($rows["SUBJ"] == "FYS" || strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1 || ($rows["SUBJ"] == "HIST" && $rows["CRSE#"] == "199")) && $rows["TITLE"] != $title){
+			if($startTime > strtotime($rows["BEGIN"]) || $endTime < strtotime($rows["END"])){
 				continue;
+			}
+			
+			if(($rows["SUBJ"] == "FYS" || $rows["SUBJ"] == "WELL" || strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1 || ($rows["SUBJ"] == "HIST" && $rows["CRSE#"] == "199") || ($rows["SUBJ"] == "BIOL" && $rows["CRSE#"] == "199") || ($rows["SUBJ"] == "ENGL" && $rows["CRSE#"] == "299")) && $rows["TITLE"] != $title){
+				if(strpos($rows["TITLE"], " LAB")>-1 || strpos($title, " LAB")>-1){}
+				else{
+					continue;
+				}
 			}
 			if(isset($section["displayTitle"])){
 				$title = $section["displayTitle"];
 			}
 			$sectionNum = $rows["SECTION"];
+			
 			if(substr($sectionNum, 0, 1) == "L" || substr($sectionNum, 0, 1) == "P" || substr($sectionNum, 0, 1) == "D"){
 				$sectionNum = substr($sectionNum, 1);
 				if(substr($sectionNum, 1) == "A" || substr($sectionNum, 1) == "B" || substr($sectionNum, 1) == "C" || substr($sectionNum, 1) == "D"){
@@ -104,16 +125,30 @@ if(isset($_GET["i"])){
 					$multipleOptions = true;
 				}
 			}
+			else{
+				if(intval($sectionNum)<10){
+					$sectionNum = "0".intval($sectionNum);
+				}
+			}
+			
+			if(!isset($rows["INSTR FN"])){
+				$rows["INSTR FN"] = "";
+			}
+			if(!isset($rows["INSTR LN"])){
+				$rows["INSTR LN"] = "";
+			}
 			
 			if(!isset($tempSection[$sectionNum]) && !$multipleOptions){
 				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
-				
 				foreach($rows as $k=>$v){
 					if($k == $v){
 						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
 					}
 				}
 				$tempSec->setProf($rows["INSTR FN"]." ".$rows["INSTR LN"]);
+				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
+					$tempSec->addCRN($rows["CRN"]);
+				}
 				$tempSection[$sectionNum] = $tempSec;
 			}
 			else if(!$multipleOptions){
@@ -126,6 +161,7 @@ if(isset($_GET["i"])){
 				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
 					$tempSec->addCRN($rows["CRN"]);
 				}
+				$tempSec->setProf($rows["INSTR FN"]." ".$rows["INSTR LN"]);
 				$tempSection[$sectionNum] = $tempSec;
 			}
 			else if($multipleOptions){
@@ -175,8 +211,97 @@ if(isset($_GET["i"])){
 			}
 		}
 	}
+	
+	$preregSections = array();
+	foreach($preregistered as $k=>$v){
+		$courseColor = generateColor(array(255, 255, 255));
+		$crn = mysqli_real_escape_string($link, $v);
+		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE `CRN` = '".$crn."'");
+
+		$tempSection = array();
+		while($rows = mysqli_fetch_assoc($result)){
+			if(!isset($rows["INSTR FN"])){
+				$rows["INSTR FN"] = "";
+			}
+			if(!isset($rows["INSTR LN"])){
+				$rows["INSTR LN"] = "";
+			}
+			
+			$title = $rows["TITLE"];
+			
+			$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
+			
+			foreach($rows as $k=>$v){
+				if($k == $v){
+					$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
+				}
+			}
+			$tempSec->setProf($rows["INSTR FN"]." ".$rows["INSTR LN"]);
+			$tempSec->setColor($courseColor);
+			array_push($preregSections, $tempSec);
+		}
+	}
+	
+	for($i=0; $i<count($preregSections); $i+=1){
+		for($j=0; $j<count($preregSections); $j+=1){
+			if($i == $j){
+				continue;
+			}
+			$v = $preregSections[$i];
+			$v2 = $preregSections[$j];
+			if(similar_text($v->getCourseTitle(), $v2->getCourseTitle()) >= 10 && $v->getCourseNumber() == $v2->getCourseNumber() && $v->getFieldOfStudy() == $v2->getFieldOfStudy()){
+				foreach($v2->getCRN() as $crn){
+					if(!(array_search($crn, $v->getCRN()) > -1)){
+						$v->addCRN($crn);
+					}
+				}
+				foreach($v2->meetingTime as $day=>$times){
+					foreach($times as $timeKey=>$time){
+						$v->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
+					}
+				}
+				unset($preregSections[$j]);
+				$preregSections = array_values($preregSections);
+			}
+		}
+	}
+	
+	foreach($preregSections as $v){
+		$v->preregistered = true;
+		array_push($allSections, $v);
+	}
+	
+	$classCount = count($inputData)+count($preregSections);
+	
 }
 mysqli_close($link);
+
+$t=new Schedule();
+foreach($allSections as $key=>$section){
+	if($section->preregistered){
+		continue;
+	}
+	foreach($section->meetingTime as $day=>$times){
+		if(!in_array($day, $daysWithUnwantedTimes)){
+			continue;
+		}
+		foreach($times as $days=>$time){
+			foreach($unwantedTimes as $dayVal){
+				foreach($dayVal as $val){
+					if($t->intToDay($t->dayToInt($val)) != $days){
+						continue;
+					}
+					else{
+						if(strtotime($dayVal["startTime"]) <= $time["to"] && strtotime($dayVal["endTime"]) >= $time["from"]){
+							unset($allSections[$key]);
+							continue 5;
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
 $GLOBALS['schedules'] = new LimitedMinHeap(100);
 $GLOBALS['numSchedules'] = 0;
@@ -203,6 +328,42 @@ unset($temp);
 $GLOBALS['schedules'] = array_reverse($GLOBALS['schedules']);
 
 $runTime = microtime(true)-$starttime;
+
+if(!isset($_COOKIE["history"])){
+	$inputData["schedules"] = $numSchedules;
+	$cookieData = Array();
+	array_push($cookieData, $inputData);
+	setcookie("history", json_encode($cookieData));
+}
+else{
+	$inputData["schedules"] = $numSchedules;
+	$cookieData = json_decode($_COOKIE["history"], true);
+	$add = true;
+	foreach($cookieData as $v){
+		$counter = 0;
+		foreach($v as $v2){
+			foreach($inputData as $i){
+				if($v2["Title"] == $i["Title"] && $v2["FOS"] == $i["FOS"] && $v2["CourseNum"] == $i["CourseNum"]){
+					$counter = $counter+1;
+				}
+			}
+		}
+		if($counter == count($v)){
+			$add = false;
+		}
+	}
+	if($add){
+		array_push($cookieData, $inputData);
+	}
+	if(count($cookieData)-10 >= 0){
+		$start = count($cookieData)-10;
+	}
+	else{
+		$start = 10;
+	}
+	array_splice($cookieData, $start);
+	setcookie("history", json_encode($cookieData));
+}
 
 function run($sections, $curr, $pick){
 	array_push($curr, $pick);
@@ -270,8 +431,10 @@ function printWeek($a){
 					$crns = $crns.", ".$crn;
 				}
 				
-				echo "<td class='has-data' style='background:rgba(".makeColorString($v[$a->intToDay($i)]->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".htmlspecialchars($v[$a->intToDay($i)]->getCourseNumber())."' data-fos='".htmlspecialchars($v[$a->intToDay($i)]->getFieldOfStudy())."' data-coursetitle=\"".htmlspecialchars($v[$a->intToDay($i)]->getCourseTitle())."\" data-prof='".htmlspecialchars($v[$a->intToDay($i)]->getProf())."'>";
+				echo "<td class='has-data' style='background:rgba(".makeColorString($v[$a->intToDay($i)]->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".htmlspecialchars($v[$a->intToDay($i)]->getCourseNumber())."' data-fos='".htmlspecialchars($v[$a->intToDay($i)]->getFieldOfStudy())."' data-coursetitle=\"".htmlspecialchars($v[$a->intToDay($i)]->getCourseTitle())."\" data-prof='".htmlspecialchars($v[$a->intToDay($i)]->getProf())."' data-prereg='".$v[$a->intToDay($i)]->preregistered."'>";
+				if($v[$a->intToDay($i)]->preregistered){echo "<em>";}
 				echo htmlspecialchars($v[$a->intToDay($i)]->getCourseTitle());
+				if($v[$a->intToDay($i)]->preregistered){echo "</em>";}
 			}
 			else{
 				echo "<td>";
@@ -311,10 +474,13 @@ function printWeek($a){
 						echo "<div class='panel-body table-responsive' id='calendar".$num."'>";
 						
 						printWeek($a);
-						echo "<h6>CRNs: ";
+						echo "<h6 class='crn'>CRNs: ";
 						$crns = "";
 						foreach($a->getSchedule() as $v){
 							foreach($v->getCRN() as $crn){
+								if($v->preregistered){
+									$crn = "<em>".$crn."</em>";
+								}
 								$crns = $crns.", ".$crn;
 							}
 						}
@@ -362,14 +528,19 @@ function printWeek($a){
 							}
 							$crns = $crns.", ".$crn;
 						}
-						echo "<tr><td class='has-data' style='background:rgba(".makeColorString($b->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".htmlspecialchars($b->getCourseNumber())."' data-fos='".htmlspecialchars($b->getFieldOfStudy())."' data-coursetitle=\"".htmlspecialchars($b->getCourseTitle())."\" data-prof='".htmlspecialchars($b->getProf())."'>";
+						echo "<tr><td class='has-data' style='background:rgba(".makeColorString($b->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".htmlspecialchars($b->getCourseNumber())."' data-fos='".htmlspecialchars($b->getFieldOfStudy())."' data-coursetitle=\"".htmlspecialchars($b->getCourseTitle())."\" data-prof='".htmlspecialchars($b->getProf())."' data-prereg='".$b->preregistered."'>";
+						if($b->preregistered){echo "<em>";}
 						echo htmlspecialchars($b);
+						if($b->preregistered){echo "</em>";}
 						echo "</tr></td>";
 					}
 					echo "</table><h6>CRNs: ";
 					$crns = "";
 					foreach($a->getSchedule() as $v){
 						foreach($v->getCRN() as $crn){
+							if($v->preregistered){
+								$crn = "<em>".$crn."</em>";
+							}
 							$crns = $crns.", ".$crn;
 						}
 					}
@@ -406,6 +577,9 @@ function printWeek($a){
 				var crns = $(element).data('crns');
 				var coursetitle = html_encode($(element).data('coursetitle'));
 				var html = '<p> '+fos+' '+coursenum+' with CRN: '+crns+'</p><p>Professor: '+prof+'</p>';
+				if($(element).data('prereg')=="1"){
+					html = html+"<p>You have already registered for this course</p>";
+				}
 				var options = {placement: 'bottom', container: "body", trigger: 'manual', html: true, title: coursetitle};
 				
 				$(element).data('content', html).popover(options);
@@ -458,6 +632,8 @@ function printWeek($a){
 					<h4>Made by <a href="http://mikedombrowski.com" style="color:#444444;">Michael Dombrowski</a></h4>
 					<h5>Code Available on <a href="https://github.com/md100play/university-schedule-generator" style="color:#444444;">GitHub</a></h5>
 					<h5>Feel Free to Contact Me With Issues or Feature Requests at <a href="mailto:michael@mikedombrowski.com" style="color:#444444;">Michael@MikeDombrowski.com&nbsp;<span class="glyphicon glyphicon-envelope" style="vertical-align:top;"></span></a></h5>
+					<p>Disclaimer: This product has been developed by Michael Dombrowski it is not owned or operated by the University of Richmond.  I will always try to have the data be kept up to date and accuate, but I cannot guarantee effectiveness. Please contact me
+					if you find any issues.</p>
 				</div>
 				<style>
 					@media screen and (min-width: 992px){

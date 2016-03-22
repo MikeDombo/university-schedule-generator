@@ -1,8 +1,8 @@
 <?php
-$database = "**********";
-$user = "**********";
-$pass = "**********";
-$link = mysqli_connect("**********", $user, $pass, $database) or die("Error " . mysqli_error($link));
+$database = "*********";
+$user = "*********";
+$pass = "*********";
+$link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 header('Content-Type: text/javascript; charset=utf8');
 
@@ -41,31 +41,33 @@ if(isset($_GET['search'])){
 				$temp["Title"] = $rows["TITLE"];
 				$temp["Course Number"] = $rows["CRSE#"];
 				$temp["FOS"] = $rows["SUBJ"];
-				$temp["Available"] = "true";
+				$temp["Available"] = true;
+				$temp["crns"] = array();
+				array_push($temp["crns"], $rows["CRN"]);
 				
 				if($rows["M"] == "" && $rows["T"] == "" && $rows["W"] == "" && $rows["R"] == "" && $rows["F"] == "" && $rows["S"] == ""){
-					$temp["Available"] = "false";
+					$temp["Available"] = false;
 				}
 				
 				$skip = false;
 				foreach($response as $k=>$v){
 					if($temp["Course Number"] == $v["Course Number"] && $temp["FOS"] == $v["FOS"]){
-						if(($v["FOS"] == "FYS" || (strpos($v["Title"], "ST:") > -1) || (strpos($v["Title"], "SP:") > -1) || ($v["FOS"] == "HIST" && $v["Course Number"] == "199")) && $temp["Title"] == $v["Title"]){
+						if(testCourseOverlap($temp, $rows, $v)){
 							$skip = true;
 						}
-						else if($v["FOS"] != "FYS" && !(strpos($v["Title"], "ST:") > -1) && !(strpos($v["Title"], "SP:") > -1) && !($v["FOS"] == "HIST" && $v["Course Number"] == "199")){
-							$skip = true;
-						}
-						else{
-							$skip = false;
+						if($temp["Title"] == $v["Title"] || similar_text($v["Title"], $temp["Title"]) >= 10){
+							array_push($response[$k]["crns"], $rows["CRN"]);
 						}
 					}
 				}
+				
 				if(!$skip){
-					$fys = getFYSDescr($rows["CRN"]);
-					if(isset($fys["displayTitle"])){
-						$temp["displayTitle"] = $fys["displayTitle"];
-						$temp["description"] = $fys["description"];
+					if($rows["SUBJ"] == "FYS"){
+						$fys = getFYSDescr($rows["CRN"]);
+						if(isset($fys["displayTitle"])){
+							$temp["displayTitle"] = $fys["displayTitle"];
+							$temp["description"] = $fys["description"];
+						}
 					}
 					array_push($response, $temp);
 				}
@@ -73,7 +75,7 @@ if(isset($_GET['search'])){
 		}
 	}
 	else{
-		$searchStr = $_GET['search'];
+		$searchStr = urldecode($_GET['search']);
 		$searchStr = mysqli_real_escape_string($link, $searchStr);
 		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE `TITLE` LIKE '%".$searchStr."%' ");
 		
@@ -83,25 +85,25 @@ if(isset($_GET['search'])){
 			$temp["Title"] = $rows["TITLE"];
 			$temp["Course Number"] = $rows["CRSE#"];
 			$temp["FOS"] = $rows["SUBJ"];
-			$temp["Available"] = "true";
+			$temp["Available"] = true;
+			$temp["crns"] = array();
+			array_push($temp["crns"], $rows["CRN"]);
 			
 			if($rows["M"] == "" && $rows["T"] == "" && $rows["W"] == "" && $rows["R"] == "" && $rows["F"] == "" && $rows["S"] == ""){
-				$temp["Available"] = "false";
+				$temp["Available"] = false;
 			}
 			$skip = false;
 			foreach($response as $k=>$v){
 				if($temp["Course Number"] == $v["Course Number"] && $temp["FOS"] == $v["FOS"]){
-					if(($v["FOS"] == "FYS" || strpos($v["Title"], "ST:") > -1 || strpos($v["Title"], "SP:") > -1 || ($v["FOS"] == "HIST" && $v["Course Number"] == "199")) && $temp["Title"] == $v["Title"]){
+					if(testCourseOverlap($temp, $rows, $v)){
 						$skip = true;
 					}
-					else if($v["FOS"] != "FYS" && !(strpos($v["Title"], "ST:") > -1) && !(strpos($v["Title"], "SP:") > -1) && !($v["FOS"] == "HIST" && $v["Course Number"] == "199")){
-						$skip = true;
-					}
-					else{
-						$skip = false;
+					if($temp["Title"] == $v["Title"] || similar_text($v["Title"], $temp["Title"]) >= 10){
+						array_push($response[$k]["crns"], $rows["CRN"]);
 					}
 				}
 			}
+			
 			if(!$skip){
 				if($rows["SUBJ"] == "FYS"){
 					$fys = getFYSDescr($rows["CRN"]);
@@ -117,6 +119,55 @@ if(isset($_GET['search'])){
 	
 	if(count($response>50)){
 		$response = array_slice($response, 0, 50);
+	}
+	$arr = ["response"=>$response, "error"=>$err];
+	echo $_GET['callback'].'('.json_encode($arr).');';
+}
+if(isset($_GET["subj"])){
+	$err="";
+	$subj = mysqli_real_escape_string($link, $_GET["subj"]);
+	$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE `SUBJ` = '".$subj."'");
+	
+	$response = array();
+	if(mysqli_num_rows($result) < 1){
+		$err = "Nothing returned";
+	}
+	else{
+		while($rows = mysqli_fetch_assoc($result)){
+			$temp = array();
+			$temp["Title"] = $rows["TITLE"];
+			$temp["Course Number"] = $rows["CRSE#"];
+			$temp["FOS"] = $rows["SUBJ"];
+			$temp["Available"] = true;
+			$temp["crns"] = array();
+			array_push($temp["crns"], $rows["CRN"]);
+			
+			if($rows["M"] == "" && $rows["T"] == "" && $rows["W"] == "" && $rows["R"] == "" && $rows["F"] == "" && $rows["S"] == ""){
+				$temp["Available"] = false;
+			}
+			$skip = false;
+			foreach($response as $k=>$v){
+				if($temp["Course Number"] == $v["Course Number"] && $temp["FOS"] == $v["FOS"]){
+					if(testCourseOverlap($temp, $rows, $v)){
+						$skip = true;
+					}
+					if($temp["Title"] == $v["Title"] || similar_text($v["Title"], $temp["Title"]) >= 10){
+						array_push($response[$k]["crns"], $rows["CRN"]);
+					}
+				}
+			}
+			
+			if(!$skip){
+				if($rows["SUBJ"] == "FYS"){
+					$fys = getFYSDescr($rows["CRN"]);
+					if(isset($fys["displayTitle"])){
+						$temp["displayTitle"] = $fys["displayTitle"];
+						$temp["description"] = $fys["description"];
+					}
+				}
+				array_push($response, $temp);
+			}
+		}
 	}
 	$arr = ["response"=>$response, "error"=>$err];
 	echo $_GET['callback'].'('.json_encode($arr).');';
@@ -137,6 +188,21 @@ function getFYSDescr($crn){
 				return ["displayTitle"=>$title, "description"=>$fysFile];
 			}
 		}
+	}
+}
+
+function testCourseOverlap($temp, $rows, $v){
+	if(($v["FOS"] == "WELL" || $v["FOS"] == "FYS" || (strpos($v["Title"], "ST:") > -1) || (strpos($v["Title"], "SP:") > -1) || ($v["FOS"] == "HIST" && $v["Course Number"] == "199") || ($v["FOS"] == "BIOL" && $v["Course Number"] == "199") || ($v["FOS"] == "ENGL" && $v["Course Number"] == "299") || ($v["FOS"] == "HIST" && $v["Course Number"] == "299")) && ($temp["Title"] == $v["Title"]  || strpos($temp["Title"], " LAB")>-1)){
+		return true;
+	}
+	else if($v["FOS"] != "FYS" && $v["FOS"] != "WELL" && !(strpos($v["Title"], "ST:") > -1) && !(strpos($v["Title"], "SP:") > -1) && !($v["FOS"] == "HIST" && $v["Course Number"] == "199") && !($v["FOS"] == "BIOL" && $v["Course Number"] == "199") && !($v["FOS"] == "ENGL" && $v["Course Number"] == "299")  && !($v["FOS"] == "HIST" && $v["Course Number"] == "299")){
+		return true;
+	}
+	else if(strpos($v["Title"], " LAB")>-1){
+		return true;
+	}
+	else{
+		return false;
 	}
 }
 ?>

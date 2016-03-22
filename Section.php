@@ -18,6 +18,7 @@ class Section extends Course{
 	private $crn = array(); //stores all registration numbers used in the section, ie. the main CRN and the CRN for a lab section
 	private $multiple = false; //true if there are multiple options of lab or drill sections for each lecture section
 	private $prof;
+	public $preregistered = false;
 	
 	/**
 	Constructor for Section that includes all the necessary parameters for the Course constructor as well as the CRN(s)
@@ -90,6 +91,9 @@ class Section extends Course{
 	public function conflictsWith($other){
 		if($this->getFieldOfStudy() == $other->getFieldOfStudy() && $this->getCourseNumber() == $other->getCourseNumber()){ //check if the fields of study and course numbers are the same
 			if($this->getCourseTitle() == $other->getCourseTitle()){//if the field of study is FYS and the course titles and the same, then the sections must conflict
+				return true;
+			}
+			else if($this->preregistered || $other->preregistered){
 				return true;
 			}
 		}
@@ -202,6 +206,8 @@ class Section extends Course{
 				return 4;
 			case "S":
 				return 5;
+			case "Su":
+				return 6;
 		}
 	}	
 	

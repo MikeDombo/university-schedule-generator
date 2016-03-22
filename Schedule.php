@@ -85,12 +85,15 @@ class Schedule{
 		$this->score = $classes*2;//set score to number of classes and units, then scale by a factor of 2
 		$this->score += ($this->numberOfClasses - reset($this->getCPD()))*1.5;//add then number of classes minus the greatest number of classes in a day and scale by 1.5
 		if($this->fridayFree){
-			$this->score += 4;
+			$this->score += 2;
 		}
 		
 		//This section calculates the score to add due to classes being later than 10:00am
 		$earliest = array();
 		foreach($this->listOfSections as $k=>$v){
+			if($v->preregistered){
+				$this->score += .25;
+			}
 			if(isset($v->meetingTime)){
 				foreach($v->meetingTime as $day=>$times){
 					foreach($times as $k2=>$time){
@@ -190,19 +193,33 @@ class Schedule{
 	
 	public function dayToInt($day){
 		switch($day){
-			case "Monday":
+			case "Monday":				
 				return 0;
-			case "Tuesday":
+			case "Tuesday":				
 				return 1;
-			case "Wednesday":
+			case "Wednesday":				
 				return 2;
-			case "Thursday":
+			case "Thursday":				
 				return 3;
-			case "Friday":	
+			case "Friday":				
 				return 4;
-			case "Saturday":
+			case "Saturday":				
 				return 5;
-			case "Sunday":
+			case "Sunday":				
+				return 6;
+			case "M":
+				return 0;
+			case "T":
+				return 1;
+			case "W":
+				return 2;
+			case "R":
+				return 3;
+			case "F":
+				return 4;
+			case "S":
+				return 5;
+			case "Su":
 				return 6;
 		}
 	}
