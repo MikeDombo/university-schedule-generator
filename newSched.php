@@ -24,10 +24,10 @@ else{
 }
 
 $starttime = microtime(true);
-$database = "*******";
+$database = "******";
 $user = "*******";
-$pass = "*******";
-$link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
+$pass = "******";
+$link = mysqli_connect("just148.justhost.com", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 
 function generateColor($c){
@@ -76,15 +76,17 @@ if(isset($_GET["i"])){
 	$unwantedTimes = json_decode(urldecode($_GET["i"]), true)["unwantedTimes"];
 	$daysWithUnwantedTimes = array();
 	
-	$t = new Schedule();
-	foreach($unwantedTimes as $k=>$v){
-		foreach($v as $k2=>$v2){
-			if(!in_array($k2, $daysWithUnwantedTimes)){
-				array_push($daysWithUnwantedTimes, $t->intToDay($t->dayToInt($k2)));
+	if(isset($unwantedTimes)){
+		$t = new Schedule();
+		foreach($unwantedTimes as $k=>$v){
+			foreach($v as $k2=>$v2){
+				if(!in_array($k2, $daysWithUnwantedTimes)){
+					array_push($daysWithUnwantedTimes, $t->intToDay($t->dayToInt($k2)));
+				}
 			}
 		}
+		unset($t);
 	}
-	unset($t);
 	
 	foreach($inputData as $key=>$section){
 		$subj = mysqli_real_escape_string($link, $section["FOS"]);
@@ -92,14 +94,14 @@ if(isset($_GET["i"])){
 		$title = $section["Title"];
 		$courseColor = generateColor(array(255, 255, 255));
 		
-		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE (`CRSE#` = '".$num."' AND `SUBJ` = '".$subj."')");
+		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE (`CRSE` = '".$num."' AND `SUBJ` = '".$subj."')");
 
 		$tempSection = array();
 		$manyOptions = array();
 		$multipleOptions = false;
 		while($rows = mysqli_fetch_assoc($result)){
 			if(!$allowFull){
-				if($rows["MAX"] <= $rows["ENROLLMENT"]){
+				if($rows["MAX"] <= $rows["ENRLLMNT"]){
 					continue;
 				}
 			}
@@ -107,7 +109,7 @@ if(isset($_GET["i"])){
 				continue;
 			}
 			
-			if(($rows["SUBJ"] == "FYS" || $rows["SUBJ"] == "WELL" || strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1 || ($rows["SUBJ"] == "HIST" && $rows["CRSE#"] == "199") || ($rows["SUBJ"] == "BIOL" && $rows["CRSE#"] == "199") || ($rows["SUBJ"] == "ENGL" && $rows["CRSE#"] == "299")) && $rows["TITLE"] != $title){
+			if(($rows["SUBJ"] == "FYS" || $rows["SUBJ"] == "WELL" || strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1 || ($rows["SUBJ"] == "HIST" && $rows["CRSE"] == "199") || ($rows["SUBJ"] == "BIOL" && $rows["CRSE"] == "199") || ($rows["SUBJ"] == "ENGL" && $rows["CRSE"] == "299")) && $rows["TITLE"] != $title){
 				if(strpos($rows["TITLE"], " LAB")>-1 || strpos($title, " LAB")>-1){}
 				else{
 					continue;
@@ -116,7 +118,7 @@ if(isset($_GET["i"])){
 			if(isset($section["displayTitle"])){
 				$title = $section["displayTitle"];
 			}
-			$sectionNum = $rows["SECTION"];
+			$sectionNum = $rows["SEC"];
 			
 			if(substr($sectionNum, 0, 1) == "L" || substr($sectionNum, 0, 1) == "P" || substr($sectionNum, 0, 1) == "D"){
 				$sectionNum = substr($sectionNum, 1);
@@ -134,18 +136,18 @@ if(isset($_GET["i"])){
 			if(!isset($rows["INSTR FN"])){
 				$rows["INSTR FN"] = "";
 			}
-			if(!isset($rows["INSTR LN"])){
-				$rows["INSTR LN"] = "";
+			if(!isset($rows["LASTNAME"])){
+				$rows["LASTNAME"] = "";
 			}
 			
 			if(!isset($tempSection[$sectionNum]) && !$multipleOptions){
-				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
+				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE"], floatval($rows["UNITS"]), [$rows["CRN"]]);
 				foreach($rows as $k=>$v){
 					if($k == $v){
 						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
 					}
 				}
-				$tempSec->setProf($rows["INSTR FN"]." ".$rows["INSTR LN"]);
+				$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
 				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
 					$tempSec->addCRN($rows["CRN"]);
 				}
@@ -161,17 +163,17 @@ if(isset($_GET["i"])){
 				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
 					$tempSec->addCRN($rows["CRN"]);
 				}
-				$tempSec->setProf($rows["INSTR FN"]." ".$rows["INSTR LN"]);
+				$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
 				$tempSection[$sectionNum] = $tempSec;
 			}
 			else if($multipleOptions){
-				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
+				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE"], floatval($rows["UNITS"]), [$rows["CRN"]]);
 				foreach($rows as $k=>$v){
 					if($k == $v){
 						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
 					}
 				}
-				$tempSec->setProf($rows["INSTR FN"]." ".$rows["INSTR LN"]);
+				$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
 				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
 					$tempSec->addCRN($rows["CRN"]);
 				}
@@ -223,20 +225,20 @@ if(isset($_GET["i"])){
 			if(!isset($rows["INSTR FN"])){
 				$rows["INSTR FN"] = "";
 			}
-			if(!isset($rows["INSTR LN"])){
-				$rows["INSTR LN"] = "";
+			if(!isset($rows["LASTNAME"])){
+				$rows["LASTNAME"] = "";
 			}
 			
 			$title = $rows["TITLE"];
 			
-			$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE#"], floatval($rows["CREDIT"]), [$rows["CRN"]]);
+			$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE"], floatval($rows["UNITS"]), [$rows["CRN"]]);
 			
 			foreach($rows as $k=>$v){
 				if($k == $v){
 					$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
 				}
 			}
-			$tempSec->setProf($rows["INSTR FN"]." ".$rows["INSTR LN"]);
+			$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
 			$tempSec->setColor($courseColor);
 			array_push($preregSections, $tempSec);
 		}
@@ -317,6 +319,9 @@ foreach($allSections as $k=>$v){
 }
 
 $numSchedules = $GLOBALS['numSchedules'];
+$scheduleFile = intval(file_get_contents("/home3/unblock2/public_html/ur/schedules-created.txt"));
+file_put_contents("/home3/unblock2/public_html/ur/schedules-created.txt", $scheduleFile+$numSchedules);
+
 $temp = array();
 $schedCount = $GLOBALS['schedules']->count();
 for($i=0; $i<$schedCount; $i++){
@@ -333,7 +338,7 @@ if(!isset($_COOKIE["history"])){
 	$inputData["schedules"] = $numSchedules;
 	$cookieData = Array();
 	array_push($cookieData, $inputData);
-	setcookie("history", json_encode($cookieData));
+	setcookie("history", json_encode($cookieData), strtotime("+30 days"));
 }
 else{
 	$inputData["schedules"] = $numSchedules;
@@ -362,7 +367,7 @@ else{
 		$start = 10;
 	}
 	array_splice($cookieData, $start);
-	setcookie("history", json_encode($cookieData));
+	setcookie("history", json_encode($cookieData), strtotime("+30 days"));
 }
 
 function run($sections, $curr, $pick){

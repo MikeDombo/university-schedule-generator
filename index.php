@@ -15,13 +15,13 @@
 		<script src="js/bootstrap-toggle.min.js"></script>
 		<script src="js/bootstrap-tour-standalone.min.js"></script>
 		<script>
-		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-		  ga('create', 'UA-69105822-1', 'mikedombrowski.com/ur');
-		  ga('require', 'linkid');
-		  ga('send', 'pageview');
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+			ga('create', 'UA-4436865-11', 'auto');
+			ga('send', 'pageview');
 		</script>
 		<style>
 			.navbar-brand-name > img {
@@ -154,7 +154,7 @@
 						</div>
 						<div class="form-group">
 							<label for="crns" class="control-label">Preregistered Courses</label>
-							<input class="form-control" type="text" id="crns" name="crns" placeholder="CRNs of Courses Already Registered" value="<?php if(isset($_GET["i"])){$print = ""; foreach(json_decode($_GET["i"], true)["preregistered"] as $v){$print = $print.$v.", ";} echo substr($print, 0, -2);}?>"></input>
+							<input class="form-control" type="text" id="crns" name="crns" placeholder="CRNs of Courses Already Registered" value="<?php if(isset($_GET["i"]) && isset(json_decode($_GET["i"], true)["preregistered"])){$print = ""; foreach(json_decode($_GET["i"], true)["preregistered"] as $v){$print = $print.$v.", ";} echo substr($print, 0, -2);}?>"></input>
 						</div>
 						<div class="form-group"><span id="arrow" class="glyphicon glyphicon-chevron-right"></span><a id="adv" onclick="advOptions()">Show Advanced Options</a></div>
 						<div id="advanced">
@@ -249,13 +249,13 @@
 								});
 							}
 							
-							if(!getCookie("jumbotron").length > 0){
+							if(getCookie("jumbotron") != "hidden"){
 								$(".jumbotron").removeClass("hide");
 							}
 						
 							var tour = new Tour({
 								backdrop: true,
-								debug: false,
+								debug: true,
 								onEnd: function(tour){
 									$("#course-basket .btn-remove-course").trigger("click");
 								},
@@ -552,21 +552,21 @@
 		}
 		
 		var subjects = {"ACCT":"Accounting", "AMST":"American Studies","ANTH":"Anthropology","ARAB":"Arabic",
-			"ARTH":"Art History","ARTS":"Studio Art","BIOL":"Biology","BMB":"Biochemistry","BUAD":"Business Administration",
+			"ARTH":"Art History","BIOL":"Biology","BMB":"Biochemistry","BUAD":"Business Administration",
 			"CHEM":"Chemistry","CHIN":"Chinese Program","CJ":"Criminal Justice","CLAC":"Cultures and Languages Across the Curriculum",
 			"CLCV":"Classical Studies","CLSC":"Classical Studies","CMSC":"Computer Science","DANC":"Dance","ECON":"Economics",
 			"EDUC":"Education","ENGL":"English","ENVR":"Environmental Studies","FIN":"Finance","FMST":"Film Studies",
 			"FREN":"French Program","FYS":"First Year Seminar","GEOG":"Geography","GERM":"German Studies Program",
 			"GREK":"Greek","HCS":"Healthcare Studies","HIST":"History","IBUS":"International Business","IDST":"Interdisciplinary Studies",
 			"IS":"International Studies","ITAL":"Italian Studies Program","JAPN":"Japanese Program","JOUR":"Journalism",
-			"JWST":"Jewish Studies","LAIS":"Latin American, Latino and Iberian Studies","LATN":"Latin","LDST":"Leadership Studies",
-			"MATH":"Mathematics","MGMT":"Management","MKT":"Marketing","MLC":"Languages, Literatures and Cultures",
-			"MSAP":"Music-Applied","MSCL":"Military Science and Leadership","MSEN":"Music-Ensemble","MUS":"Music",
+			"JWST":"Jewish Studies","LAIS":"Latin American, Latino and Iberian Studies","LATN":"Latin","LDST":"Leadership Studies", "LLC":"Languages, Literatures and Cultures",
+			"MATH":"Mathematics","MGMT":"Management","MKT":"Marketing", "MSAP":"Music-Applied","MSCL":"Military Science and Leadership",
+			"MSEN":"Music-Ensemble","MUS":"Music",
 			"PHIL":"Philosophy", "PHYS":"Physics","PLSC":"Political Science","PPEL":"Philosophy Politics Economics and Law",
 			"PSYC":"Psychology","RELG":"Religious Studies","RHCS":"Rhetoric and Communication Studies", 
 			"RUSN":"Russian Studies Program","SDLC":"Languages, Literatures and Cultures","SOC":"Sociology",
 			"SPCS":"School of Professional and Continuing Studies", "SWAH":"Languages, Literatures and Cultures",
-			"THTR":"Theatre","UNIV":"University Seminar","WELL":"Wellness Program","WGSS":"Women, Gender and Sexuality Studies"};
+			"THTR":"Theatre","UNIV":"University Seminar", "VMAP":"Visual and Media Arts Practice","WELL":"Wellness Program","WGSS":"Women, Gender and Sexuality Studies"};
 			
 		
 		function browse(){
@@ -775,7 +775,7 @@
 				unwantedTimes.push(tempTime);
 			});
 			
-			var crns = $("#crns").val().replace(/[,]+/g, '').replace(/ +(?= )/g,'').split(" ");
+			var crns = $("#crns").val().replace(/\D+/g, ',').split(",");
 			getCourses = {allCourses: getCourses, timePref:$("#time-pref").prop('checked'), fullClasses:$("#full-classes").prop('checked'), preregistered: crns, startTime:$("#restrict-slider").text().split(" - ")[0], endTime:$("#restrict-slider").text().split(" - ")[1], unwantedTimes:unwantedTimes};
 			var json = JSON.stringify(getCourses);
 			if(count>5){
@@ -787,7 +787,7 @@
 		
 		$(document).on("click", ".btn-jumbo-close", function(){
 			$(this).parent().parent().hide();
-			document.cookie="jumbotron=false";
+			document.cookie="jumbotron=hidden";
 		});
 		
 		$(document).on("click", ".btn-remove-course", function (e) {

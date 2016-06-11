@@ -1,8 +1,8 @@
 <?php
-$database = "*********";
-$user = "*********";
-$pass = "*********";
-$link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
+$database = "********";
+$user = "***********";
+$pass = "***********";
+$link = mysqli_connect("just148.justhost.com", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 header('Content-Type: text/javascript; charset=utf8');
 
@@ -29,7 +29,7 @@ if(isset($_GET['search'])){
 		$num = mysqli_real_escape_string($link, $num);
 		$subj = mysqli_real_escape_string($link, $subj);
 		
-		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE (`CRSE#` like '%".$num."%' AND `SUBJ` LIKE '%".$subj."%' )");
+		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE (`CRSE` like '%".$num."%' AND `SUBJ` LIKE '%".$subj."%' )");
 		
 		$response = array();
 		if(mysqli_num_rows($result) < 1){
@@ -39,7 +39,7 @@ if(isset($_GET['search'])){
 			while($rows = mysqli_fetch_assoc($result)){
 				$temp = array();
 				$temp["Title"] = $rows["TITLE"];
-				$temp["Course Number"] = $rows["CRSE#"];
+				$temp["Course Number"] = $rows["CRSE"];
 				$temp["FOS"] = $rows["SUBJ"];
 				$temp["Available"] = true;
 				$temp["crns"] = array();
@@ -83,7 +83,7 @@ if(isset($_GET['search'])){
 		while($rows = mysqli_fetch_assoc($result)){
 			$temp = array();
 			$temp["Title"] = $rows["TITLE"];
-			$temp["Course Number"] = $rows["CRSE#"];
+			$temp["Course Number"] = $rows["CRSE"];
 			$temp["FOS"] = $rows["SUBJ"];
 			$temp["Available"] = true;
 			$temp["crns"] = array();
@@ -136,7 +136,7 @@ if(isset($_GET["subj"])){
 		while($rows = mysqli_fetch_assoc($result)){
 			$temp = array();
 			$temp["Title"] = $rows["TITLE"];
-			$temp["Course Number"] = $rows["CRSE#"];
+			$temp["Course Number"] = $rows["CRSE"];
 			$temp["FOS"] = $rows["SUBJ"];
 			$temp["Available"] = true;
 			$temp["crns"] = array();
@@ -178,14 +178,15 @@ mysqli_close($link);
 function getFYSDescr($crn){
 	$fysFile = file_get_contents('Seminar.html');
 	if(strpos($fysFile, $crn)>-1){
-		$fysArr = explode("name=", $fysFile);
-		foreach($fysArr as $v){
+		$fysArr = explode("CRN: ", $fysFile);
+		foreach($fysArr as $k => $v){
 			if(strpos($v, $crn)>-1){
-				$title = substr($v, strpos($v, "name=")+1, strpos($v, "\">")-1);
-				$fysFile = substr($v, strpos($v, $crn));
-				$fysFile = substr($fysFile, strpos($fysFile, "<p>")+3);
-				$fysFile = substr($fysFile, 0, strpos($fysFile, "</p>"));
-				return ["displayTitle"=>$title, "description"=>$fysFile];
+				$title = substr($fysArr[$k-1], strpos($fysArr[$k-1], "class=\"title\">")+strlen("class=\"title\">"));
+				$title = substr($title, 0, strpos($title, "</div>"));
+				preg_match("/(id=\"[a-zA-Z0-9]+\">)/", $v, $matches, PREG_OFFSET_CAPTURE);
+				$descr = substr($v, $matches[0][1]+strlen($matches[0][0]));
+				$descr = substr($descr, 0, strpos($descr, "</p>"));
+				return ["displayTitle"=>$title, "description"=>$descr];
 			}
 		}
 	}

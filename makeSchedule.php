@@ -3,10 +3,12 @@ if(isset($_GET["i"])){//check if we received the correct GET request, and redire
 	$inputData = json_decode(urldecode($_GET["i"]), true);
 	if(count($inputData["allCourses"])<1){
 		echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/ur');</script>";
+		exit;
 	}
 }
 else{
 	echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/ur');</script>";
+	exit;
 }
 ?>
 <html>
@@ -18,13 +20,22 @@ else{
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="js/loadingoverlay.min.js"></script>
 		<script>
-		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-		  ga('create', 'UA-69105822-1', 'mikedombrowski.com/sched');
-		  ga('require', 'linkid');
-		  ga('send', 'pageview');
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+			ga('create', 'UA-4436865-11', 'auto');
+			ga('send', 'pageview');
+			ga(function(tracker){
+				var uid = tracker.get('clientId');
+				$.ajax({
+					url: 'submitAnalytics.php',
+					type: 'POST',
+					data:{"i":getParameterByName("i"), "userID":uid},
+					success: function(data){console.log(data);},
+					error: function(e){console.log(e);}
+				});
+			});
 		</script>
 		<style>
 			td{
@@ -169,6 +180,7 @@ else{
 			custom:customElement,
 			image:""
 		});
+		
 		$.ajax({
 			url: 'newSched.php',
 			type: 'GET',
