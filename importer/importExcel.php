@@ -1,6 +1,9 @@
 <?php
 require_once dirname(__FILE__) . '/Classes/PHPExcel.php';
 
+$database = "*******";
+$user = "*********";
+$pass = "*********";
 $link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 $objPHPExcel = new PHPExcel();
