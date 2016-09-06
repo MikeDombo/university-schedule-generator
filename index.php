@@ -1,19 +1,22 @@
+<?php
+require_once("config.php");
+?>
 <html>
 	<head>
 		<title>Student Schedule Creator</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link href="css/bootstrap-tour-standalone.min.css" rel="stylesheet">
-		<link rel="stylesheet" href="css/bootstrap.min.css"></link>
-		<script type="text/javascript" src="js/jquery.min.js"></script>
-		<script type="text/javascript" src="js/bootstrap.min.js"></script>
-		<script src="js/jquery-ui.min.js" type="text/javascript"></script>
-		<script src="js/jquery.ui.touch.min.js" type="text/javascript"></script>
-		<link href="css/bootstrap-toggle.min.css" rel="stylesheet"></link>
-		<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"></link>
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<script type="text/javascript" src="js/jquery.min.js" ></script>
+		<script type="text/javascript" src="js/bootstrap.min.js" ></script>
+		<script src="js/jquery-ui.min.js" type="text/javascript" ></script>
+		<script src="js/jquery.ui.touch.min.js" type="text/javascript" ></script>
+		<link href="css/bootstrap-toggle.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css" />
 		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css">
-		<script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js"></script>
-		<script src="js/bootstrap-toggle.min.js"></script>
-		<script src="js/bootstrap-tour-standalone.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js" ></script>
+		<script src="js/bootstrap-toggle.min.js" ></script>
+		<script src="js/bootstrap-tour-standalone.min.js" ></script>
 		<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -364,8 +367,8 @@
 									d.setMinutes(parseInt(time[1]) || 0 );
 									this["startTime"] = parseInt((d-now)/60000);
 									
-									var time = this["endTime"].split(" ")[0].split(":");
-									var ampm = this["endTime"].split(" ")[1];
+									time = this["endTime"].split(" ")[0].split(":");
+									ampm = this["endTime"].split(" ")[1];
 									d.setHours(parseInt(time[0]) + (ampm=="PM" ? 12 : 0));
 									d.setMinutes(parseInt(time[1]) || 0 );
 									this["endTime"] = parseInt((d-now)/60000);
@@ -553,20 +556,25 @@
 		
 		var subjects = {"ACCT":"Accounting", "AMST":"American Studies","ANTH":"Anthropology","ARAB":"Arabic",
 			"ARTH":"Art History","BIOL":"Biology","BMB":"Biochemistry","BUAD":"Business Administration",
-			"CHEM":"Chemistry","CHIN":"Chinese Program","CJ":"Criminal Justice","CLAC":"Cultures and Languages Across the Curriculum",
+			"CHEM":"Chemistry","CHIN":"Chinese Program","CJ":"Criminal Justice",
+			"CLAC":"Cultures and Languages Across the Curriculum",
 			"CLCV":"Classical Studies","CLSC":"Classical Studies","CMSC":"Computer Science","DANC":"Dance","ECON":"Economics",
 			"EDUC":"Education","ENGL":"English","ENVR":"Environmental Studies","FIN":"Finance","FMST":"Film Studies",
 			"FREN":"French Program","FYS":"First Year Seminar","GEOG":"Geography","GERM":"German Studies Program",
-			"GREK":"Greek","HCS":"Healthcare Studies","HIST":"History","IBUS":"International Business","IDST":"Interdisciplinary Studies",
+			"GREK":"Greek","HCS":"Healthcare Studies","HIST":"History","IBUS":"International Business",
+			"IDST":"Interdisciplinary Studies",
 			"IS":"International Studies","ITAL":"Italian Studies Program","JAPN":"Japanese Program","JOUR":"Journalism",
-			"JWST":"Jewish Studies","LAIS":"Latin American, Latino and Iberian Studies","LATN":"Latin","LDST":"Leadership Studies", "LLC":"Languages, Literatures and Cultures",
-			"MATH":"Mathematics","MGMT":"Management","MKT":"Marketing", "MSAP":"Music-Applied","MSCL":"Military Science and Leadership",
+			"JWST":"Jewish Studies","LAIS":"Latin American, Latino and Iberian Studies","LATN":"Latin","LDST":"Leadership Studies",
+			"LLC":"Languages, Literatures and Cultures",
+			"MATH":"Mathematics","MGMT":"Management","MKT":"Marketing", "MSAP":"Music-Applied",
+			"MSCL":"Military Science and Leadership",
 			"MSEN":"Music-Ensemble","MUS":"Music",
 			"PHIL":"Philosophy", "PHYS":"Physics","PLSC":"Political Science","PPEL":"Philosophy Politics Economics and Law",
 			"PSYC":"Psychology","RELG":"Religious Studies","RHCS":"Rhetoric and Communication Studies", 
 			"RUSN":"Russian Studies Program","SDLC":"Languages, Literatures and Cultures","SOC":"Sociology",
 			"SPCS":"School of Professional and Continuing Studies", "SWAH":"Languages, Literatures and Cultures",
-			"THTR":"Theatre","UNIV":"University Seminar", "VMAP":"Visual and Media Arts Practice","WELL":"Wellness Program","WGSS":"Women, Gender and Sexuality Studies"};
+			"THTR":"Theatre","UNIV":"University Seminar", "VMAP":"Visual and Media Arts Practice","WELL":"Wellness Program",
+			"WGSS":"Women, Gender and Sexuality Studies"};
 			
 		
 		function browse(){
@@ -578,7 +586,7 @@
 		}
 		
 		function fetchBySubj(k){
-			$.getJSON('/ur/richmondAPI.php?subj='+k+'&callback=?', function(courseData){
+			$.getJSON('<?php echo SUBDIR;?>/richmondAPI.php?subj='+k+'&callback=?', function(courseData){
 				courseData = eval(courseData.response);
 				
 				$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2016&term=&catalogtype=ug&paginate=false&subj='+k+'&level=&keyword=&callback=?', function(data){
@@ -597,11 +605,11 @@
 		}
 		
 		browse();
-		var alreadyFetched = new Array();
+		var alreadyFetched = [];
 		
 		$(document).on("click", ".collapse-btn", function(){
 			var cls = $(this).parent().attr("class").split(" ");
-			var cls = cls[cls.length-1].split("-")[1];
+			cls = cls[cls.length-1].split("-")[1];
 			if(alreadyFetched.indexOf(cls) == -1){
 				fetchBySubj(cls);
 				alreadyFetched.push(cls);
@@ -638,7 +646,7 @@
 			if(loc.length < 3){
 				return;
 			}
-			$.getJSON('/ur/richmondAPI.php?search='+loc+'&callback=?', function(courseData){
+			$.getJSON('<?php echo SUBDIR;?>/richmondAPI.php?search='+loc+'&callback=?', function(courseData){
 				courseData = eval(courseData.response);
 				var crns = $("#crns").val().replace(/[,]+/g, '').replace(/ +(?= )/g,'').split(" ");
 				$("#search-results").empty();
@@ -751,7 +759,7 @@
 		
 		$(document).on("click", ".btn-generate", function (e) {
 			var $courses = $("#course-basket li");
-			var getCourses = new Array();
+			var getCourses = [];
 			var count = 0;
 			$courses.each(function(){
 				var temp = {CourseNum:$(this).data("coursenum"), FOS:$(this).data("fos"), Title:$(this).data("coursename"), displayTitle:$(this).data("displaytitle")};
@@ -759,7 +767,7 @@
 				count++;
 			});
 			
-			var unwantedTimes = new Array();
+			var unwantedTimes = [];
 			$("#block").find(".blocked-time").each(function(){
 				var tempTime = {};
 				$(this).find("input, .time-display").each(function(){
@@ -782,7 +790,7 @@
 				window.alert("Trying to generate schedules with this many courses may take a long time, but I will try.  \n\nThe page will appear to be loading until it is finished, so do not refresh the page.  \n\nThe calculation is allowed take up to 5 minutes, if it takes longer, it will fail.");
 			}
 			console.log(json);
-			window.location.assign("/ur/makeSchedule.php?i="+encodeURIComponent(json));
+			window.location.assign("<?php echo SUBDIR;?>/makeSchedule.php?i="+encodeURIComponent(json));
 		});
 		
 		$(document).on("click", ".btn-jumbo-close", function(){

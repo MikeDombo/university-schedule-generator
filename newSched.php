@@ -1,4 +1,5 @@
 <?php
+require_once("config.php");
 /**
 Authored by Michael Dombrowski, http://mikedombrowski.com
 Original repository available at http://github.com/md100play/university-schedule-generator
@@ -6,28 +7,26 @@ Original repository available at http://github.com/md100play/university-schedule
 This is the most important file. It accepts a GET request that contains all the requested courses and will generate all the non-conflicting schedules using the "run" function.
 **/
 
-spl_autoload_register(function ($class) { //load all external classes to run the algorithm
-    include "Course.php";
-	include "Schedule.php";
-	include "Section.php";
-	include "MinHeap.php";
-});
-
 if(isset($_GET["i"])){//check if we received the correct GET request, and redirect back to the input page if not
 	$inputData = json_decode(urldecode($_GET["i"]), true);
 	if(count($inputData["allCourses"])<1){
-		echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/ur');</script>";
+		echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('".SUBDIR."');</script>";
 	}
 }
 else{
-	echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/ur');</script>";
+	echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('".SUBDIR."');</script>";
 }
 
 $starttime = microtime(true);
-$database = "******";
-$user = "*******";
-$pass = "******";
-$link = mysqli_connect("just148.justhost.com", $user, $pass, $database) or die("Error " . mysqli_error($link));
+
+try{
+	$link = new PDO("mysql:dbname=".DB_DATABASE.";host=".DB_HOST.";", DB_USER, DB_PASSWORD);
+}
+catch(PDOException $e){
+	echo 'Connection failed: ' . $e->getMessage();
+	error_log($e->getMessage());
+	exit;
+}
 
 
 function generateColor($c){
@@ -89,17 +88,24 @@ if(isset($_GET["i"])){
 	}
 	
 	foreach($inputData as $key=>$section){
-		$subj = mysqli_real_escape_string($link, $section["FOS"]);
-		$num = mysqli_real_escape_string($link, $section["CourseNum"]);
+		if(!isset($section["FOS"]) || !isset($section["CourseNum"]) || !isset($section["Title"])){
+			continue;
+		}
+		$subj = $section["FOS"];
+		$num = $section["CourseNum"];
 		$title = $section["Title"];
 		$courseColor = generateColor(array(255, 255, 255));
-		
-		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE (`CRSE` = '".$num."' AND `SUBJ` = '".$subj."')");
+
+		$q = $link->prepare("SELECT * FROM `schedule` WHERE `CRSE` = :num AND `SUBJ` = :subj");
+		$q->bindValue(":num", $num, PDO::PARAM_INT);
+		$q->bindValue(":subj", $subj, PDO::PARAM_STR);
+		$q->execute();
+		$result = $q->fetchAll(PDO::FETCH_ASSOC);
 
 		$tempSection = array();
 		$manyOptions = array();
 		$multipleOptions = false;
-		while($rows = mysqli_fetch_assoc($result)){
+		foreach($result as $rows){
 			if(!$allowFull){
 				if($rows["MAX"] <= $rows["ENRLLMNT"]){
 					continue;
@@ -217,11 +223,15 @@ if(isset($_GET["i"])){
 	$preregSections = array();
 	foreach($preregistered as $k=>$v){
 		$courseColor = generateColor(array(255, 255, 255));
-		$crn = mysqli_real_escape_string($link, $v);
-		$result = mysqli_query($link, "SELECT * FROM `schedule` WHERE `CRN` = '".$crn."'");
+		$crn = $v;
+
+		$q = $link->prepare("SELECT * FROM `schedule` WHERE `CRN` = :crn");
+		$q->bindValue(":crn", $crn, PDO::PARAM_INT);
+		$q->execute();
+		$result = $q->fetchAll(PDO::FETCH_ASSOC);
 
 		$tempSection = array();
-		while($rows = mysqli_fetch_assoc($result)){
+		foreach($result as $rows){
 			if(!isset($rows["INSTR FN"])){
 				$rows["INSTR FN"] = "";
 			}
@@ -276,7 +286,6 @@ if(isset($_GET["i"])){
 	$classCount = count($inputData)+count($preregSections);
 	
 }
-mysqli_close($link);
 
 $t=new Schedule();
 foreach($allSections as $key=>$section){
@@ -319,8 +328,8 @@ foreach($allSections as $k=>$v){
 }
 
 $numSchedules = $GLOBALS['numSchedules'];
-$scheduleFile = intval(file_get_contents("/home3/unblock2/public_html/ur/schedules-created.txt"));
-file_put_contents("/home3/unblock2/public_html/ur/schedules-created.txt", $scheduleFile+$numSchedules);
+$scheduleFile = intval(file_get_contents("schedules-created.txt"));
+file_put_contents("schedules-created.txt", $scheduleFile+$numSchedules);
 
 $temp = array();
 $schedCount = $GLOBALS['schedules']->count();
