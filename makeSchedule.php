@@ -1,13 +1,14 @@
 <?php
+require_once("config.php");
 if(isset($_GET["i"])){//check if we received the correct GET request, and redirect back to the input page if not
 	$inputData = json_decode(urldecode($_GET["i"]), true);
 	if(count($inputData["allCourses"])<1){
-		echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/ur');</script>";
+		echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('".SUBDIR."');</script>";
 		exit;
 	}
 }
 else{
-	echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('/ur');</script>";
+	echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('".SUBDIR."');</script>";
 	exit;
 }
 ?>
@@ -15,7 +16,7 @@ else{
 	<head>
 		<title>Student Schedule Creator</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="css/bootstrap.min.css"></link>
+		<link rel="stylesheet" href="css/bootstrap.min.css"/>
         <script type="text/javascript" src="js/jquery.min.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="js/loadingoverlay.min.js"></script>
@@ -72,7 +73,7 @@ else{
 		<nav class="navbar navbar-default navbar-inverse">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="/ur">
+					<a class="navbar-brand" href="<?php echo SUBDIR;?>">
 						<div class="navbar-brand-name">
 							<span style="color:#ffffff">Unofficial Richmond Scheduler</span>
 						</div>
@@ -85,7 +86,7 @@ else{
 				</div>
 				<div class="navbar-collapse collapse" id="navbar-main">
 					<ul class="nav navbar-nav navbar-right">
-						<li><a><button class="btn btn-default" type="button" onclick="window.location.href='/ur/?i=<?php echo urlencode(json_encode($inputData));?>'">Edit Courses</button></a></li>
+						<li><a><button class="btn btn-default" type="button" onclick="window.location.href='<?php echo SUBDIR;?>/?i=<?php echo urlencode(json_encode($inputData));?>'">Edit Courses</button></a></li>
 						<li><a><button class="btn btn-success btn-expand glyphicon glyphicon-collapse-down" type="button">&nbsp;Expand All Schedules</button></a></li>
 						<li><a><button class="btn-listview btn glyphicon glyphicon-list btn-default" type="button">&nbsp;List View</button></a></li>
 					</ul>
@@ -154,7 +155,7 @@ else{
 		var random = [["Recalibrating", "Excavating", "Acquiring", "Extracting", "Computing", "Deflummoxing", "Binding", "Serving","Routing","Distributing","Sampling","Servicing","Repairing","Discombobulating", "Processing", "Preprocessing"],
 		["Flux", "Data", "Spline", "Storage", "Plasma", "Cache", "Laser","Extra Large","Ethernet","WiFi","Wireless","Sample", "Computational", "Local", "Integral"],
 		["Capacitor", "Conductor", "Assembler", "Detector", "Post-processor", "Integrator", "Computer", "Disk", "Server","Router","Calculator"]];
-		var customElement = $("<img src='/ur/loading-spinner.gif'></img><h3>", {
+		var customElement = $("<img src='<?php echo SUBDIR;?>/loading-spinner.gif'></img><h3>", {
 			id : "countdown",
 			text : ""
 		});
