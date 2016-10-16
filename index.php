@@ -1,22 +1,19 @@
-<?php
-require_once("config.php");
-?>
 <html>
 	<head>
 		<title>Student Schedule Creator</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
 		<link href="css/bootstrap-tour-standalone.min.css" rel="stylesheet">
-		<link rel="stylesheet" href="css/bootstrap.min.css" />
-		<script type="text/javascript" src="js/jquery.min.js" ></script>
-		<script type="text/javascript" src="js/bootstrap.min.js" ></script>
-		<script src="js/jquery-ui.min.js" type="text/javascript" ></script>
-		<script src="js/jquery.ui.touch.min.js" type="text/javascript" ></script>
-		<link href="css/bootstrap-toggle.min.css" rel="stylesheet" />
-		<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css" />
+		<link rel="stylesheet" href="css/bootstrap.min.css"></link>
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/bootstrap.min.js"></script>
+		<script src="js/jquery-ui.min.js" type="text/javascript"></script>
+		<script src="js/jquery.ui.touch.min.js" type="text/javascript"></script>
+		<link href="css/bootstrap-toggle.min.css" rel="stylesheet"></link>
+		<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"></link>
 		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css">
-		<script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js" ></script>
-		<script src="js/bootstrap-toggle.min.js" ></script>
-		<script src="js/bootstrap-tour-standalone.min.js" ></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js"></script>
+		<script src="js/bootstrap-toggle.min.js"></script>
+		<script src="js/bootstrap-tour-standalone.min.js"></script>
 		<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -25,6 +22,16 @@ require_once("config.php");
 
 			ga('create', 'UA-4436865-11', 'auto');
 			ga('send', 'pageview');
+		</script>
+		<script>
+		(function(){
+				var t,i,e,n=window,o=document,a=arguments,s="script",r=["config","track","identify","visit","push","call","trackForm","trackClick"],c=function(){var t,i=this;for(i._e=[],t=0;r.length>t;t++)(function(t){i[t]=function(){return i._e.push([t].concat(Array.prototype.slice.call(arguments,0))),i}})(r[t])};for(n._w=n._w||{},t=0;a.length>t;t++)n._w[a[t]]=n[a[t]]=n[a[t]]||new c;i=o.createElement(s),i.async=1,i.src="//static.woopra.com/js/w.js",e=o.getElementsByTagName(s)[0],e.parentNode.insertBefore(i,e)
+		})("woopra");
+
+		woopra.config({
+			domain: 'mikedombrowski.com'
+		});
+		woopra.track();
 		</script>
 		<style>
 			.navbar-brand-name > img {
@@ -59,7 +66,7 @@ require_once("config.php");
 				<div class="navbar-header">
 					<a class="navbar-brand" href="#">
 						<div class="navbar-brand-name">
-							<span style="color:#ffffff">Unofficial University of Richmond Scheduler</span>
+							<span style="color:#ffffff">Unofficial Richmond Scheduler</span>
 						</div>
 					</a>
 				</div>
@@ -73,7 +80,8 @@ require_once("config.php");
 			</nav>
 			<div class="col-md-12">
 				<div class="jumbotron hide">
-					<h1>Welcome to the Unofficial University of Richmond Scheduler!</h1>
+					<h1>Welcome to the Unofficial Richmond Scheduler!</h1>
+					<h2>Schedules for Spring 2017 Now Available</h2>
 					<p>Use the search below to find courses and then click the&nbsp;<button class="glyphicon glyphicon-plus btn btn-success" style="line-height:1em!important; vertical-align:text-top;"></button>&nbsp;to add the course to your basket.</p>
 					<p>Then click "Create Schedule" to generate every possible schedule</p>
 					<p>Disclaimer: This product has been developed by Michael Dombrowski it is not owned or operated by the University of Richmond. Accuracy cannot be guaranteed, please contact me if you find any inaccuracies.</p>
@@ -315,8 +323,10 @@ require_once("config.php");
 								}
 								]});
 
-								tour.init();
-								tour.start();
+								if(!isMobile()){
+									tour.init();
+									tour.start();
+								}
 							
 							$(document).on("click", ".btn-load-history", function(e){
 								var c = getCookie("history");
@@ -331,6 +341,12 @@ require_once("config.php");
 									}
 								});
 							});
+							
+							function isMobile() {
+								var check = false;
+								(function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
+								return check;
+							};
 							
 							function getCookie(cname) {
 								var name = cname + "=";
@@ -367,8 +383,8 @@ require_once("config.php");
 									d.setMinutes(parseInt(time[1]) || 0 );
 									this["startTime"] = parseInt((d-now)/60000);
 									
-									time = this["endTime"].split(" ")[0].split(":");
-									ampm = this["endTime"].split(" ")[1];
+									var time = this["endTime"].split(" ")[0].split(":");
+									var ampm = this["endTime"].split(" ")[1];
 									d.setHours(parseInt(time[0]) + (ampm=="PM" ? 12 : 0));
 									d.setMinutes(parseInt(time[1]) || 0 );
 									this["endTime"] = parseInt((d-now)/60000);
@@ -457,8 +473,8 @@ require_once("config.php");
 							setSpanTime($("#slider-range"));
 							
 							function slideTime(event, ui){
-								var val0 = $(event.target).slider("values", 0),
-								val1 = $(event.target).slider("values", 1),
+								var val0 = ui.values[0],
+								val1 = ui.values[1],
 								minutes0 = parseInt(val0 % 60, 10),
 								hours0 = parseInt(val0 / 60 % 24, 10),
 								minutes1 = parseInt(val1 % 60, 10),
@@ -476,7 +492,7 @@ require_once("config.php");
 								hours0 = parseInt(val0 / 60 % 24, 10),
 								minutes1 = parseInt(val1 % 60, 10),
 								hours1 = parseInt(val1 / 60 % 24, 10);
-									
+								
 								startTime = getTime(hours0, minutes0);
 								endTime = getTime(hours1, minutes1);
 								$id.parent().children().last().text(startTime + ' - ' + endTime);
@@ -556,25 +572,20 @@ require_once("config.php");
 		
 		var subjects = {"ACCT":"Accounting", "AMST":"American Studies","ANTH":"Anthropology","ARAB":"Arabic",
 			"ARTH":"Art History","BIOL":"Biology","BMB":"Biochemistry","BUAD":"Business Administration",
-			"CHEM":"Chemistry","CHIN":"Chinese Program","CJ":"Criminal Justice",
-			"CLAC":"Cultures and Languages Across the Curriculum",
+			"CHEM":"Chemistry","CHIN":"Chinese Program","CJ":"Criminal Justice","CLAC":"Cultures and Languages Across the Curriculum",
 			"CLCV":"Classical Studies","CLSC":"Classical Studies","CMSC":"Computer Science","DANC":"Dance","ECON":"Economics",
 			"EDUC":"Education","ENGL":"English","ENVR":"Environmental Studies","FIN":"Finance","FMST":"Film Studies",
 			"FREN":"French Program","FYS":"First Year Seminar","GEOG":"Geography","GERM":"German Studies Program",
-			"GREK":"Greek","HCS":"Healthcare Studies","HIST":"History","IBUS":"International Business",
-			"IDST":"Interdisciplinary Studies",
+			"GREK":"Greek","HCS":"Healthcare Studies","HIST":"History","IBUS":"International Business","IDST":"Interdisciplinary Studies",
 			"IS":"International Studies","ITAL":"Italian Studies Program","JAPN":"Japanese Program","JOUR":"Journalism",
-			"JWST":"Jewish Studies","LAIS":"Latin American, Latino and Iberian Studies","LATN":"Latin","LDST":"Leadership Studies",
-			"LLC":"Languages, Literatures and Cultures",
-			"MATH":"Mathematics","MGMT":"Management","MKT":"Marketing", "MSAP":"Music-Applied",
-			"MSCL":"Military Science and Leadership",
+			"JWST":"Jewish Studies","LAIS":"Latin American, Latino and Iberian Studies","LATN":"Latin","LDST":"Leadership Studies", "LLC":"Languages, Literatures and Cultures",
+			"MATH":"Mathematics","MGMT":"Management","MKT":"Marketing", "MSAP":"Music-Applied","MSCL":"Military Science and Leadership",
 			"MSEN":"Music-Ensemble","MUS":"Music",
 			"PHIL":"Philosophy", "PHYS":"Physics","PLSC":"Political Science","PPEL":"Philosophy Politics Economics and Law",
 			"PSYC":"Psychology","RELG":"Religious Studies","RHCS":"Rhetoric and Communication Studies", 
 			"RUSN":"Russian Studies Program","SDLC":"Languages, Literatures and Cultures","SOC":"Sociology",
 			"SPCS":"School of Professional and Continuing Studies", "SWAH":"Languages, Literatures and Cultures",
-			"THTR":"Theatre","UNIV":"University Seminar", "VMAP":"Visual and Media Arts Practice","WELL":"Wellness Program",
-			"WGSS":"Women, Gender and Sexuality Studies"};
+			"THTR":"Theatre","UNIV":"University Seminar", "VMAP":"Visual and Media Arts Practice","WELL":"Wellness Program","WGSS":"Women, Gender and Sexuality Studies"};
 			
 		
 		function browse(){
@@ -586,30 +597,38 @@ require_once("config.php");
 		}
 		
 		function fetchBySubj(k){
-			$.getJSON('<?php echo SUBDIR;?>/richmondAPI.php?subj='+k+'&callback=?', function(courseData){
-				courseData = eval(courseData.response);
-				
-				$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2016&term=&catalogtype=ug&paginate=false&subj='+k+'&level=&keyword=&callback=?', function(data){
-					data = data.courses;
-					$.each(courseData, function(i,v){
-						var $newPanel = $("#subj-list-template2").clone().removeAttr('id');
-						var num = v["Course Number"];
-						if(v["Course Number"] <= 99){
-							num = "0"+v["Course Number"];
-						}
-						$newPanel = loadCourses($newPanel, data, v, num).removeClass("hide");
-						$("#subj-list .subj-"+k).find('.main-body').append($newPanel);
+			$.ajax({
+				url: "/ur/richmondAPI.php",
+				jsonp: "callback",
+				dataType: "jsonp",
+				data: {
+					subj: k
+				},
+				success: function( courseData ) {
+					courseData = eval(courseData.response);
+					
+					$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2016&term=&catalogtype=ug&paginate=false&subj='+k+'&level=&keyword=&callback=?', function(data){
+						data = data.courses;
+						$.each(courseData, function(i,v){
+							var $newPanel = $("#subj-list-template2").clone().removeAttr('id');
+							var num = v["Course Number"];
+							if(v["Course Number"] <= 99){
+								num = "0"+v["Course Number"];
+							}
+							$newPanel = loadCourses($newPanel, data, v, num).removeClass("hide");
+							$("#subj-list .subj-"+k).find('.main-body').append($newPanel);
+						});
 					});
-				});
+				}
 			});
 		}
 		
 		browse();
-		var alreadyFetched = [];
+		var alreadyFetched = new Array();
 		
 		$(document).on("click", ".collapse-btn", function(){
 			var cls = $(this).parent().attr("class").split(" ");
-			cls = cls[cls.length-1].split("-")[1];
+			var cls = cls[cls.length-1].split("-")[1];
 			if(alreadyFetched.indexOf(cls) == -1){
 				fetchBySubj(cls);
 				alreadyFetched.push(cls);
@@ -646,30 +665,37 @@ require_once("config.php");
 			if(loc.length < 3){
 				return;
 			}
-			$.getJSON('<?php echo SUBDIR;?>/richmondAPI.php?search='+loc+'&callback=?', function(courseData){
-				courseData = eval(courseData.response);
-				var crns = $("#crns").val().replace(/[,]+/g, '').replace(/ +(?= )/g,'').split(" ");
-				$("#search-results").empty();
-				$.each(courseData, function(i,v){
-					var $newPanel = $defaultSearchResult.clone();
-					var cn;
-					var num = v["Course Number"];
-					if(v["Course Number"] <= 99){
-						num = "0"+v["Course Number"];
-					}
-					if(v["Course Number"] > 99){
-						cn = v["Course Number"].substr(0,1)+"00";
-					}
-					else{
-						cn = v["Course Number"];
-					}
-					$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2016&term=&catalogtype=ug&paginate=false&subj='+v["FOS"]+'&level='+cn+'&keyword=&callback=?', function(data){
-						data = data.courses;
-						$newPanel = loadCourses($newPanel, data, v, num).removeAttr('id').removeClass("hide");
-						$("#search-results").append($newPanel);
+			$.ajax({
+				url: "/ur/richmondAPI.php",
+				jsonp: "callback",
+				dataType: "jsonp",
+				data: {
+					search: loc
+				},
+				success: function( courseData ) {
+					courseData = eval(courseData.response);
+					var crns = $("#crns").val().replace(/[,]+/g, '').replace(/ +(?= )/g,'').split(" ");
+					$("#search-results").empty();
+					$.each(courseData, function(i,v){
+						var $newPanel = $defaultSearchResult.clone();
+						var cn;
+						var num = v["Course Number"];
+						if(v["Course Number"] <= 99){
+							num = "0"+v["Course Number"];
+						}
+						if(v["Course Number"] > 99){
+							cn = v["Course Number"].substr(0,1)+"00";
+						}
+						else{
+							cn = v["Course Number"];
+						}
+						$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2016&term=&catalogtype=ug&paginate=false&subj='+v["FOS"]+'&level='+cn+'&keyword=&callback=?', function(data){
+							data = data.courses;
+							$newPanel = loadCourses($newPanel, data, v, num).removeAttr('id').removeClass("hide");
+							$("#search-results").append($newPanel);
+						});
 					});
-					 
-				});
+				}
 			});
 		});
 		
@@ -759,7 +785,7 @@ require_once("config.php");
 		
 		$(document).on("click", ".btn-generate", function (e) {
 			var $courses = $("#course-basket li");
-			var getCourses = [];
+			var getCourses = new Array();
 			var count = 0;
 			$courses.each(function(){
 				var temp = {CourseNum:$(this).data("coursenum"), FOS:$(this).data("fos"), Title:$(this).data("coursename"), displayTitle:$(this).data("displaytitle")};
@@ -767,7 +793,7 @@ require_once("config.php");
 				count++;
 			});
 			
-			var unwantedTimes = [];
+			var unwantedTimes = new Array();
 			$("#block").find(".blocked-time").each(function(){
 				var tempTime = {};
 				$(this).find("input, .time-display").each(function(){
@@ -787,10 +813,10 @@ require_once("config.php");
 			getCourses = {allCourses: getCourses, timePref:$("#time-pref").prop('checked'), fullClasses:$("#full-classes").prop('checked'), preregistered: crns, startTime:$("#restrict-slider").text().split(" - ")[0], endTime:$("#restrict-slider").text().split(" - ")[1], unwantedTimes:unwantedTimes};
 			var json = JSON.stringify(getCourses);
 			if(count>5){
-				window.alert("Trying to generate schedules with this many courses may take a long time, but I will try.  \n\nThe page will appear to be loading until it is finished, so do not refresh the page.  \n\nThe calculation is allowed take up to 5 minutes, if it takes longer, it will fail.");
+				window.alert("Trying to generate schedules with this many courses may take a long time, but I will try.\n\nThe calculation is allowed take up to 5 minutes, if it takes longer, it will fail.");
 			}
 			console.log(json);
-			window.location.assign("<?php echo SUBDIR;?>/makeSchedule.php?i="+encodeURIComponent(json));
+			window.location.assign("/ur/makeSchedule.php?i="+encodeURIComponent(json));
 		});
 		
 		$(document).on("click", ".btn-jumbo-close", function(){
@@ -847,46 +873,45 @@ require_once("config.php");
 			});
 			
 			if(continuing){
+				$("#search-results button").each(function(){
+					if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+						$(this).removeClass("glyphicon-plus");
+						$(this).removeClass("btn-success");
+						$(this).removeClass("btn-add-course");
+						$(this).addClass("btn-danger");
+						$(this).addClass("glyphicon-minus");
+						$(this).addClass("btn-remove-course");
+					}
+				});
+				
+				$(".panel .panel-default button").each(function(){
+					if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+						$(this).removeClass("glyphicon-plus");
+						$(this).removeClass("btn-success");
+						$(this).removeClass("btn-add-course");
+						$(this).addClass("btn-danger");
+						$(this).addClass("glyphicon-minus");
+						$(this).addClass("btn-remove-course");
+					}
+				});
 			
-			$("#search-results button").each(function(){
-				if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
-					$(this).removeClass("glyphicon-plus");
-					$(this).removeClass("btn-success");
-					$(this).removeClass("btn-add-course");
-					$(this).addClass("btn-danger");
-					$(this).addClass("glyphicon-minus");
-					$(this).addClass("btn-remove-course");
+				var $add = $addedTemplate.clone();
+				var $button = $buttonRemoveTemplate.clone().removeClass("hide");
+				
+				if(displaytitle != null){
+					name = displaytitle;
 				}
-			});
 			
-			$(".panel .panel-default button").each(function(){
-				if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
-					$(this).removeClass("glyphicon-plus");
-					$(this).removeClass("btn-success");
-					$(this).removeClass("btn-add-course");
-					$(this).addClass("btn-danger");
-					$(this).addClass("glyphicon-minus");
-					$(this).addClass("btn-remove-course");
-				}
-			});
-			
-			var $add = $addedTemplate.clone();
-			var $button = $buttonRemoveTemplate.clone().removeClass("hide");
-			
-			if(displaytitle != null){
-				name = displaytitle;
-			}
-			
-			$add.removeClass("hide");
-			$add.attr("id", "");
-			$add.text(fos+" "+num+" | "+name);
-			$add.append("&nbsp; &nbsp; &nbsp; &nbsp;", $button);
-			$add.attr("data-fos", fos);
-			$add.attr("data-coursenum", num);
-			$add.attr("data-coursename", name);
-			$add.attr("data-displayTitle", displaytitle);
-			
-			$("#course-basket").append($add);
+				$add.removeClass("hide");
+				$add.attr("id", "");
+				$add.text(fos+" "+num+" | "+name);
+				$add.append("&nbsp; &nbsp; &nbsp; &nbsp;", $button);
+				$add.attr("data-fos", fos);
+				$add.attr("data-coursenum", num);
+				$add.attr("data-coursename", name);
+				$add.attr("data-displayTitle", displaytitle);
+				
+				$("#course-basket").append($add);
 			}
 		}
 		
