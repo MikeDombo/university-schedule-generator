@@ -94,7 +94,7 @@ if(isset($_GET["i"])){
 		$num = $section["CourseNum"];
 		$title = $section["Title"];
 		$courseColor = generateColor(array(255, 255, 255));
-		
+
 		$q = $link->prepare("SELECT * FROM `schedule` WHERE `CRSE` = :num AND `SUBJ` = :subj");
 		$q->bindValue(":num", $num, PDO::PARAM_INT);
 		$q->bindValue(":subj", $subj, PDO::PARAM_STR);
@@ -285,7 +285,6 @@ if(isset($_GET["i"])){
 	$classCount = count($inputData)+count($preregSections);
 	
 }
-mysqli_close($link);
 
 $t=new Schedule();
 foreach($allSections as $key=>$section){
