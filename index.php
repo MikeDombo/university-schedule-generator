@@ -1,10 +1,10 @@
 <?php
-	require_once("config.php");		
+	require_once("config.php");
 ?>
 <html>
 	<head>
 		<title>Student Schedule Creator</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
 		<link href="css/bootstrap-tour-standalone.min.css" rel="stylesheet"/>
 		<link rel="stylesheet" href="css/bootstrap.min.css"/>
 		<script type="text/javascript" src="js/jquery.min.js"></script>
@@ -386,8 +386,8 @@
 									d.setMinutes(parseInt(time[1]) || 0 );
 									this["startTime"] = parseInt((d-now)/60000);
 									
-									var time = this["endTime"].split(" ")[0].split(":");
-									var ampm = this["endTime"].split(" ")[1];
+									time = this["endTime"].split(" ")[0].split(":");
+									ampm = this["endTime"].split(" ")[1];
 									d.setHours(parseInt(time[0]) + (ampm=="PM" ? 12 : 0));
 									d.setMinutes(parseInt(time[1]) || 0 );
 									this["endTime"] = parseInt((d-now)/60000);
