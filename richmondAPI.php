@@ -30,7 +30,6 @@ if(isset($_GET['search'])){
 		else{
 			$num = $num[0];
 		}
-
 		try{
 			$q = $link->prepare("SELECT * FROM `schedule` WHERE `CRSE` like :num AND `SUBJ` LIKE :subj");
 			$q->bindValue(":num", "%".$num."%", PDO::PARAM_INT);

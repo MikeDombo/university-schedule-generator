@@ -28,7 +28,6 @@ catch(PDOException $e){
 	exit;
 }
 
-
 function generateColor($c){
 	$red = rand(0, 255);
 	$green = rand(0, 255);
