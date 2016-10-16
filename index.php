@@ -601,7 +601,7 @@
 		
 		function fetchBySubj(k){
 			$.ajax({
-				url: "/ur/richmondAPI.php",
+				url: "<?php echo SUBDIR;?>/richmondAPI.php",
 				jsonp: "callback",
 				dataType: "jsonp",
 				data: {
@@ -669,7 +669,7 @@
 				return;
 			}
 			$.ajax({
-				url: "/ur/richmondAPI.php",
+				url: "<?php echo SUBDIR;?>/richmondAPI.php",
 				jsonp: "callback",
 				dataType: "jsonp",
 				data: {
