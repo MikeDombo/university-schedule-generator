@@ -1,16 +1,19 @@
+<?php
+	require_once("config.php");		
+?>
 <html>
 	<head>
 		<title>Student Schedule Creator</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-		<link href="css/bootstrap-tour-standalone.min.css" rel="stylesheet">
-		<link rel="stylesheet" href="css/bootstrap.min.css"></link>
+		<link href="css/bootstrap-tour-standalone.min.css" rel="stylesheet"/>
+		<link rel="stylesheet" href="css/bootstrap.min.css"/>
 		<script type="text/javascript" src="js/jquery.min.js"></script>
 		<script type="text/javascript" src="js/bootstrap.min.js"></script>
 		<script src="js/jquery-ui.min.js" type="text/javascript"></script>
 		<script src="js/jquery.ui.touch.min.js" type="text/javascript"></script>
-		<link href="css/bootstrap-toggle.min.css" rel="stylesheet"></link>
-		<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"></link>
-		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css">
+		<link href="css/bootstrap-toggle.min.css" rel="stylesheet"/>
+		<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/>
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css"/>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/js/jasny-bootstrap.min.js"></script>
 		<script src="js/bootstrap-toggle.min.js"></script>
 		<script src="js/bootstrap-tour-standalone.min.js"></script>
@@ -624,11 +627,11 @@
 		}
 		
 		browse();
-		var alreadyFetched = new Array();
+		var alreadyFetched = [];
 		
 		$(document).on("click", ".collapse-btn", function(){
 			var cls = $(this).parent().attr("class").split(" ");
-			var cls = cls[cls.length-1].split("-")[1];
+			cls = cls[cls.length-1].split("-")[1];
 			if(alreadyFetched.indexOf(cls) == -1){
 				fetchBySubj(cls);
 				alreadyFetched.push(cls);
@@ -785,7 +788,7 @@
 		
 		$(document).on("click", ".btn-generate", function (e) {
 			var $courses = $("#course-basket li");
-			var getCourses = new Array();
+			var getCourses = [];
 			var count = 0;
 			$courses.each(function(){
 				var temp = {CourseNum:$(this).data("coursenum"), FOS:$(this).data("fos"), Title:$(this).data("coursename"), displayTitle:$(this).data("displaytitle")};
@@ -793,7 +796,7 @@
 				count++;
 			});
 			
-			var unwantedTimes = new Array();
+			var unwantedTimes = [];
 			$("#block").find(".blocked-time").each(function(){
 				var tempTime = {};
 				$(this).find("input, .time-display").each(function(){
@@ -816,7 +819,7 @@
 				window.alert("Trying to generate schedules with this many courses may take a long time, but I will try.\n\nThe calculation is allowed take up to 5 minutes, if it takes longer, it will fail.");
 			}
 			console.log(json);
-			window.location.assign("/ur/makeSchedule.php?i="+encodeURIComponent(json));
+			window.location.assign("<?php echo SUBDIR;?>/makeSchedule.php?i="+encodeURIComponent(json));
 		});
 		
 		$(document).on("click", ".btn-jumbo-close", function(){

@@ -1,4 +1,7 @@
 <?php
+$database = "***";
+$user = "****";
+$pass = "****";
 $link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
 
 header('Content-Type: text/javascript; charset=utf8');
