@@ -146,6 +146,8 @@ function getFYSDescr($crn){
 				preg_match("/(id=\"[a-zA-Z0-9]+\">)/", $v, $matches, PREG_OFFSET_CAPTURE);
 				$descr = substr($v, $matches[0][1]+strlen($matches[0][0]));
 				$descr = substr($descr, 0, strpos($descr, "</p>"));
+				$title = htmlspecialchars_decode($title);
+				$descr = htmlspecialchars_decode($descr);
 				return ["displayTitle"=>$title, "description"=>$descr];
 			}
 		}

@@ -18,6 +18,7 @@
 		<script src="js/bootstrap-toggle.min.js"></script>
 		<script src="js/bootstrap-tour-standalone.min.js"></script>
 		<script>
+		if(location.hostname != "localhost" && location.hostname != "127.0.0.1"){
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -25,16 +26,15 @@
 
 			ga('create', 'UA-4436865-11', 'auto');
 			ga('send', 'pageview');
-		</script>
-		<script>
-		(function(){
-				var t,i,e,n=window,o=document,a=arguments,s="script",r=["config","track","identify","visit","push","call","trackForm","trackClick"],c=function(){var t,i=this;for(i._e=[],t=0;r.length>t;t++)(function(t){i[t]=function(){return i._e.push([t].concat(Array.prototype.slice.call(arguments,0))),i}})(r[t])};for(n._w=n._w||{},t=0;a.length>t;t++)n._w[a[t]]=n[a[t]]=n[a[t]]||new c;i=o.createElement(s),i.async=1,i.src="//static.woopra.com/js/w.js",e=o.getElementsByTagName(s)[0],e.parentNode.insertBefore(i,e)
-		})("woopra");
+			(function(){
+					var t,i,e,n=window,o=document,a=arguments,s="script",r=["config","track","identify","visit","push","call","trackForm","trackClick"],c=function(){var t,i=this;for(i._e=[],t=0;r.length>t;t++)(function(t){i[t]=function(){return i._e.push([t].concat(Array.prototype.slice.call(arguments,0))),i}})(r[t])};for(n._w=n._w||{},t=0;a.length>t;t++)n._w[a[t]]=n[a[t]]=n[a[t]]||new c;i=o.createElement(s),i.async=1,i.src="//static.woopra.com/js/w.js",e=o.getElementsByTagName(s)[0],e.parentNode.insertBefore(i,e)
+			})("woopra");
 
-		woopra.config({
-			domain: 'mikedombrowski.com'
-		});
-		woopra.track();
+			woopra.config({
+				domain: 'mikedombrowski.com'
+			});
+			woopra.track();
+		}
 		</script>
 		<style>
 			.navbar-brand-name > img {
@@ -82,6 +82,9 @@
 			<nav id="history" class="navmenu navmenu-default navmenu-fixed-left offcanvas">
 			</nav>
 			<div class="col-md-12">
+				<div class="alert alert-info" role="alert">
+					<h4 style="font-size:16px;">Courses Updated 10/13/2016</h4>
+				</div>
 				<div class="jumbotron hide">
 					<h1>Welcome to the Unofficial Richmond Scheduler!</h1>
 					<h2>Schedules for Spring 2017 Now Available</h2>
@@ -678,7 +681,6 @@
 				success: function( courseData ) {
 					courseData = eval(courseData.response);
 					var crns = $("#crns").val().replace(/[,]+/g, '').replace(/ +(?= )/g,'').split(" ");
-					$("#search-results").empty();
 					$.each(courseData, function(i,v){
 						var $newPanel = $defaultSearchResult.clone();
 						var cn;
@@ -695,6 +697,9 @@
 						$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2016&term=&catalogtype=ug&paginate=false&subj='+v["FOS"]+'&level='+cn+'&keyword=&callback=?', function(data){
 							data = data.courses;
 							$newPanel = loadCourses($newPanel, data, v, num).removeAttr('id').removeClass("hide");
+							if(i == 0){
+								$("#search-results").empty();
+							}
 							$("#search-results").append($newPanel);
 						});
 					});

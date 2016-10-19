@@ -21,32 +21,23 @@ else{
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="js/loadingoverlay.min.js"></script>
 		<script>
+		if(location.hostname != "localhost" && location.hostname != "127.0.0.1"){
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
 			ga('create', 'UA-4436865-11', 'auto');
 			ga('send', 'pageview');
-			ga(function(tracker){
-				var uid = tracker.get('clientId');
-				$.ajax({
-					url: 'submitAnalytics.php',
-					type: 'POST',
-					data:{"i":getParameterByName("i"), "userID":uid},
-					success: function(data){console.log(data);},
-					error: function(e){console.log(e);}
-				});
-			});
-		</script>
-		<script>
-		(function(){
-				var t,i,e,n=window,o=document,a=arguments,s="script",r=["config","track","identify","visit","push","call","trackForm","trackClick"],c=function(){var t,i=this;for(i._e=[],t=0;r.length>t;t++)(function(t){i[t]=function(){return i._e.push([t].concat(Array.prototype.slice.call(arguments,0))),i}})(r[t])};for(n._w=n._w||{},t=0;a.length>t;t++)n._w[a[t]]=n[a[t]]=n[a[t]]||new c;i=o.createElement(s),i.async=1,i.src="//static.woopra.com/js/w.js",e=o.getElementsByTagName(s)[0],e.parentNode.insertBefore(i,e)
-		})("woopra");
+			(function(){
+					var t,i,e,n=window,o=document,a=arguments,s="script",r=["config","track","identify","visit","push","call","trackForm","trackClick"],c=function(){var t,i=this;for(i._e=[],t=0;r.length>t;t++)(function(t){i[t]=function(){return i._e.push([t].concat(Array.prototype.slice.call(arguments,0))),i}})(r[t])};for(n._w=n._w||{},t=0;a.length>t;t++)n._w[a[t]]=n[a[t]]=n[a[t]]||new c;i=o.createElement(s),i.async=1,i.src="//static.woopra.com/js/w.js",e=o.getElementsByTagName(s)[0],e.parentNode.insertBefore(i,e)
+			})("woopra");
 
-		woopra.config({
-			domain: 'mikedombrowski.com'
-		});
-		woopra.track();
+			woopra.config({
+				domain: 'mikedombrowski.com'
+			});
+			woopra.track();
+		}
 		</script>
 		<style>
 			td{
