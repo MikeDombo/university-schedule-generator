@@ -12,6 +12,7 @@ class Course{
 	private $fieldOfStudy;
 	private $numUnits;
 	private $color = array(0, 0, 0); //RGB color representing the course
+	private $required = false;
 	
 	/**
 	Constructor accepting course title, field of study, course number, and number of units
@@ -48,6 +49,14 @@ class Course{
 	
 	public function getColor(){
 		return $this->color;
+	}
+	
+	public function setRequiredCourse($required){
+		$this->required = $required;
+	}
+	
+	public function isRequiredCourse(){
+		return $this->required;
 	}
 }
 ?>

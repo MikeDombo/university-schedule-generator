@@ -83,7 +83,7 @@
 			</nav>
 			<div class="col-md-12">
 				<div class="alert alert-info" role="alert">
-					<h4 style="font-size:16px;">Courses Updated 10/13/2016</h4>
+					<h4 style="font-size:16px;">Courses Updated 10/19/2016</h4>
 				</div>
 				<div class="jumbotron hide">
 					<h1>Welcome to the Unofficial Richmond Scheduler!</h1>
@@ -139,7 +139,15 @@
 						<h1 class="panel-title">Selected Courses</h1>
 					</div>
 					<div class="panel-body">
-						<ul class="list-group row" id="course-basket">
+						<style>
+							#course-basket, #course-basket-required {
+								border: 1px solid #eee;
+								min-height: 20px;
+								list-style-type: none;
+							  }
+						</style>
+						<p>Required Courses</p>
+						<ul class="list-group row connectedSortable" id="course-basket-required">
 						<?php
 							$get = false;
 							if(isset($_GET["i"])){
@@ -149,18 +157,48 @@
 							
 							if($get != false){
 								foreach($get as $k=>$v){
+									if(!isset($v["requiredCourse"]) || !$v["requiredCourse"]){
+										continue;
+									}
 									$display = $v["Title"];
 									if(isset($v["displayTitle"])){
 										$display = $v["displayTitle"];
 									}
 									echo '<li class="list-group-item" data-fos="'.htmlspecialchars($v["FOS"]).'" data-coursenum="'.htmlspecialchars($v["CourseNum"]).'" data-coursename="'.htmlspecialchars($v["Title"]).'" data-displaytitle="'.htmlspecialchars($display).'">';
 									echo htmlspecialchars($v["FOS"])." ".htmlspecialchars($v["CourseNum"])." | ".htmlspecialchars($display).
-									'<button class="btn btn-danger glyphicon glyphicon-minus btn-remove-course pull-right" type="button" style="line-height: 1!important;" id="basket-remove" data-coursenum="'.
+									'<button class="btn btn-danger glyphicon glyphicon-minus btn-remove-course pull-right" type="button" style="line-height: 1!important;" data-coursenum="'.
 									htmlspecialchars($v["CourseNum"]).'" data-fos="'.htmlspecialchars($v["FOS"]).'" data-coursename="'.htmlspecialchars($v["Title"]).'"></button></li>';
 								}
 							}
 						?>
 						</ul>
+						<p>Optional Courses</p>
+						<ul class="list-group row connectedSortable" id="course-basket">
+						<?php
+							$get = false;
+							if(isset($_GET["i"])){
+								$get = $_GET["i"];
+								$get = json_decode($get, true)["allCourses"];
+							}
+							
+							if($get != false){
+								foreach($get as $k=>$v){
+									if(isset($v["requiredCourse"]) && $v["requiredCourse"]){
+										continue;
+									}
+									$display = $v["Title"];
+									if(isset($v["displayTitle"])){
+										$display = $v["displayTitle"];
+									}
+									echo '<li class="list-group-item" data-fos="'.htmlspecialchars($v["FOS"]).'" data-coursenum="'.htmlspecialchars($v["CourseNum"]).'" data-coursename="'.htmlspecialchars($v["Title"]).'" data-displaytitle="'.htmlspecialchars($display).'">';
+									echo htmlspecialchars($v["FOS"])." ".htmlspecialchars($v["CourseNum"])." | ".htmlspecialchars($display).
+									'<button class="btn btn-danger glyphicon glyphicon-minus btn-remove-course pull-right" type="button" style="line-height: 1!important;" data-coursenum="'.
+									htmlspecialchars($v["CourseNum"]).'" data-fos="'.htmlspecialchars($v["FOS"]).'" data-coursename="'.htmlspecialchars($v["Title"]).'"></button></li>';
+								}
+							}
+						?>
+						</ul>
+						<script>$("#course-basket, #course-basket-required").sortable({connectWith: ".connectedSortable"}).disableSelection();</script>
 						<div class="form-inline">
 							<div class="form-group">
 							<label for="full-classes" class="control-label">Show Sections at Capacity&nbsp;</label><input class="form-control" type="checkbox" id="full-classes" <?php if(isset($_GET["i"])){if(json_decode($_GET["i"], true)["fullClasses"]){echo "checked";}}else{echo "checked";}?>></input>
@@ -776,7 +814,7 @@
 				$newPanel.find("#button").text("Preregistered");
 			}
 
-			var $list = $("#course-basket").find("li");
+			var $list = $("#course-basket, #course-basket-required").find("li");
 			$list.each(function(){
 				if($(this).data("fos") == v["FOS"] && $(this).data("coursenum") == v["Course Number"] && $(this).data("coursename") == v["Title"]){
 					$newPanel.find("#button").removeClass("glyphicon-plus");
@@ -797,6 +835,12 @@
 			var count = 0;
 			$courses.each(function(){
 				var temp = {CourseNum:$(this).data("coursenum"), FOS:$(this).data("fos"), Title:$(this).data("coursename"), displayTitle:$(this).data("displaytitle")};
+				getCourses.push(temp);
+				count++;
+			});
+			var $courses = $("#course-basket-required li");
+			$courses.each(function(){
+				var temp = {CourseNum:$(this).data("coursenum"), FOS:$(this).data("fos"), Title:$(this).data("coursename"), displayTitle:$(this).data("displaytitle"), requiredCourse:true};
 				getCourses.push(temp);
 				count++;
 			});
@@ -863,7 +907,7 @@
 				}
 			});
 				
-			var $list = $("#course-basket").find("li");
+			var $list = $("#course-basket li").add("#course-basket-required li");
 			$list.each(function(){
 				if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
 					$(this).remove();
@@ -873,7 +917,7 @@
 		
 		function addCourse(fos, num, name, displaytitle) {
 			var continuing = true;
-			var $list = $("#course-basket").find("li");
+			var $list = $("#course-basket, #course-basket-required").find("li");
 			$list.each(function(){
 				if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
 					continuing = false;

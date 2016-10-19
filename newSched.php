@@ -73,6 +73,7 @@ if(isset($_GET["i"])){
 	$endTime = strtotime(json_decode(urldecode($_GET["i"]), true)["endTime"]);
 	$unwantedTimes = json_decode(urldecode($_GET["i"]), true)["unwantedTimes"];
 	$daysWithUnwantedTimes = array();
+	$requiredCourseNum = 0;
 	
 	if(isset($unwantedTimes)){
 		$t = new Schedule();
@@ -89,6 +90,9 @@ if(isset($_GET["i"])){
 	foreach($inputData as $key=>$section){
 		if(!isset($section["FOS"]) || !isset($section["CourseNum"]) || !isset($section["Title"])){
 			continue;
+		}
+		if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
+			$requiredCourseNum++;
 		}
 		$subj = $section["FOS"];
 		$num = $section["CourseNum"];
@@ -147,6 +151,9 @@ if(isset($_GET["i"])){
 			
 			if(!isset($tempSection[$sectionNum]) && !$multipleOptions){
 				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE"], floatval($rows["UNITS"]), [$rows["CRN"]]);
+				if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
+					$tempSec->setRequiredCourse(true);
+				}
 				foreach($rows as $k=>$v){
 					if($k == $v){
 						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
@@ -173,6 +180,9 @@ if(isset($_GET["i"])){
 			}
 			else if($multipleOptions){
 				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE"], floatval($rows["UNITS"]), [$rows["CRN"]]);
+				if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
+					$tempSec->setRequiredCourse(true);
+				}
 				foreach($rows as $k=>$v){
 					if($k == $v){
 						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
@@ -191,6 +201,9 @@ if(isset($_GET["i"])){
 				foreach($manyOptions as $optionalSection){
 					if($optionalSection->getCourseNumber() == $v->getCourseNumber() && $optionalSection->getFieldOfStudy() == $v->getFieldOfStudy() && !$v->conflictsWithTime($optionalSection)){
 						$newSec = new Section($v->getCourseTitle(), $v->getFieldOfStudy(), $v->getCourseNumber(), $v->getNumUnits(), $v->getCRN());
+						if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
+							$tempSec->setRequiredCourse(true);
+						}
 						foreach($optionalSection->meetingTime as $day=>$times){
 							foreach($times as $timeKey=>$time){
 								$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
@@ -387,13 +400,20 @@ function run($sections, $curr, $pick){
 		}
 	}
 	if(count($temp)==0){
+		global $requiredCourseNum;
 		$a = new Schedule();
+		$requiredCourses = 0;
 		foreach($curr as $b){
+			if($b->isRequiredCourse()){
+				$requiredCourses++;
+			}
 			$a->addSection($b);
 		}
-		$a->setScore($GLOBALS["morning"]);
-		$GLOBALS['schedules']->insert($a);
-		$GLOBALS['numSchedules']++;
+		if($requiredCourses == $requiredCourseNum){
+			$a->setScore($GLOBALS["morning"]);
+			$GLOBALS['schedules']->insert($a);
+			$GLOBALS['numSchedules']++;
+		}
 	}
 	else{
 		foreach($temp as $k=>$v){
