@@ -83,7 +83,7 @@
 			</nav>
 			<div class="col-md-12">
 				<div class="alert alert-info" role="alert">
-					<h4 style="font-size:16px;">Courses Updated 10/19/2016</h4>
+					<h4 style="font-size:16px;">Courses Updated 10/31/2016</h4>
 				</div>
 				<div class="jumbotron hide">
 					<h1>Welcome to the Unofficial Richmond Scheduler!</h1>
@@ -949,10 +949,6 @@
 			
 				var $add = $addedTemplate.clone();
 				var $button = $buttonRemoveTemplate.clone().removeClass("hide");
-				
-				if(displaytitle != null){
-					name = displaytitle;
-				}
 			
 				$add.removeClass("hide");
 				$add.attr("id", "");
