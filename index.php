@@ -83,11 +83,11 @@
 			</nav>
 			<div class="col-md-12">
 				<div class="alert alert-info" role="alert">
-					<h4 style="font-size:16px;">Courses Updated 11/1/2016</h4>
+					<h4 style="font-size:16px;">Courses Last Updated 3/16/2017. Always check on BannerWeb for the most up to date data.</h4>
 				</div>
 				<div class="jumbotron hide">
 					<h1>Welcome to the Unofficial Richmond Scheduler!</h1>
-					<h2>Schedules for Spring 2017 Now Available</h2>
+					<h2>Schedules for Fall 2017 Now Available</h2>
 					<p>Use the search below to find courses and then click the&nbsp;<button class="glyphicon glyphicon-plus btn btn-success" style="line-height:1em!important; vertical-align:text-top;"></button>&nbsp;to add the course to your basket.</p>
 					<p>Then click "Create Schedule" to generate every possible schedule</p>
 					<p>Disclaimer: This product has been developed by Michael Dombrowski it is not owned or operated by the University of Richmond. Accuracy cannot be guaranteed, please contact me if you find any inaccuracies.</p>
