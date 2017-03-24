@@ -83,7 +83,8 @@ class Schedule{
 	public function setScore($morning){
 		$classes = $this->numberOfUnits+$this->numberOfClasses;
 		$this->score = $classes*2;//set score to number of classes and units, then scale by a factor of 2
-		$this->score += ($this->numberOfClasses - reset($this->getCPD()))*1.5;//add then number of classes minus the greatest number of classes in a day and scale by 1.5
+		$cpd = $this->getCPD();
+		$this->score += ($this->numberOfClasses - reset($cpd))*1.5;//add then number of classes minus the greatest number of classes in a day and scale by 1.5
 		if($this->fridayFree){
 			$this->score += 2;
 		}

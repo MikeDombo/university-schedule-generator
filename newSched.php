@@ -499,7 +499,8 @@ function printWeek($a){
 						echo "<div class='col-md-6'>";
 						echo "<div class='panel panel-default' style='margin:4px;'>";
 						echo "<div class='panel-heading panel-title'>";
-						echo "<h5 style='color: #000000;'>".$a->getNumClasses()." ".plural("class", $a->getNumClasses()).", ".$a->getNumUnits()." ".plural("unit", $a->getNumUnits()).", with ".reset($a->getCPD())." ".plural("class", reset($a->getCPD()))." every ".key($a->getCPD());
+						$cpd = $a->getCPD();
+						echo "<h5 style='color: #000000;'>".$a->getNumClasses()." ".plural("class", $a->getNumClasses()).", ".$a->getNumUnits()." ".plural("unit", $a->getNumUnits()).", with ".reset($cpd)." ".plural("class", reset($cpd))." every ".key($cpd);
 						if($classCount == $a->getNumClasses()){
 							echo '<span style="color:#4CAF50;" data-toggle="tooltip" title="Has all classes you asked for" class="glyphicon glyphicon-ok pull-right"></span>';
 						}
@@ -546,7 +547,8 @@ function printWeek($a){
 					echo "<div class='col-md-3'>";
 					echo "<div class='panel panel-default'>";
 					echo "<div class='panel-heading panel-title' data-toggle='collapse' data-target='#collapse".$num."' style='cursor: pointer;'>";
-					echo "<a data-toggle='collapse' href='#collapse".$num."'>".$a->getNumClasses()." ".plural("class", $a->getNumClasses()).", ".$a->getNumUnits()." ".plural("unit", $a->getNumUnits()).", with ".reset($a->getCPD())." ".plural("class", reset($a->getCPD()))." every ".key($a->getCPD());
+					$cpd = $a->getCPD();
+					echo "<a data-toggle='collapse' href='#collapse".$num."'>".$a->getNumClasses()." ".plural("class", $a->getNumClasses()).", ".$a->getNumUnits()." ".plural("unit", $a->getNumUnits()).", with ".reset($cpd)." ".plural("class", reset($cpd))." every ".key($cpd);
 					if($classCount == $a->getNumClasses()){
 						echo '<span style="color:#4CAF50;" data-toggle="tooltip" title="Has all classes you asked for" class="glyphicon glyphicon-ok pull-right"></span>';
 					}
