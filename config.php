@@ -20,7 +20,7 @@ define("DB_HOST", "localhost");
 function generatePug($view, $title, $options = [], $prettyPrint = true){
 		$initialOptions = array(
 		'title' => $title,
-		'subdir' => SUBDIR,
+		'subdir' => SUBDIR
 	);
 
 	$options = array_merge($initialOptions, $options);

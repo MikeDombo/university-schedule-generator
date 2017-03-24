@@ -300,7 +300,7 @@ if(isset($_GET["i"])){
 	
 }
 
-$t=new Schedule();
+$t = new Schedule();
 foreach($allSections as $key=>$section){
 	if($section->preregistered){
 		continue;
@@ -396,6 +396,7 @@ function run($sections, $curr, $pick){
 	array_push($curr, $pick);
 	$temp = $sections;
 	foreach($temp as $k=>$v){
+		/** @var \Section $v */
 		if($v->conflictsWith($pick)){
 			unset($temp[$k]);
 		}
@@ -405,6 +406,7 @@ function run($sections, $curr, $pick){
 		$a = new Schedule();
 		$requiredCourses = 0;
 		foreach($curr as $b){
+			/** @var \Section $b */
 			if($b->isRequiredCourse()){
 				$requiredCourses++;
 			}
@@ -429,6 +431,7 @@ function makeColorString($color){
 }
 
 function printWeek($a){
+	/** @var \Schedule $a */
 	$numDays = $a->getLastTime()[0] - $a->getFirstTime()[0] + 1;
 	echo "<table class='table table-condensed table-bordered'>";
 	echo "<tr>";
@@ -602,91 +605,16 @@ function printWeek($a){
 			</div>
 		</div>
 		</div>
-		<script>
-			function html_encode(value){
-				return $("<div/>").text(value).html();
-			}
-			function createPopover(element){
-				var coursenum = html_encode($(element).data('coursenum'));
-				var fos = html_encode($(element).data('fos'));
-				var prof = html_encode($(element).data('prof'));
-				var crns = $(element).data('crns');
-				var coursetitle = html_encode($(element).data('coursetitle'));
-				var html = '<p> '+fos+' '+coursenum+' with CRN: '+crns+'</p><p>Professor: '+prof+'</p>';
-				if($(element).data('prereg')=="1"){
-					html = html+"<p>You have already registered for this course</p>";
-				}
-				var options = {placement: 'bottom', container: "body", trigger: 'manual', html: true, title: coursetitle};
-				
-				$(element).data('content', html).popover(options);
-			}
-			
-			function popoverPlacementBottom(){
-				createPopover($(this));
-			}
-			
-			var insidePopover=false;
-			
-			function attachEvents(td) {
-				$('.popover').on('mouseenter', function() {
-					insidePopover=true;
-				});
-				$('.popover').on('mouseleave', function() {
-					insidePopover=false;
-					$(td).popover('hide');
-				});
-			}
+		<?php
+		$timeUsed = "";
+		if($runTime*1000<1000){
+			$timeUsed = number_format($runTime*1000, 0)." ms";
+		}
+		else{
+			$timeUsed = number_format($runTime, 3)." s";
+		}
+		$maxMemoryUsed = number_format(memory_get_peak_usage()/1024, 2);
 
-			$('table').on('mouseenter', 'td.has-data', function() {
-				var td=$(this);
-				setTimeout(function(){
-					if (!insidePopover){
-						$(td).popover('show');
-						attachEvents(td);
-					}
-				}, 200);
-			});
-
-			$('table').on('mouseleave', 'td.has-data', function() {
-				var td=$(this);
-				setTimeout(function() {
-					if (!insidePopover){
-						$(td).popover('hide');
-					}
-				}, 200);
-			});
-			
-			$('td.has-data').each(popoverPlacementBottom);
-			
-			$(document).ready(function(){
-				$('[data-toggle="tooltip"]').tooltip(); 
-			});
-		</script>
-		<div class="container-fluid" style="margin-top:30px;">
-			<div class="col-md-12 well well-lg" style="text-align:center;">
-				<div class="col-md-6">
-					<h4>Made by <a href="http://mikedombrowski.com" style="color:#444444;">Michael Dombrowski</a></h4>
-					<h5>Code Available on <a href="https://github.com/md100play/university-schedule-generator" style="color:#444444;">GitHub</a></h5>
-					<h5>Feel Free to Contact Me With Issues or Feature Requests at <a href="mailto:michael@mikedombrowski.com" style="color:#444444;">Michael@MikeDombrowski.com&nbsp;<span class="glyphicon glyphicon-envelope" style="vertical-align:top;"></span></a></h5>
-					<p>Disclaimer: This product has been developed by Michael Dombrowski it is not owned or operated by the University of Richmond.  I will always try to have the data be kept up to date and accuate, but I cannot guarantee effectiveness. Please contact me
-					if you find any issues.</p>
-				</div>
-				<style>
-					@media screen and (min-width: 992px){
-						div.vdivide {
-							border-left: 1px solid #A4A4A4;
-						}
-						hr.vdivide {
-							display:none;
-						}
-					}
-				</style>
-				<hr class="vdivide" style="border-top-color:#A4A4A4"></hr>
-				<div class="col-md-6 vdivide">
-					<h4>Stats For Nerds</h4>
-					<ul class="list-group">
-						<li class="list-group-item">Time to Compute: <?php if($runTime*1000<1000){echo number_format($runTime*1000, 0)." ms";} else{echo number_format($runTime, 3)." s";}?></li>
-						<li class="list-group-item">Maximum Memory Used: <?php echo number_format(memory_get_peak_usage()/1024, 2);?> kilobytes</li>
-					</ul>
-				</div>
-			</div>
+		$options = ["time_used"=>$timeUsed, "max_memory_used"=>$maxMemoryUsed];
+		echo generatePug("views/scheduleViewer.pug", "Student Schedule Creator", $options);
+		?>

@@ -1,0 +1,83 @@
+include calendarScheduleViewer.pug
+include listScheduleViewer.pug
+
+script.
+    function html_encode(value){
+        return $("<div/>").text(value).html();
+    }
+    function createPopover(element){
+        var coursenum = html_encode($(element).data('coursenum'));
+        var fos = html_encode($(element).data('fos'));
+        var prof = html_encode($(element).data('prof'));
+        var crns = $(element).data('crns');
+        var coursetitle = html_encode($(element).data('coursetitle'));
+        var html = '<p> ' + fos + ' ' + coursenum + ' with CRN: ' + crns + '</p><p>Professor: ' + prof + '</p>';
+        if($(element).data('prereg') == "1"){
+            html = html + "<p>You have already registered for this course</p>";
+        }
+        var options = {placement: 'bottom', container: "body", trigger: 'manual', html: true, title: coursetitle};
+        $(element).data('content', html).popover(options);
+    }
+    function popoverPlacementBottom(){
+        createPopover($(this));
+    }
+    var insidePopover = false;
+    function attachEvents(td){
+        $('.popover').on('mouseenter', function (){
+            insidePopover = true;
+        });
+        $('.popover').on('mouseleave', function (){
+            insidePopover = false;
+            $(td).popover('hide');
+        });
+    }
+    $('table').on('mouseenter', 'td.has-data', function (){
+        var td = $(this);
+        setTimeout(function (){
+            if(!insidePopover){
+                $(td).popover('show');
+                attachEvents(td);
+            }
+        }, 200);
+    });
+    $('table').on('mouseleave', 'td.has-data', function (){
+        var td = $(this);
+        setTimeout(function (){
+            if(!insidePopover){
+                $(td).popover('hide');
+            }
+        }, 200);
+    });
+    $('td.has-data').each(popoverPlacementBottom);
+    $(document).ready(function (){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+div.container-fluid(style='margin-top:30px;')
+    div.col-md-12.well.well-lg(style='text-align:center;')
+        div.col-md-6
+            h4 Made by
+                a(href='http://mikedombrowski.com', style='color:#444444;') &nbsp;Michael Dombrowski
+            h5 Code Available on
+                a(href='https://github.com/md100play/university-schedule-generator', style='color:#444444;') &nbsp;GitHub
+            h5 Feel Free to Contact Me With Issues or Feature Requests at
+                a(href='mailto:michael@mikedombrowski.com', style='color:#444444;') &nbsp;Michael@MikeDombrowski.com&nbsp;
+                    span.glyphicon.glyphicon-envelope(style='vertical-align:top;')
+            p
+                | Disclaimer: This product has been developed by Michael Dombrowski it is not owned or operated by the University of Richmond. I will always try to have the data be kept up to date and accuate, but I cannot guarantee effectiveness. Please contact me if you find any issues.
+        style.
+            @media screen and (min-width: 992px) {
+                div.vdivide {
+                    border-left: 1px solid #A4A4A4;
+                }
+
+                hr.vdivide {
+                    display: none;
+                }
+            }
+        hr.vdivide(style='border-top-color:#A4A4A4')
+        div.col-md-6.vdivide
+            h4 Stats For Nerds
+            ul.list-group
+                li.list-group-item Time to Compute: #{time_used}
+                li.list-group-item Maximum Memory Used: #{max_memory_used} kilobytes
