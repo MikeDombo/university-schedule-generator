@@ -1,3 +1,5 @@
 .idea/
 .idea/*
+vendor/
+vendor/*
 schedules-created.txt

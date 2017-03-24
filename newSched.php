@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
 require_once("config.php");
 /**
 Authored by Michael Dombrowski, http://mikedombrowski.com
