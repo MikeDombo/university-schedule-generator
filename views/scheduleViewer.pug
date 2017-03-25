@@ -1,5 +1,25 @@
-include calendarScheduleViewer.pug
-include listScheduleViewer.pug
+div.col-md-12
+    div.page-header(style="margin-top:0px;")
+        h2
+            strong #{numSchedules}
+            =$pluralize("Schedule", $numSchedules)
+            |Generated
+        h3
+            |&nbsp;from #{sectionCount}
+            =$pluralize('Section', $sectionCount)
+            |of
+            =$number_format($classCount)
+            =$pluralize("Course", $classCount)
+
+    include calendarScheduleViewer.pug
+    include listScheduleViewer.pug
+
+    div.col-md-12
+        div.col-md-4
+        div.col-md-4
+        if numSchedules > 100
+            h1(style='text-align:center;') View Truncated to Best 100 Schedules
+        div.col-md-4
 
 script.
     function html_encode(value){

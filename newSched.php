@@ -429,110 +429,7 @@ function run($sections, $curr, $pick){
 function makeColorString($color){
 	 return $color[0].", ".$color[1].", ".$color[2];
 }
-
-function printWeek($a){
-	/** @var \Schedule $a */
-	$numDays = $a->getLastTime()[0] - $a->getFirstTime()[0] + 1;
-	echo "<table class='table table-condensed table-bordered'>";
-	echo "<tr>";
-	echo "<td></td>";
-		for($i = $a->getFirstTime()[0]; $i<($numDays+$a->getFirstTime()[0]); $i++){
-			echo "<td>";
-			echo $a->intToDay($i);
-			echo "</td>";
-		}
-	echo "</tr>";
-	
-	$timeArray = array();
-	foreach($a->getSchedule() as $k=>$b){
-		foreach($b->meetingTime as $day=>$times){
-			foreach($times as $key=>$time){
-				$timeArray[$time["from"]][$day] = $b;
-			}
-		}
-	}
-	ksort($timeArray);
-	
-	foreach($timeArray as $k=>$v){
-		echo "<tr>";
-		echo "<td>";
-		echo date("g:i a", $k);
-		echo "</td>";
-		for($i = $a->getFirstTime()[0]; $i<($numDays+$a->getFirstTime()[0]); $i++){
-			if(isset($v[$a->intToDay($i)])){
-				$crns = $v[$a->intToDay($i)]->getCRN()[0];
-				foreach($v[$a->intToDay($i)]->getCRN() as $j=>$crn){
-					if($j==0){
-						continue;
-					}
-					$crns = $crns.", ".$crn;
-				}
-				
-				echo "<td class='has-data' style='background:rgba(".makeColorString($v[$a->intToDay($i)]->getColor()).", .60)' data-crns='".$crns."' data-coursenum='".htmlspecialchars($v[$a->intToDay($i)]->getCourseNumber())."' data-fos='".htmlspecialchars($v[$a->intToDay($i)]->getFieldOfStudy())."' data-coursetitle=\"".htmlspecialchars($v[$a->intToDay($i)]->getCourseTitle())."\" data-prof='".htmlspecialchars($v[$a->intToDay($i)]->getProf())."' data-prereg='".$v[$a->intToDay($i)]->preregistered."'>";
-				if($v[$a->intToDay($i)]->preregistered){echo "<em>";}
-				echo htmlspecialchars($v[$a->intToDay($i)]->getCourseTitle());
-				if($v[$a->intToDay($i)]->preregistered){echo "</em>";}
-			}
-			else{
-				echo "<td>";
-			}
-			echo "</td>";
-		}
-		echo "</tr>";
-	}
-	
-	echo "</table>";
-}
-?>
-			<div class="col-md-12">
-				<div class="page-header" style="margin-top:0px;">
-					<h2><strong><?php echo number_format($numSchedules);?></strong>&nbsp;<?php echo plural("Schedule", $numSchedules);?> Generated </h2>
-					<h3>from&nbsp;<?php echo number_format($sectionCount)." ".plural('Section', $sectionCount)." of ".number_format($classCount);?>&nbsp;<?php echo plural("Course", $classCount);?></h3>
-				</div>
-				
-				<div class="panel-group" id="calendar-view">
-					<?php
-					$num = 0;
-					foreach($GLOBALS['schedules'] as $k=>$a){
-						if($num == 100){
-							break;
-						}
-						if($num%2==0){
-							echo "<div class='row' style='margin:2px;'>";
-						}
-						echo "<div class='col-md-6'>";
-						echo "<div class='panel panel-default' style='margin:4px;'>";
-						echo "<div class='panel-heading panel-title'>";
-						$cpd = $a->getCPD();
-						echo "<h5 style='color: #000000;'>".$a->getNumClasses()." ".plural("class", $a->getNumClasses()).", ".$a->getNumUnits()." ".plural("unit", $a->getNumUnits()).", with ".reset($cpd)." ".plural("class", reset($cpd))." every ".key($cpd);
-						if($classCount == $a->getNumClasses()){
-							echo '<span style="color:#4CAF50;" data-toggle="tooltip" title="Has all classes you asked for" class="glyphicon glyphicon-ok pull-right"></span>';
-						}
-						echo "</h5></div>";
-						echo "<div class='panel-body table-responsive' id='calendar".$num."'>";
-						
-						printWeek($a);
-						echo "<h6 class='crn'>CRNs: ";
-						$crns = "";
-						foreach($a->getSchedule() as $v){
-							foreach($v->getCRN() as $crn){
-								if($v->preregistered){
-									$crn = "<em>".$crn."</em>";
-								}
-								$crns = $crns.", ".$crn;
-							}
-						}
-						echo substr($crns, 2)."</h6>";
-						
-						echo "</div></div></div>";
-						if($num%2==1){
-							echo "</div>";
-						}
-						$num+=1;
-					}
-					?>
-				</div>
-			</div>
+		?>
 				
 			<div class="panel-group hide" id="list-view">
 				<?php 
@@ -592,20 +489,7 @@ function printWeek($a){
 				}
 				?>
 			</div>
-			<div class='col-md-12'>
-				<div class='col-md-4'></div>
-				<div class='col-md-4'>
-				<?php
-					if($num == 100){
-						echo "<h1 style='text-align:center;'>View Truncated to Best 100 Schedules</h1>";
-					}
-				?>
-				</div>
-				<div class='col-md-4'></div>
-			</div>
-		</div>
-		</div>
-		<?php
+	<?php
 		$timeUsed = "";
 		if($runTime*1000<1000){
 			$timeUsed = number_format($runTime*1000, 0)." ms";
@@ -615,6 +499,91 @@ function printWeek($a){
 		}
 		$maxMemoryUsed = number_format(memory_get_peak_usage()/1024, 2);
 
-		$options = ["time_used"=>$timeUsed, "max_memory_used"=>$maxMemoryUsed];
+		$myPlural = function($word, $num){return plural($word, $num);};
+		$numFormat = function($num, $digit=0){return number_format($num, $digit);};
+
+		$weekSchedule = [];
+		$num = 0;
+		foreach($GLOBALS['schedules'] as $k=>$a){
+			/** @var Schedule $a */
+			$cpd = $a->getCPD();
+			$weekSchedule[$num] = [];
+			if($num == 100){
+				break;
+			}
+			$daysString = [];
+
+			$numDays = $a->getLastTime()[0] - $a->getFirstTime()[0] + 1;
+			for($i = $a->getFirstTime()[0]; $i < ($numDays + $a->getFirstTime()[0]); $i++){
+				$daysString[] = $a->intToDay($i);
+			}
+
+			$crns = "";
+			foreach($a->getSchedule() as $v){
+				foreach($v->getCRN() as $crn){
+					if($v->preregistered){
+						$crn = "<em>".$crn."</em>";
+					}
+					$crns = $crns.", ".$crn;
+				}
+			}
+
+			$weekSchedule[$num]["daysString"] = $daysString;
+			$weekSchedule[$num]["newRow"] = $num%2 == 0;
+			$weekSchedule[$num]["cpd"] = $cpd;
+			$weekSchedule[$num]["hasAllClasses"] = $classCount == $a->getNumClasses();
+			$weekSchedule[$num]["numUnits"] = ["num"=>$a->getNumUnits(), "string"=>plural("unit", $a->getNumUnits())];
+			$weekSchedule[$num]["numClasses"] = ["num"=>$a->getNumClasses(), "string"=>plural("class", $a->getNumClasses())];
+			$weekSchedule[$num]["numCPD"] = ["num"=>reset($cpd), "string"=>plural("class", reset($cpd))];
+			$weekSchedule[$num]["dayCPD"] = key($cpd);
+			$weekSchedule[$num]["num"] = $num;
+			$weekSchedule[$num]["crnList"] = substr($crns, 2);
+
+			$timeArray = array();
+			foreach($a->getSchedule() as $b){
+				foreach($b->meetingTime as $day=>$times){
+					foreach($times as $key=>$time){
+						$timeArray[$time["from"]][$day] = $b;
+					}
+				}
+			}
+			ksort($timeArray);
+
+			$rows = [];
+			$rowCount = 0;
+			foreach($timeArray as $k2=>$v){
+				$rows[$rowCount] = [];
+				$rows[$rowCount]["timestamp"] = date("g:i a", $k2);
+				$rows[$rowCount]["rowData"] = [];
+
+				for($i = $a->getFirstTime()[0]; $i < ($numDays + $a->getFirstTime()[0]); $i++){
+					if(isset($v[$a->intToDay($i)])){
+						$crns = $v[$a->intToDay($i)]->getCRN()[0];
+						foreach($v[$a->intToDay($i)]->getCRN() as $j => $crn){
+							if($j == 0){
+								continue;
+							}
+							$crns = $crns.", ".$crn;
+						}
+						$rows[$rowCount]["rowData"][] = ["color"=>makeColorString($v[$a->intToDay($i)]->getColor()),
+							"crns"=>$crns, "coursenum"=>$v[$a->intToDay($i)]->getCourseNumber(),
+							"fos"=>$v[$a->intToDay($i)]->getFieldOfStudy(),
+							"preregistered"=>$v[$a->intToDay($i)]->preregistered,
+							"title"=>$v[$a->intToDay($i)]->getCourseTitle(), "prof"=>$v[$a->intToDay($i)]->getProf()];
+					}
+					else{
+						$rows[$rowCount]["rowData"][] = [];
+					}
+				}
+				$rowCount += 1;
+			}
+			$weekSchedule[$num]["rows"] = $rows;
+			$num += 1;
+		}
+
+		$options = ["time_used"=>$timeUsed, "max_memory_used"=>$maxMemoryUsed, "pluralize"=>$myPlural, "number_format"=>$numFormat,
+			"numSchedules"=>$numSchedules, "sectionCount"=>$sectionCount, "classCount"=>$classCount,
+			"weekSchedule"=>$weekSchedule];
+
 		echo generatePug("views/scheduleViewer.pug", "Student Schedule Creator", $options);
-		?>
+	?>

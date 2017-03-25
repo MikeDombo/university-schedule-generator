@@ -1,0 +1,36 @@
+mixin makeCalendar(schedule)
+    div.col-md-6
+        div.panel.panel-default(style='margin:4px;')
+            div.panel-heading.panel-title
+                h5(style='color: #000000;') #{schedule.numClasses.num} #{schedule.numClasses.string},
+                    |#{schedule.numUnits.num} #{schedule.numUnits.string},
+                    |with #{schedule.numCPD.num} #{schedule.numCPD.string} every #{schedule.dayCPD}
+                    if schedule.hasAllClasses
+                        span.glyphicon.glyphicon-ok.pull-right(style="color:#4CAF50;" data-toggle="tooltip" title="Has all classes you asked for")
+            div.panel-body.table-responsive(id='calendar#{schedule.num}')
+                table.table.table-condensed.table-bordered
+                    tr
+                        td
+                            each day in schedule.daysString
+                                td #{day}
+                    each row in schedule.rows
+                        tr
+                            td #{row.timestamp}
+                            each rowData in row.rowData
+                                td.has-data(style='background:rgba(#{rowData.color}, .60)' data-crns='#{rowData.crns}'
+                                data-coursenum='#{rowData.coursenum}' data-fos='#{rowData.fos}' data-coursetitle="#{rowData.title}"
+                                data-prof='#{rowData.prof}' data-prereg='#{rowData.preregistered}')
+                                    if rowData.preregistered
+                                        em #{rowData.title}
+                                    else
+                                        | #{rowData.title}
+                h6.crn CRNs: !{schedule.crnList}
+
+div.panel-group#calendar-view
+    each schedule in weekSchedule
+        if schedule.newRow
+            |<div class='row' style='margin:2px;'>
+            +makeCalendar(schedule)
+        else
+            +makeCalendar(schedule)
+            |</div>
