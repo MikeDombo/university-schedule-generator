@@ -106,7 +106,7 @@ function getResponseArrayFromDB($result){
 		$temp["crns"] = array();
 		array_push($temp["crns"], $rows["CRN"]);
 
-		if($rows["M"] == "" && $rows["T"] == "" && $rows["W"] == "" && $rows["R"] == "" && $rows["F"] == "" && $rows["S"] == ""){
+		if($rows["M"] == "" && $rows["T"] == "" && $rows["W"] == "" && $rows["R"] == "" && $rows["F"] == ""){
 			$temp["Available"] = false;
 		}
 		$skip = false;
