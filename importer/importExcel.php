@@ -1,16 +1,14 @@
 <?php
 require_once dirname(__FILE__) . '/Classes/PHPExcel.php';
+require_once '../config.php';
 
-$database = "*******";
-$user = "*********";
-$pass = "*********";
-$link = mysqli_connect("localhost", $user, $pass, $database) or die("Error " . mysqli_error($link));
+$link = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE) or die("Error " . mysqli_error($link));
 
 $objPHPExcel = new PHPExcel();
 
 $objReader = new PHPExcel_Reader_Excel2007();
 $objReader->setReadDataOnly(true);
-$objPHPExcel = $objReader->load( dirname(__FILE__) . '/Fall_2016.xlsx' );
+$objPHPExcel = $objReader->load( dirname(__FILE__) . '/Fall_2017.xlsx' );
 
 mysqli_query($link,"DELETE FROM `schedule`");
 
@@ -37,10 +35,8 @@ foreach($rowIterator as $row){
 }
 
 foreach($array_data as $k=>$v){
-	$code = $v["CRN"];
 	$newRow = "";
 	$columns = "";
-	$update = "";
 	$chkcol = mysqli_query($link, "SELECT * FROM `schedule` LIMIT 1");
 	$mycol = mysqli_fetch_array($chkcol);
 	
@@ -49,7 +45,6 @@ foreach($array_data as $k=>$v){
 			$cell = mysqli_real_escape_string($link, $cell);
 			$newRow = $newRow . "'" . $cell . "', ";
 			$columns = $columns .  "`" . $column . "`, ";
-			$update = $update."`".$column."`"."='".$cell."', ";
 		}
 		if(!isset($mycol[$column])){
 			mysqli_query($link, "ALTER TABLE `schedule` ADD `".$column."` TEXT NOT NULL");
@@ -57,16 +52,7 @@ foreach($array_data as $k=>$v){
 	}
 	$newRow = substr($newRow, 0, -2);
 	$columns = substr($columns, 0, -2);
-	$update = substr($update, 0, -2);
 	
-	$result = mysqli_query($link, "SELECT `CRN` from `schedule` WHERE `CRN`='".$code."'");
-	$row = mysqli_fetch_array($result);
-	
-	if ($row != NULL){
-		mysqli_query($link, "UPDATE `schedule` SET ".$update." WHERE `CRN`= '".$code."'");
-	}
-	else {
-		mysqli_query($link, "INSERT INTO `schedule` (".$columns.") VALUES (".$newRow.")");
-	}
+	mysqli_query($link, "INSERT INTO `schedule` (".$columns.") VALUES (".$newRow.")");
 }
 ?>
