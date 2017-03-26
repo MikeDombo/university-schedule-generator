@@ -15,6 +15,7 @@ class Section extends Course{
 	private $meetsFriday; //true if the class has a meeting on Friday
 	public $meetingTime; //stores all times and days a section meets
 	private $lastTime; //absolute last time the class meets in a week
+	private $firstTime; //absolute first time the class meets in a week
 	private $crn = array(); //stores all registration numbers used in the section, ie. the main CRN and the CRN for a lab section
 	private $multiple = false; //true if there are multiple options of lab or drill sections for each lecture section
 	private $prof;
@@ -78,6 +79,18 @@ class Section extends Course{
 		}
 		else if($this->lastTime[0] == $this->dayToInt($day) && $this->lastTime[1] < strtotime($to)){//if the current day in lastTime is the same as the new day and the current time is earlier than the new time, update lastTime
 			$this->lastTime = array($this->dayToInt($day), strtotime($to));
+		}
+
+		if(!isset($this->firstTime)){//if firstTime has not been set yet, just set it to the current value
+			$this->firstTime = array($this->dayToInt($day), strtotime($from));
+		}
+		else if($this->firstTime[0] > $this->dayToInt($day)){//if the current day in firstTime is later in the week
+			// than the new day, then update firstTime to the new day and time
+			$this->firstTime = array($this->dayToInt($day), strtotime($from));
+		}
+		else if($this->firstTime[0] == $this->dayToInt($day) && $this->firstTime[1] < strtotime($from)){//if the current
+			// day in firstTime is the same as the new day and the current time is earlier than the new time, update lastTime
+			$this->firstTime = array($this->dayToInt($day), strtotime($from));
 		}
 		
 		if($day == "Friday"){
@@ -163,6 +176,10 @@ class Section extends Course{
 	
 	public function getLastTime(){
 		return $this->lastTime;
+	}
+
+	public function getFirstTime(){
+		return $this->firstTime;
 	}
 	
 	public function getCRN(){

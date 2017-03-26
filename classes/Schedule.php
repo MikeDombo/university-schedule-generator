@@ -33,6 +33,7 @@ class Schedule{
 	adds a single section to the list of sections and updates important variables, much like addTime in the Section class
 	**/
 	public function addSection($sec){
+		/** @var Section $sec */
 		array_push($this->listOfSections, $sec); //add the Section to the current list
 		$this->numberOfClasses += 1;
 		$this->numberOfUnits += $sec->getNumUnits();
@@ -52,13 +53,13 @@ class Schedule{
 		}
 		
 		if(!isset($this->firstTime)){//if the first time isn't set, then set it
-			$this->firstTime = $sec->getEarliestTime();
+			$this->firstTime = $sec->getFirstTime();
 		}
-		else if($this->firstTime[0] > $sec->getEarliestTime()[0]){//if the current first time's day is later than the earliest time's day, then set the first time
-			$this->firstTime = array($sec->getEarliestTime()[0], $sec->getEarliestTime()[1]);
+		else if($this->firstTime[0] > $sec->getFirstTime()[0]){//if the current first time's day is later than the earliest time's day, then set the first time
+			$this->firstTime = array($sec->getFirstTime()[0], $sec->getFirstTime()[1]);
 		}
-		else if($this->firstTime[0] == $sec->getEarliestTime()[0] && $this->firstTime[1] > $sec->getEarliestTime()[1]){//if the current first time's day is the same as the earliest time's day, and the time of firstTime is later than earliestTime, then set it
-			$this->firstTime = array($sec->getEarliestTime()[0], $sec->getEarliestTime()[1]);
+		else if($this->firstTime[0] == $sec->getFirstTime()[0] && $this->firstTime[1] > $sec->getFirstTime()[1]){//if the current first time's day is the same as the earliest time's day, and the time of firstTime is later than earliestTime, then set it
+			$this->firstTime = array($sec->getFirstTime()[0], $sec->getFirstTime()[1]);
 		}
 		
 		if(!isset($this->lastTime)){//if the last time isn't set, then set it
@@ -74,6 +75,7 @@ class Schedule{
 		if($sec->meetsFriday()){
 			$this->fridayFree = false;
 		}
+
 	}
 	
 	/**
