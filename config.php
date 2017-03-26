@@ -5,6 +5,7 @@ spl_autoload_register(function ($class) { //load all external classes to run the
 
 define("SUBDIR", "/ur");
 define("DB_DATABASE", "schedule");
+define("DB_DATABASE_TABLE", "schedule");
 define("DB_USER", "root");
 define("DB_PASSWORD", "");
 define("DB_HOST", "localhost");
