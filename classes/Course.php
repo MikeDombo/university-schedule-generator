@@ -59,4 +59,3 @@ class Course{
 		return $this->required;
 	}
 }
-?>

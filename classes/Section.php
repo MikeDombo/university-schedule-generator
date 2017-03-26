@@ -247,4 +247,3 @@ class Section extends Course{
 		}
 	}
 }
-?>
