@@ -17,7 +17,7 @@ define("DB_HOST", "localhost");
  * @param bool $prettyPrint If prettyPrint is false, all HTML is on a single line
  * @return string Pug generated HTML
  */
-function generatePug($view, $title, $options = [], $prettyPrint = true){
+function generatePug($view, $title, $options = [], $prettyPrint = false){
 		$initialOptions = array(
 		'title' => $title,
 		'subdir' => SUBDIR
