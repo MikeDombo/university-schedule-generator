@@ -17,20 +17,20 @@ mixin makeCalendar(schedule)
                         tr
                             td #{row.timestamp}
                             each rowData in row.rowData
-                                td.has-data(style='background:rgba(#{rowData.color}, .60)' data-crns='#{rowData.crns}'
-                                data-coursenum='#{rowData.coursenum}' data-fos='#{rowData.fos}' data-coursetitle="#{rowData.title}"
-                                data-prof='#{rowData.prof}' data-prereg='#{rowData.preregistered}')
-                                    if rowData.preregistered
-                                        em #{rowData.title}
-                                    else
-                                        | #{rowData.title}
+                                if rowData.empty
+                                    td
+                                else
+                                    td.has-data(style='background:rgba(#{rowData.color}, .60)' data-crns='#{rowData.crns}'
+                                    data-coursenum='#{rowData.coursenum}' data-fos='#{rowData.fos}' data-coursetitle="#{rowData.title}"
+                                    data-prof='#{rowData.prof}' data-prereg='#{rowData.preregistered}')
+                                        if rowData.preregistered
+                                            em #{rowData.title}
+                                        else
+                                            | #{rowData.title}
                 h6.crn CRNs: !{schedule.crnList}
 
 div.panel-group#calendar-view
-    each schedule in weekSchedule
-        if schedule.newRow
-            |<div class='row' style='margin:2px;'>
-            +makeCalendar(schedule)
-        else
-            +makeCalendar(schedule)
-            |</div>
+    each pageRow in weekSchedule
+        div.row(style="margin:2px;")
+            each schedule in pageRow
+                +makeCalendar(schedule)
