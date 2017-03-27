@@ -7,6 +7,8 @@ Original repository available at http://github.com/md100play/university-schedule
 This is the most important file. It accepts a GET request that contains all the requested courses and will generate all the non-conflicting schedules using the "run" function.
 **/
 
+$starttime = microtime(true);
+
 if(isset($_GET["i"])){//check if we received the correct GET request, and redirect back to the input page if not
 	$inputData = json_decode(urldecode($_GET["i"]), true);
 	if(count($inputData["allCourses"])<1){
@@ -16,8 +18,6 @@ if(isset($_GET["i"])){//check if we received the correct GET request, and redire
 else{
 	echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('".SUBDIR."');</script>";
 }
-
-$starttime = microtime(true);
 
 try{
 	$link = new PDO("mysql:dbname=".DB_DATABASE.";host=".DB_HOST.";", DB_USER, DB_PASSWORD);
@@ -64,240 +64,238 @@ function jsonp_decode($jsonp, $assoc = false) { // PHP 5.3 adds depth as third p
 }
 
 $allSections = array();
-if(isset($_GET["i"])){
-	$inputData = json_decode(urldecode($_GET["i"]), true)["allCourses"];
-	$preregistered = json_decode(urldecode($_GET["i"]), true)["preregistered"];
-	$GLOBALS["morning"] = json_decode(urldecode($_GET["i"]), true)["timePref"];
-	$allowFull = json_decode(urldecode($_GET["i"]), true)["fullClasses"];
-	$startTime = strtotime(json_decode(urldecode($_GET["i"]), true)["startTime"]);
-	$endTime = strtotime(json_decode(urldecode($_GET["i"]), true)["endTime"]);
-	$unwantedTimes = json_decode(urldecode($_GET["i"]), true)["unwantedTimes"];
-	$daysWithUnwantedTimes = array();
-	$requiredCourseNum = 0;
-	
-	if(isset($unwantedTimes)){
-		$t = new Schedule();
-		foreach($unwantedTimes as $k=>$v){
-			foreach($v as $k2=>$v2){
-				if(!in_array($k2, $daysWithUnwantedTimes)){
-					array_push($daysWithUnwantedTimes, $t->intToDay($t->dayToInt($k2)));
-				}
+
+$inputData = json_decode(urldecode($_GET["i"]), true)["allCourses"];
+$preregistered = json_decode(urldecode($_GET["i"]), true)["preregistered"];
+$GLOBALS["morning"] = json_decode(urldecode($_GET["i"]), true)["timePref"];
+$allowFull = json_decode(urldecode($_GET["i"]), true)["fullClasses"];
+$startTime = strtotime(json_decode(urldecode($_GET["i"]), true)["startTime"]);
+$endTime = strtotime(json_decode(urldecode($_GET["i"]), true)["endTime"]);
+$unwantedTimes = json_decode(urldecode($_GET["i"]), true)["unwantedTimes"];
+$daysWithUnwantedTimes = array();
+$requiredCourseNum = 0;
+
+if(isset($unwantedTimes)){
+	$t = new Schedule();
+	foreach($unwantedTimes as $k=>$v){
+		foreach($v as $k2=>$v2){
+			if(!in_array($k2, $daysWithUnwantedTimes)){
+				array_push($daysWithUnwantedTimes, $t->intToDay($t->dayToInt($k2)));
 			}
 		}
-		unset($t);
 	}
-	
-	foreach($inputData as $key=>$section){
-		if(!isset($section["FOS"]) || !isset($section["CourseNum"]) || !isset($section["Title"])){
-			continue;
-		}
-		if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
-			$requiredCourseNum++;
-		}
-		$subj = $section["FOS"];
-		$num = $section["CourseNum"];
-		$title = $section["Title"];
-		$courseColor = generateColor(array(255, 255, 255));
+	unset($t);
+}
 
-		$q = $link->prepare("SELECT * FROM `schedule` WHERE `CRSE` = :num AND `SUBJ` = :subj");
-		$q->bindValue(":num", $num, PDO::PARAM_INT);
-		$q->bindValue(":subj", $subj, PDO::PARAM_STR);
-		$q->execute();
-		$result = $q->fetchAll(PDO::FETCH_ASSOC);
+foreach($inputData as $key=>$section){
+	if(!isset($section["FOS"]) || !isset($section["CourseNum"]) || !isset($section["Title"])){
+		continue;
+	}
+	if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
+		$requiredCourseNum++;
+	}
+	$subj = $section["FOS"];
+	$num = $section["CourseNum"];
+	$title = $section["Title"];
+	$courseColor = generateColor(array(255, 255, 255));
 
-		$tempSection = array();
-		$manyOptions = array();
-		$multipleOptions = false;
-		foreach($result as $rows){
-			if(!$allowFull){
-				if($rows["MAX"] <= $rows["ENRLLMNT"]){
-					continue;
-				}
-			}
-			if($startTime > strtotime($rows["BEGIN"]) || $endTime < strtotime($rows["END"])){
+	$q = $link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `CRSE` = :num AND `SUBJ` = :subj");
+	$q->bindValue(":num", $num, PDO::PARAM_INT);
+	$q->bindValue(":subj", $subj, PDO::PARAM_STR);
+	$q->execute();
+	$result = $q->fetchAll(PDO::FETCH_ASSOC);
+
+	$tempSection = array();
+	$manyOptions = array();
+	$multipleOptions = false;
+	foreach($result as $rows){
+		if(!$allowFull){
+			if($rows["MAX"] <= $rows["ENRLLMNT"]){
 				continue;
 			}
-			
-			if(($rows["SUBJ"] == "FYS" || $rows["SUBJ"] == "WELL" || strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1 || ($rows["SUBJ"] == "HIST" && $rows["CRSE"] == "199") || ($rows["SUBJ"] == "BIOL" && $rows["CRSE"] == "199") || ($rows["SUBJ"] == "ENGL" && $rows["CRSE"] == "299")) && $rows["TITLE"] != $title){
-				if(strpos($rows["TITLE"], " LAB")>-1 || strpos($title, " LAB")>-1){}
-				else{
-					continue;
-				}
-			}
-			if(isset($section["displayTitle"])){
-				$title = $section["displayTitle"];
-			}
-			$sectionNum = $rows["SEC"];
-			
-			if(substr($sectionNum, 0, 1) == "L" || substr($sectionNum, 0, 1) == "P" || substr($sectionNum, 0, 1) == "D"){
-				$sectionNum = substr($sectionNum, 1);
-				if(substr($sectionNum, 1) == "A" || substr($sectionNum, 1) == "B" || substr($sectionNum, 1) == "C" || substr($sectionNum, 1) == "D"){
-					$sectionNum = "0".substr($sectionNum, 0, -2);
-					$multipleOptions = true;
-				}
-			}
+		}
+		if($startTime > strtotime($rows["BEGIN"]) || $endTime < strtotime($rows["END"])){
+			continue;
+		}
+
+		if(($rows["SUBJ"] == "FYS" || $rows["SUBJ"] == "WELL" || strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1 || ($rows["SUBJ"] == "HIST" && $rows["CRSE"] == "199") || ($rows["SUBJ"] == "BIOL" && $rows["CRSE"] == "199") || ($rows["SUBJ"] == "ENGL" && $rows["CRSE"] == "299")) && $rows["TITLE"] != $title){
+			if(strpos($rows["TITLE"], " LAB")>-1 || strpos($title, " LAB")>-1){}
 			else{
-				if(intval($sectionNum)<10){
-					$sectionNum = "0".intval($sectionNum);
-				}
-			}
-			
-			if(!isset($rows["INSTR FN"])){
-				$rows["INSTR FN"] = "";
-			}
-			if(!isset($rows["LASTNAME"])){
-				$rows["LASTNAME"] = "";
-			}
-			
-			if(!isset($tempSection[$sectionNum]) && !$multipleOptions){
-				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE"], floatval($rows["UNITS"]), [$rows["CRN"]]);
-				if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
-					$tempSec->setRequiredCourse(true);
-				}
-				foreach($rows as $k=>$v){
-					if($k == $v){
-						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
-					}
-				}
-				$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
-				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
-					$tempSec->addCRN($rows["CRN"]);
-				}
-				$tempSection[$sectionNum] = $tempSec;
-			}
-			else if(!$multipleOptions){
-				$tempSec = $tempSection[$sectionNum];
-				foreach($rows as $k=>$v){
-					if($k == $v){
-						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
-					}
-				}
-				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
-					$tempSec->addCRN($rows["CRN"]);
-				}
-				$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
-				$tempSection[$sectionNum] = $tempSec;
-			}
-			else if($multipleOptions){
-				$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE"], floatval($rows["UNITS"]), [$rows["CRN"]]);
-				if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
-					$tempSec->setRequiredCourse(true);
-				}
-				foreach($rows as $k=>$v){
-					if($k == $v){
-						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
-					}
-				}
-				$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
-				if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
-					$tempSec->addCRN($rows["CRN"]);
-				}
-				array_push($manyOptions, $tempSec);
+				continue;
 			}
 		}
-		
-		foreach($tempSection as $k=>$v){
-			if($multipleOptions){
-				foreach($manyOptions as $optionalSection){
-					if($optionalSection->getCourseNumber() == $v->getCourseNumber() && $optionalSection->getFieldOfStudy() == $v->getFieldOfStudy() && !$v->conflictsWithTime($optionalSection)){
-						$newSec = new Section($v->getCourseTitle(), $v->getFieldOfStudy(), $v->getCourseNumber(), $v->getNumUnits(), $v->getCRN());
-						if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
-							$tempSec->setRequiredCourse(true);
-						}
-						foreach($optionalSection->meetingTime as $day=>$times){
-							foreach($times as $timeKey=>$time){
-								$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
-								$newSec->setMultiples(true);
-							}
-						}
-						foreach($v->meetingTime as $day=>$times){
-							foreach($times as $timeKey=>$time){
-								$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
-							}
-						}
-						foreach($optionalSection->getCRN() as $crn){
-							if(!(array_search($crn, $newSec->getCRN()) > -1)){
-								$newSec->addCRN($crn);
-							}
-						}
-						$newSec->setColor($courseColor);
-						array_push($allSections, $newSec);
-					}
-				}
-			}
-			else{
-				$v->setColor($courseColor);
-				array_push($allSections, $v);
+		if(isset($section["displayTitle"])){
+			$title = $section["displayTitle"];
+		}
+		$sectionNum = $rows["SEC"];
+
+		if(substr($sectionNum, 0, 1) == "L" || substr($sectionNum, 0, 1) == "P" || substr($sectionNum, 0, 1) == "D"){
+			$sectionNum = substr($sectionNum, 1);
+			if(substr($sectionNum, 1) == "A" || substr($sectionNum, 1) == "B" || substr($sectionNum, 1) == "C" || substr($sectionNum, 1) == "D"){
+				$sectionNum = "0".substr($sectionNum, 0, -2);
+				$multipleOptions = true;
 			}
 		}
-	}
-	
-	$preregSections = array();
-	foreach($preregistered as $k=>$v){
-		$courseColor = generateColor(array(255, 255, 255));
-		$crn = $v;
-
-		$q = $link->prepare("SELECT * FROM `schedule` WHERE `CRN` = :crn");
-		$q->bindValue(":crn", $crn, PDO::PARAM_INT);
-		$q->execute();
-		$result = $q->fetchAll(PDO::FETCH_ASSOC);
-
-		$tempSection = array();
-		foreach($result as $rows){
-			if(!isset($rows["INSTR FN"])){
-				$rows["INSTR FN"] = "";
+		else{
+			if(intval($sectionNum)<10){
+				$sectionNum = "0".intval($sectionNum);
 			}
-			if(!isset($rows["LASTNAME"])){
-				$rows["LASTNAME"] = "";
-			}
-			
-			$title = $rows["TITLE"];
-			
+		}
+
+		if(!isset($rows["INSTR FN"])){
+			$rows["INSTR FN"] = "";
+		}
+		if(!isset($rows["LASTNAME"])){
+			$rows["LASTNAME"] = "";
+		}
+
+		if(!isset($tempSection[$sectionNum]) && !$multipleOptions){
 			$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE"], floatval($rows["UNITS"]), [$rows["CRN"]]);
-			
+			if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
+				$tempSec->setRequiredCourse(true);
+			}
 			foreach($rows as $k=>$v){
 				if($k == $v){
 					$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
 				}
 			}
 			$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
-			$tempSec->setColor($courseColor);
-			array_push($preregSections, $tempSec);
+			if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
+				$tempSec->addCRN($rows["CRN"]);
+			}
+			$tempSection[$sectionNum] = $tempSec;
+		}
+		else if(!$multipleOptions){
+			$tempSec = $tempSection[$sectionNum];
+			foreach($rows as $k=>$v){
+				if($k == $v){
+					$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
+				}
+			}
+			if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
+				$tempSec->addCRN($rows["CRN"]);
+			}
+			$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
+			$tempSection[$sectionNum] = $tempSec;
+		}
+		else if($multipleOptions){
+			$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE"], floatval($rows["UNITS"]), [$rows["CRN"]]);
+			if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
+				$tempSec->setRequiredCourse(true);
+			}
+			foreach($rows as $k=>$v){
+				if($k == $v){
+					$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
+				}
+			}
+			$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
+			if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
+				$tempSec->addCRN($rows["CRN"]);
+			}
+			array_push($manyOptions, $tempSec);
 		}
 	}
-	
-	for($i=0; $i<count($preregSections); $i+=1){
-		for($j=0; $j<count($preregSections); $j+=1){
-			if($i == $j){
-				continue;
-			}
-			$v = $preregSections[$i];
-			$v2 = $preregSections[$j];
-			if(similar_text($v->getCourseTitle(), $v2->getCourseTitle()) >= 10 && $v->getCourseNumber() == $v2->getCourseNumber() && $v->getFieldOfStudy() == $v2->getFieldOfStudy()){
-				foreach($v2->getCRN() as $crn){
-					if(!(array_search($crn, $v->getCRN()) > -1)){
-						$v->addCRN($crn);
+
+	foreach($tempSection as $k=>$v){
+		if($multipleOptions){
+			foreach($manyOptions as $optionalSection){
+				if($optionalSection->getCourseNumber() == $v->getCourseNumber() && $optionalSection->getFieldOfStudy() == $v->getFieldOfStudy() && !$v->conflictsWithTime($optionalSection)){
+					$newSec = new Section($v->getCourseTitle(), $v->getFieldOfStudy(), $v->getCourseNumber(), $v->getNumUnits(), $v->getCRN());
+					if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
+						$tempSec->setRequiredCourse(true);
 					}
-				}
-				foreach($v2->meetingTime as $day=>$times){
-					foreach($times as $timeKey=>$time){
-						$v->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
+					foreach($optionalSection->meetingTime as $day=>$times){
+						foreach($times as $timeKey=>$time){
+							$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
+							$newSec->setMultiples(true);
+						}
 					}
+					foreach($v->meetingTime as $day=>$times){
+						foreach($times as $timeKey=>$time){
+							$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
+						}
+					}
+					foreach($optionalSection->getCRN() as $crn){
+						if(!(array_search($crn, $newSec->getCRN()) > -1)){
+							$newSec->addCRN($crn);
+						}
+					}
+					$newSec->setColor($courseColor);
+					array_push($allSections, $newSec);
 				}
-				unset($preregSections[$j]);
-				$preregSections = array_values($preregSections);
 			}
 		}
+		else{
+			$v->setColor($courseColor);
+			array_push($allSections, $v);
+		}
 	}
-	
-	foreach($preregSections as $v){
-		$v->preregistered = true;
-		array_push($allSections, $v);
-	}
-	
-	$classCount = count($inputData)+count($preregSections);
-	
 }
+
+$preregSections = array();
+foreach($preregistered as $k=>$v){
+	$courseColor = generateColor(array(255, 255, 255));
+	$crn = $v;
+
+	$q = $link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `CRN` = :crn");
+	$q->bindValue(":crn", $crn, PDO::PARAM_INT);
+	$q->execute();
+	$result = $q->fetchAll(PDO::FETCH_ASSOC);
+
+	$tempSection = array();
+	foreach($result as $rows){
+		if(!isset($rows["INSTR FN"])){
+			$rows["INSTR FN"] = "";
+		}
+		if(!isset($rows["LASTNAME"])){
+			$rows["LASTNAME"] = "";
+		}
+
+		$title = $rows["TITLE"];
+
+		$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE"], floatval($rows["UNITS"]), [$rows["CRN"]]);
+
+		foreach($rows as $k=>$v){
+			if($k == $v){
+				$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
+			}
+		}
+		$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
+		$tempSec->setColor($courseColor);
+		array_push($preregSections, $tempSec);
+	}
+}
+
+for($i=0; $i<count($preregSections); $i+=1){
+	for($j=0; $j<count($preregSections); $j+=1){
+		if($i == $j){
+			continue;
+		}
+		$v = $preregSections[$i];
+		$v2 = $preregSections[$j];
+		if(similar_text($v->getCourseTitle(), $v2->getCourseTitle()) >= 10 && $v->getCourseNumber() == $v2->getCourseNumber() && $v->getFieldOfStudy() == $v2->getFieldOfStudy()){
+			foreach($v2->getCRN() as $crn){
+				if(!(array_search($crn, $v->getCRN()) > -1)){
+					$v->addCRN($crn);
+				}
+			}
+			foreach($v2->meetingTime as $day=>$times){
+				foreach($times as $timeKey=>$time){
+					$v->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
+				}
+			}
+			unset($preregSections[$j]);
+			$preregSections = array_values($preregSections);
+		}
+	}
+}
+
+foreach($preregSections as $v){
+	$v->preregistered = true;
+	array_push($allSections, $v);
+}
+
+$classCount = count($inputData)+count($preregSections);
 
 $t = new Schedule();
 foreach($allSections as $key=>$section){
