@@ -351,8 +351,6 @@ $GLOBALS['schedules'] = $temp;
 unset($temp);
 $GLOBALS['schedules'] = array_reverse($GLOBALS['schedules']);
 
-$runTime = microtime(true)-$starttime;
-
 if(!isset($_COOKIE["history"])){
 	$inputData["schedules"] = $numSchedules;
 	$cookieData = Array();
@@ -495,6 +493,7 @@ foreach($GLOBALS['schedules'] as $k=>$a){
 		$rows[$rowCount]["rowData"] = [];
 
 		for($i = $a->getFirstTime()[0]; $i < ($numDays + $a->getFirstTime()[0]); $i++){
+			/** @var Array|Section $v */
 			if(isset($v[$a->intToDay($i)])){
 				$crns = $v[$a->intToDay($i)]->getCRN()[0];
 				foreach($v[$a->intToDay($i)]->getCRN() as $j => $crn){
@@ -527,7 +526,7 @@ foreach($GLOBALS['schedules'] as $k=>$a){
 	$num += 1;
 }
 
-$timeUsed = "";
+$runTime = microtime(true)-$starttime;
 if($runTime*1000<1000){
 	$timeUsed = number_format($runTime*1000, 0)." ms";
 }

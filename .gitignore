@@ -2,4 +2,8 @@
 .idea/*
 vendor/
 vendor/*
+.scannerwork/
+.scannerwork/*
+build/
+build/*
 schedules-created.txt

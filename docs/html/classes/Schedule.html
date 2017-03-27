@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>phpDox - Schedule</title>
+    <link rel="stylesheet" type="text/css" href="../css/style.css" media="screen"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  </head>
+  <body>
+    <nav class="topnav">
+      <ul>
+        <li>
+          <div class="logo"><span>/**</span>phpDox</div>
+        </li>
+        <li class="separator">
+          <a href="../index.html">Overview</a>
+        </li>
+        <li class="separator">
+          <a href="../namespaces.html">Namespaces</a>
+        </li>
+        <li>
+          <a href="../interfaces.html">Interfaces</a>
+        </li>
+        <li>
+          <a href="../classes.html">Classes</a>
+        </li>
+        <li class="separator">
+          <a href="../source/index.html">Source</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="mainstage">
+      <div class="box">
+        <ul class="breadcrumb">
+          <li>
+            <a href="../index.html">Overview</a>
+          </li>
+          <li class="separator">
+            <a href="../classes.html">Classes</a>
+          </li>
+          <li class="separator">Schedule</li>
+        </ul>
+      </div>
+      <nav class="box">
+        <ul>
+          <li>
+            <a href="#introduction">Introduction</a>
+          </li>
+          <li>
+            <a href="#synopsis">Synopsis</a>
+          </li>
+          <li>
+            <a href="#members">Members</a>
+          </li>
+          <li>
+            <a href="#methods">Methods</a>
+          </li>
+          <li>
+            <a href="#history">History</a>
+          </li>
+          <li>
+            <a href="../source/classes/Schedule.php.html#line10">Source</a>
+          </li>
+        </ul>
+      </nav>
+      <section>
+        <h1 id="introduction"><small>\</small>Schedule</h1>
+        <h4>Authored by Michael Dombrowski, http://mikedombrowski.com Original repository available at http://github.com/md100play/university-schedule-generator</h4>
+        <p>This class essentially holds many sections that represent a single schedule option. It includes variables for ease of use like,<br/>$numberOfClasses, $numberOfUnits, $earliestTime, $latestTime, $firstTime, $lastTime, $fridayFree, and $score.</p>
+        <ul/>
+        <h2 id="synopsis">Synopsis</h2>
+        <div class="synopsis">class Schedule
+            {<br/><ul class="none"><li>// members</li><li>private  <a href="#members">$listOfSections</a>;
+                    </li><li>private  <a href="#members">$numberOfClasses</a>;
+                    </li><li>private  <a href="#members">$numberOfUnits</a>;
+                    </li><li>private  <a href="#members">$earliestTime</a>;
+                    </li><li>private  <a href="#members">$latestTime</a>;
+                    </li><li>private  <a href="#members">$firstTime</a>;
+                    </li><li>private  <a href="#members">$lastTime</a>;
+                    </li><li>private  <a href="#members">$fridayFree</a>;
+                    </li><li>public  <a href="#members">$score</a>;
+                    </li></ul><ul class="none"><li>// methods</li><li>public void <a title="Schedule" href="../classes/Schedule/__construct.html">__construct</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/addSection.html">addSection</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/setScore.html">setScore</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/getCPD.html">getCPD</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/getSchedule.html">getSchedule</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/getNumClasses.html">getNumClasses</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/getEarliestTime.html">getEarliestTime</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/getlatestTime.html">getlatestTime</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/fridayFree.html">fridayFree</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/getNumUnits.html">getNumUnits</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/getLastTime.html">getLastTime</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/getFirstTime.html">getFirstTime</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/dayToInt.html">dayToInt</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/intToDay.html">intToDay</a>()
+                    </li></ul>
+
+            }<br/></div>
+        <h2 id="members">Members</h2>
+        <div class="styled members">
+          <h4>private</h4>
+          <ul class="members">
+            <li id="earliestTime">
+              <strong>$earliestTime</strong>
+            </li>
+            <li id="firstTime">
+              <strong>$firstTime</strong>
+            </li>
+            <li id="fridayFree">
+              <strong>$fridayFree</strong>
+            </li>
+            <li id="lastTime">
+              <strong>$lastTime</strong>
+            </li>
+            <li id="latestTime">
+              <strong>$latestTime</strong>
+            </li>
+            <li id="listOfSections">
+              <strong>$listOfSections</strong>
+            </li>
+            <li id="numberOfClasses">
+              <strong>$numberOfClasses</strong>
+            </li>
+            <li id="numberOfUnits">
+              <strong>$numberOfUnits</strong>
+            </li>
+          </ul>
+          <h4>public</h4>
+          <ul class="members">
+            <li id="score">
+              <strong>$score</strong>
+            </li>
+          </ul>
+        </div>
+        <h2 id="methods">Methods</h2>
+        <div class="styled">
+          <h4>public</h4>
+          <ul>
+            <li id="__construct"><a title="Schedule" href="../classes/Schedule/__construct.html">__construct()</a>
+                — Default constructor to initialize critical values</li>
+            <li id="addSection"><a title="Schedule" href="../classes/Schedule/addSection.html">addSection()</a>
+                — adds a single section to the list of sections and updates important variables, much like addTime in the Section class</li>
+            <li id="dayToInt">
+              <a title="Schedule" href="../classes/Schedule/dayToInt.html">dayToInt()</a>
+            </li>
+            <li id="fridayFree">
+              <a title="Schedule" href="../classes/Schedule/fridayFree.html">fridayFree()</a>
+            </li>
+            <li id="getCPD"><a title="Schedule" href="../classes/Schedule/getCPD.html">getCPD()</a>
+                — This function calculates the number of classes on each day</li>
+            <li id="getEarliestTime">
+              <a title="Schedule" href="../classes/Schedule/getEarliestTime.html">getEarliestTime()</a>
+            </li>
+            <li id="getFirstTime">
+              <a title="Schedule" href="../classes/Schedule/getFirstTime.html">getFirstTime()</a>
+            </li>
+            <li id="getLastTime">
+              <a title="Schedule" href="../classes/Schedule/getLastTime.html">getLastTime()</a>
+            </li>
+            <li id="getNumClasses">
+              <a title="Schedule" href="../classes/Schedule/getNumClasses.html">getNumClasses()</a>
+            </li>
+            <li id="getNumUnits">
+              <a title="Schedule" href="../classes/Schedule/getNumUnits.html">getNumUnits()</a>
+            </li>
+            <li id="getSchedule">
+              <a title="Schedule" href="../classes/Schedule/getSchedule.html">getSchedule()</a>
+            </li>
+            <li id="getlatestTime">
+              <a title="Schedule" href="../classes/Schedule/getlatestTime.html">getlatestTime()</a>
+            </li>
+            <li id="intToDay">
+              <a title="Schedule" href="../classes/Schedule/intToDay.html">intToDay()</a>
+            </li>
+            <li id="setScore"><a title="Schedule" href="../classes/Schedule/setScore.html">setScore()</a>
+                — This function sets the score variable that is used to sort all schedules based on number of classes, number of units, classes per day, and the earliest time classes occur</li>
+          </ul>
+        </div>
+        <h2 id="history">History</h2>
+        <ul class="styled history">
+          <li>
+            <h3>2017-03-26T04:35:30+02:00 (commit #<span title="c423c3ee8306b0b9e6a0cd46880d614a8231a4f4">c423c3e</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">insert newline at the end of files</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-03-26T03:43:13+02:00 (commit #<span title="2bbfbbb955f440b7e1d2b059bf1f57e48a029e79">2bbfbbb</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Bug fixes to fix first time in schedules by adding a first time to sections</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-03-24T19:07:10+01:00 (commit #<span title="f1e0c2089f27dc87f6cb5346a3b7d9a1939ec79d">f1e0c20</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Cleaning up and moving to Pug for HTML rendering</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-03-24T05:11:16+01:00 (commit #<span title="a4fd11244ba0ee479cc9b078dfd3288f8e36a968">a4fd112</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Fix for PHP 7</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2016-03-22T04:44:18+01:00 (commit #<span title="7cb0d8e821ca5803b9f32e3e6a72fa49a077c37f">7cb0d8e</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">update to latest version</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2016-01-06T16:53:38+01:00 (commit #<span title="7c95116a067e27fbc7956c88f55db219052da0ee">7c95116</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">update to latest version</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2015-12-17T18:48:45+01:00 (commit #<span title="a63f1b2e287acaf57c12fb8aeb43b96bd9ab3b2b">a63f1b2</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">add comments</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2015-12-14T06:44:04+01:00 (commit #<span title="e76b8690cca0f1990ef25723e4ce75aa52ba7b92">e76b869</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">initial commit</pre>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </div>
+    <footer>
+      <span>Generated using phpDox 0.9.0 - Copyright (C) 2010 - 2017 by Arne Blankerts</span>
+    </footer>
+  </body>
+</html>
