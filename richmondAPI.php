@@ -31,7 +31,7 @@ if(isset($_GET['search'])){
 			$num = $num[0];
 		}
 		try{
-			$q = $link->prepare("SELECT * FROM `schedule` WHERE `CRSE` like :num AND `SUBJ` LIKE :subj");
+			$q = $link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `CRSE` like :num AND `SUBJ` LIKE :subj");
 			$q->bindValue(":num", "%".$num."%", PDO::PARAM_INT);
 			$q->bindValue(":subj", "%".$subj."%", PDO::PARAM_STR);
 			$q->execute();
@@ -52,7 +52,7 @@ if(isset($_GET['search'])){
 	else{
 		$searchStr = urldecode($_GET['search']);
 		try{
-			$q = $link->prepare("SELECT * FROM `schedule` WHERE `TITLE` LIKE :searchStr");
+			$q = $link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `TITLE` LIKE :searchStr");
 			$q->bindValue(":searchStr", "%".$searchStr."%", PDO::PARAM_STR);
 			$q->execute();
 			$result = $q->fetchAll(PDO::FETCH_ASSOC);
@@ -75,7 +75,7 @@ if(isset($_GET["subj"])){
 	$err="";
 	$subj = $_GET["subj"];
 	try{
-		$q = $link->prepare("SELECT * FROM `schedule` WHERE `SUBJ` = :subj");
+		$q = $link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `SUBJ` = :subj");
 		$q->bindValue(":subj", $subj, PDO::PARAM_STR);
 		$q->execute();
 		$result = $q->fetchAll(PDO::FETCH_ASSOC);
