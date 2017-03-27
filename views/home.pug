@@ -306,7 +306,7 @@ block content
                             return decodeURIComponent(results[2].replace(/\+/g, " "));
                         }
 
-                        if(getParameterByName('i') != undefined){
+                        if(getParameterByName('i') !== null){
                             var importFromURL = JSON.parse(getParameterByName('i'))['unwantedTimes'];
                             $.each(importFromURL, function(){
                                 var $cloned = $("#block-time-template").clone().removeClass("hide").removeAttr('id');

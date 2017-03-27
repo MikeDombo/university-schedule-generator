@@ -1,5 +1,5 @@
 var crns = "";
-if($("#crns").val() != undefined && $("#crns").val().length > 0){
+if($("#crns").val() !== undefined && $("#crns").val().length > 0){
 	crns = $("#crns").val().replace(/[,]+/g, '').replace(/ +(?= )/g, '').split(" ");
 }
 var subjects = {
@@ -86,7 +86,7 @@ function fetchBySubj(k){
 		},
 		success: function (courseData){
 			courseData = eval(courseData.response);
-			$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2016&term=&catalogtype=ug&paginate=false&subj=' + k + '&level=&keyword=&callback=?', function (data){
+			$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2017&term=&catalogtype=ug&paginate=false&subj=' + k + '&level=&keyword=&callback=?', function (data){
 				data = data.courses;
 				$.each(courseData, function (i, v){
 					var $newPanel = $("#subj-list-template2").clone().removeAttr('id');
@@ -106,7 +106,7 @@ var alreadyFetched = [];
 $(document).on("click", ".collapse-btn", function (){
 	var cls = $(this).parent().attr("class").split(" ");
 	cls = cls[cls.length - 1].split("-")[1];
-	if(alreadyFetched.indexOf(cls) == -1){
+	if(alreadyFetched.indexOf(cls) === -1){
 		fetchBySubj(cls);
 		alreadyFetched.push(cls);
 	}
@@ -133,7 +133,7 @@ var $addedTemplate = $("#addedTemplate");
 var $buttonRemoveTemplate = $("#basket-remove");
 $(document).on("keyup", "#searchField", function (){
 	var loc = $("#searchField").val();
-	if(loc == ""){
+	if(loc === ""){
 		$("#search-results").empty();
 	}
 	if(loc.length < 3){
@@ -148,24 +148,23 @@ $(document).on("keyup", "#searchField", function (){
 		},
 		success: function (courseData){
 			courseData = eval(courseData.response);
-			var crns = $("#crns").val().replace(/[,]+/g, '').replace(/ +(?= )/g, '').split(" ");
 			$.each(courseData, function (i, v){
 				var $newPanel = $defaultSearchResult.clone();
 				var cn;
 				var num = v["Course Number"];
-				if(v["Course Number"] <= 99){
+				if(num <= 99){
 					num = "0" + v["Course Number"];
 				}
-				if(v["Course Number"] > 99){
+				if(num > 99){
 					cn = v["Course Number"].substr(0, 1) + "00";
 				}
 				else{
 					cn = v["Course Number"];
 				}
-				$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2016&term=&catalogtype=ug&paginate=false&subj=' + v["FOS"] + '&level=' + cn + '&keyword=&callback=?', function (data){
+				$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2017&term=&catalogtype=ug&paginate=false&subj=' + v["FOS"] + '&level=' + cn + '&keyword=&callback=?', function (data){
 					data = data.courses;
 					$newPanel = loadCourses($newPanel, data, v, num).removeAttr('id').removeClass("hide");
-					if(i == 0){
+					if(i === 0){
 						$("#search-results").empty();
 					}
 					$("#search-results").append($newPanel);
@@ -192,25 +191,25 @@ function loadCourses($newPanel, data, v, num){
 		var prereq = end.substring(end.indexOf("Prerequisites</div>") + 19);
 		prereq = prereq.substring(0, prereq.indexOf("</div>"));
 	}
-	if(!(v["Title"].indexOf("ST:") > -1) && !(v["Title"].indexOf("SP:") > -1) && v["FOS"] != "FYS" &&
-		v["FOS"] != "WELL" && !(v["FOS"] == "HIST" && v["Course Number"] == "199") && !(v["FOS"] == "HIST" &&
-		v["Course Number"] == "299") && !(v["FOS"] == "ENGL" && v["Course Number"] == "299") &&
-		!(v["FOS"] == "BIOL" && v["Course Number"] == "199")){
+	if(!(v["Title"].indexOf("ST:") > -1) && !(v["Title"].indexOf("SP:") > -1) && v["FOS"] !== "FYS" &&
+		v["FOS"] !== "WELL" && !(v["FOS"] === "HIST" && v["Course Number"] === "199") && !(v["FOS"] === "HIST" &&
+		v["Course Number"] === "299") && !(v["FOS"] === "ENGL" && v["Course Number"] === "299") &&
+		!(v["FOS"] === "BIOL" && v["Course Number"] === "199")){
 		if(hasDescr){
 			v["Title"] = title;
 		}
 	}
 
-	if(v["FOS"] == "FYS" && v["description"] != null){
+	if(v["FOS"] === "FYS" && "description" in v){
 		title = v["displayTitle"];
 		descr = v["description"];
 	}
-	else if(v["description"] == null){
+	else if(!("description" in v)){
 		title = v["Title"];
 	}
 	
 	var html = "<h4>" + title + "</h4><p>" + descr + "</p><p>Units: " + units + "</p>";
-	if(prereq != undefined){
+	if(prereq !== undefined){
 		html = html + "<p>Prerequisites: " + prereq + "</p>";
 	}
 	$newPanel.find("#title").text(v["FOS"] + " " + v["Course Number"] + " | " + title);
@@ -242,7 +241,8 @@ function loadCourses($newPanel, data, v, num){
 		}
 	var $list = $("#course-basket, #course-basket-required").find("li");
 	$list.each(function (){
-		if($(this).data("fos") == v["FOS"] && $(this).data("coursenum") == v["Course Number"] && $(this).data("coursename") == v["Title"]){
+		if($(this).data("fos") === v["FOS"] && $(this).data("coursenum") === parseInt(v["Course Number"]) &&
+			$(this).data("coursename") === v["Title"]){
 			$newPanel.find("#button").removeClass("glyphicon-plus");
 			$newPanel.find("#button").removeClass("btn-success");
 			$newPanel.find("#button").removeClass("btn-add-course");
@@ -267,7 +267,7 @@ $(document).on("click", ".btn-generate", function (e){
 		getCourses.push(temp);
 		count++;
 	});
-	var $courses = $("#course-basket-required").find("li");
+	$courses = $("#course-basket-required").find("li");
 	$courses.each(function (){
 		var temp = {
 			CourseNum: $(this).data("coursenum"),
@@ -283,7 +283,7 @@ $(document).on("click", ".btn-generate", function (e){
 	$("#block").find(".blocked-time").each(function (){
 		var tempTime = {};
 		$(this).find("input, .time-display").each(function (){
-			if($(this).text() != "" && $(this).text() != undefined){
+			if($(this).text() !== "" && $(this).text() !== undefined){
 				var times = $(this).text().split(" - ");
 				tempTime["startTime"] = times[0];
 				tempTime["endTime"] = times[1];
@@ -318,14 +318,14 @@ $(document).on("click", ".btn-jumbo-close", function (){
 });
 $(document).on("click", ".btn-remove-course", function (e){
 	var $course = $(e.target);
-	if($course.data("fos") == undefined){
+	if($course.data("fos") === undefined){
 		$course = $course.parent();
 	}
 	var fos = $course.data("fos");
 	var num = $course.data("coursenum");
 	var name = $course.data("coursename");
 	$("#search-results").find("button").each(function (){
-		if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+		if($(this).data("fos") === fos && $(this).data("coursenum") === num && $(this).data("coursename") === name){
 			$(this).addClass("glyphicon-plus");
 			$(this).addClass("btn-success");
 			$(this).addClass("btn-add-course");
@@ -335,7 +335,7 @@ $(document).on("click", ".btn-remove-course", function (e){
 		}
 	});
 	$(".panel .panel-default button").each(function (){
-		if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+		if($(this).data("fos") === fos && $(this).data("coursenum") === num && $(this).data("coursename") === name){
 			$(this).addClass("glyphicon-plus");
 			$(this).addClass("btn-success");
 			$(this).addClass("btn-add-course");
@@ -346,7 +346,7 @@ $(document).on("click", ".btn-remove-course", function (e){
 	});
 	var $list = $("#course-basket").find("li").add("#course-basket-required li");
 	$list.each(function (){
-		if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+		if($(this).data("fos") === fos && $(this).data("coursenum") === num && $(this).data("coursename") === name){
 			$(this).remove();
 		}
 	});
@@ -355,13 +355,13 @@ function addCourse(fos, num, name, displaytitle){
 	var continuing = true;
 	var $list = $("#course-basket, #course-basket-required").find("li");
 	$list.each(function (){
-		if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+		if($(this).data("fos") === fos && $(this).data("coursenum") === num && $(this).data("coursename") === name){
 			continuing = false;
 		}
 	});
 	if(continuing){
 		$("#search-results").find("button").each(function (){
-			if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+			if($(this).data("fos") === fos && $(this).data("coursenum") === num && $(this).data("coursename") === name){
 				$(this).removeClass("glyphicon-plus");
 				$(this).removeClass("btn-success");
 				$(this).removeClass("btn-add-course");
@@ -371,7 +371,7 @@ function addCourse(fos, num, name, displaytitle){
 			}
 		});
 		$(".panel .panel-default button").each(function (){
-			if($(this).data("fos") == fos && $(this).data("coursenum") == num && $(this).data("coursename") == name){
+			if($(this).data("fos") === fos && $(this).data("coursenum") === num && $(this).data("coursename") === name){
 				$(this).removeClass("glyphicon-plus");
 				$(this).removeClass("btn-success");
 				$(this).removeClass("btn-add-course");
