@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac4bd9c044a867c21bc4f9e16555a478",
+    "content-hash": "edaf151c2774d1b5a04307f401416569",
     "packages": [
         {
             "name": "js-phpize/js-phpize",
@@ -208,7 +208,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "pug-php/pug": 0
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
