@@ -8,6 +8,14 @@ our algorithm, generates all possible non-conflicting schedules.
 Right now the PHP version is available at http://mikedombrowski.com/ur/.
 We are currently still developing the Java version which will then be used to make the Android version.
 
+## Run Your Own
+Although there are many customizations that are probabily specific to only the University of Richmond, if you wanted to run your own here's how.
+1. Clone this repository
+2. Install dependencies using composer. `php composer.phar install`
+3. Edit `config.php` with the correct installation directory and database login details
+4. Run `importer/importExcel.php` from a web browser to create the database and import all the data
+5. You now have the same installation that I do. If you are running on data that is not from UR, then you may have to change some things.
+
 ## PHP API Documentation
 Available at https://md100play.github.io/university-schedule-generator/html/index.html
 
