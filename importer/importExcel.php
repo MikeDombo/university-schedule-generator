@@ -97,12 +97,7 @@ function getDatabaseTables($pdo){
 function verifyDB($pdo){
 	try{
 		$tables = getDatabaseTables($pdo);
-		if(!in_array(DB_DATABASE_TABLE, $tables, true)){
-			return false;
-		}
-		else{
-			return true;
-		}
+		return in_array(DB_DATABASE_TABLE, $tables, true);
 	}
 	catch(PDOException $e){
 		echo "ERROR: ".$e->getMessage();
