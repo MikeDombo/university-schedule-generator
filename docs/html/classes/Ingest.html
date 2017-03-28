@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>phpDox - Ingest</title>
+    <link rel="stylesheet" type="text/css" href="../css/style.css" media="screen"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  </head>
+  <body>
+    <nav class="topnav">
+      <ul>
+        <li>
+          <div class="logo"><span>/**</span>phpDox</div>
+        </li>
+        <li class="separator">
+          <a href="../index.html">Overview</a>
+        </li>
+        <li class="separator">
+          <a href="../namespaces.html">Namespaces</a>
+        </li>
+        <li>
+          <a href="../interfaces.html">Interfaces</a>
+        </li>
+        <li>
+          <a href="../classes.html">Classes</a>
+        </li>
+        <li class="separator">
+          <a href="../source/index.html">Source</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="mainstage">
+      <div class="box">
+        <ul class="breadcrumb">
+          <li>
+            <a href="../index.html">Overview</a>
+          </li>
+          <li class="separator">
+            <a href="../classes.html">Classes</a>
+          </li>
+          <li class="separator">Ingest</li>
+        </ul>
+      </div>
+      <nav class="box">
+        <ul>
+          <li>
+            <a href="#introduction">Introduction</a>
+          </li>
+          <li>
+            <a href="#synopsis">Synopsis</a>
+          </li>
+          <li>
+            <a href="#members">Members</a>
+          </li>
+          <li>
+            <a href="#methods">Methods</a>
+          </li>
+          <li>
+            <a href="#history">History</a>
+          </li>
+          <li>
+            <a href="../source/classes/Ingest.php.html#line3">Source</a>
+          </li>
+        </ul>
+      </nav>
+      <section>
+        <h1 id="introduction"><small>\</small>Ingest</h1>
+        <h4/>
+        <p/>
+        <h2 id="synopsis">Synopsis</h2>
+        <div class="synopsis">class Ingest
+            {<br/><ul class="none"><li>// members</li><li>private <span title="array|string">array|string</span> <a href="#members">$requestData</a>;
+                    </li><li>private <span title="bool">bool</span> <a href="#members">$morning</a>;
+                    </li><li>private <span title="array|mixed">array|mixed</span> <a href="#members">$courseInput</a>;
+                    </li><li>private  <a href="#members">$preregistered</a>;
+                    </li><li>private <span title="bool">bool</span> <a href="#members">$allowFull</a>;
+                    </li><li>private  <a href="#members">$startTime</a>;
+                    </li><li>private  <a href="#members">$endTime</a>;
+                    </li><li>private <span title="array|mixed">array|mixed</span> <a href="#members">$unwantedTimes</a>;
+                    </li><li>private <span title="array|Section">array|Section</span> <a href="#members">$allSections</a> =
+                        ;
+                    </li><li>private integer <a href="#members">$requiredCourseNum</a> =
+                        0;
+                    </li><li>private <span title="\PDO">PDO</span> <a href="#members">$link</a>;
+                    </li><li>private  <a href="#members">$classCount</a>;
+                    </li><li>private array <a href="#members">$daysWithUnwantedTimes</a> =
+                        ;
+                    </li></ul><ul class="none"><li>// methods</li><li>public void <a title="Ingest" href="../classes/Ingest/__construct.html">__construct</a>()
+                    </li><li>public void <a title="Ingest" href="../classes/Ingest/getAllSections.html">getAllSections</a>()
+                    </li><li>public void <a title="Ingest" href="../classes/Ingest/getClassCount.html">getClassCount</a>()
+                    </li><li>public void <a title="Ingest" href="../classes/Ingest/getMorning.html">getMorning</a>()
+                    </li><li>public void <a title="Ingest" href="../classes/Ingest/getRequiredCourseNum.html">getRequiredCourseNum</a>()
+                    </li><li>private array|int <a title="Ingest" href="../classes/Ingest/generateColor.html">generateColor</a>()
+                    </li><li>private Section <a title="Ingest" href="../classes/Ingest/makeNewSection.html">makeNewSection</a>()
+                    </li><li>private void <a title="Ingest" href="../classes/Ingest/setDaysWithUnwantedTimes.html">setDaysWithUnwantedTimes</a>()
+                    </li><li>private void <a title="Ingest" href="../classes/Ingest/generatePreregisteredSections.html">generatePreregisteredSections</a>()
+                    </li><li>private void <a title="Ingest" href="../classes/Ingest/removeSectionsForTime.html">removeSectionsForTime</a>()
+                    </li><li>public void <a title="Ingest" href="../classes/Ingest/generateSections.html">generateSections</a>()
+                    </li></ul>
+
+            }<br/></div>
+        <h2 id="members">Members</h2>
+        <div class="styled members">
+          <h4>private</h4>
+          <ul class="members">
+            <li id="allSections"><strong>$allSections</strong>
+                —
+                <a title="array|Section" href="../classes/array|Section.html">array|Section</a></li>
+            <li id="allowFull"><strong>$allowFull</strong>
+                —
+                <a title="bool" href="../classes/bool.html">bool</a></li>
+            <li id="classCount"><strong>$classCount</strong>
+                —
+                int</li>
+            <li id="courseInput"><strong>$courseInput</strong>
+                —
+                <a title="array|mixed" href="../classes/array|mixed.html">array|mixed</a></li>
+            <li id="daysWithUnwantedTimes"><strong>$daysWithUnwantedTimes</strong>
+                —
+                array</li>
+            <li id="endTime"><strong>$endTime</strong>
+                —
+                string</li>
+            <li id="link"><strong>$link</strong>
+                —
+                <a title="\PDO" href="../classes/_PDO.html">\PDO</a></li>
+            <li id="morning"><strong>$morning</strong>
+                —
+                <a title="bool" href="../classes/bool.html">bool</a></li>
+            <li id="preregistered"><strong>$preregistered</strong>
+                —
+                mixed</li>
+            <li id="requestData"><strong>$requestData</strong>
+                —
+                <a title="array|string" href="../classes/array|string.html">array|string</a></li>
+            <li id="requiredCourseNum"><strong>$requiredCourseNum</strong>
+                —
+                int</li>
+            <li id="startTime"><strong>$startTime</strong>
+                —
+                string</li>
+            <li id="unwantedTimes"><strong>$unwantedTimes</strong>
+                —
+                <a title="array|mixed" href="../classes/array|mixed.html">array|mixed</a></li>
+          </ul>
+        </div>
+        <h2 id="methods">Methods</h2>
+        <div class="styled">
+          <h4>private</h4>
+          <ul>
+            <li id="generateColor"><a title="Ingest" href="../classes/Ingest/generateColor.html">generateColor()</a>
+                — Generates a random RGB array</li>
+            <li id="generatePreregisteredSections"><a title="Ingest" href="../classes/Ingest/generatePreregisteredSections.html">generatePreregisteredSections()</a>
+                — Generates the section variables for all preregistered classes and adds them to $allSections Also sets the class count variable</li>
+            <li id="makeNewSection"><a title="Ingest" href="../classes/Ingest/makeNewSection.html">makeNewSection()</a>
+                — Makes a new \Section using the data provided in $rows from the database</li>
+            <li id="removeSectionsForTime"><a title="Ingest" href="../classes/Ingest/removeSectionsForTime.html">removeSectionsForTime()</a>
+                — Removes sections from the $allSections list if there is a problem with the time it meets ie. it is on a day, during a time that is blacked out, or it occurs outside of the start and end times chosen</li>
+            <li id="setDaysWithUnwantedTimes"><a title="Ingest" href="../classes/Ingest/setDaysWithUnwantedTimes.html">setDaysWithUnwantedTimes()</a>
+                — Generates the daysWithUnwatedTimes array which is an array of all the days which may have blacked out times</li>
+          </ul>
+          <h4>public</h4>
+          <ul>
+            <li id="__construct"><a title="Ingest" href="../classes/Ingest/__construct.html">__construct()</a>
+                — Ingest constructor.</li>
+            <li id="generateSections"><a title="Ingest" href="../classes/Ingest/generateSections.html">generateSections()</a>
+                — Generates entries in the private variable $allSections</li>
+            <li id="getAllSections">
+              <a title="Ingest" href="../classes/Ingest/getAllSections.html">getAllSections()</a>
+            </li>
+            <li id="getClassCount">
+              <a title="Ingest" href="../classes/Ingest/getClassCount.html">getClassCount()</a>
+            </li>
+            <li id="getMorning">
+              <a title="Ingest" href="../classes/Ingest/getMorning.html">getMorning()</a>
+            </li>
+            <li id="getRequiredCourseNum">
+              <a title="Ingest" href="../classes/Ingest/getRequiredCourseNum.html">getRequiredCourseNum()</a>
+            </li>
+          </ul>
+        </div>
+        <h2 id="history">History</h2>
+        <ul class="styled history"/>
+      </section>
+    </div>
+    <footer>
+      <span>Generated using phpDox 0.9.0 - Copyright (C) 2010 - 2017 by Arne Blankerts</span>
+    </footer>
+  </body>
+</html>

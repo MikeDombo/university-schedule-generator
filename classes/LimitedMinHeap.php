@@ -40,4 +40,13 @@ class LimitedMinHeap {
 		$this->minHeap->extract();
 		return $a;
 	}
+
+	public function getArray(){
+		$temp = [];
+		$schedCount = $this->count();
+		for($i=0; $i<$schedCount; $i++){
+			$temp[] = $this->pop();
+		}
+		return $temp;
+	}
 }

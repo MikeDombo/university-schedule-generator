@@ -10,20 +10,37 @@ last day and time a class meets, and if the class meets on Fridays
 **/
 
 class Section extends Course{
-	private $earliestTime; //earliest time a class meets, no matter what day that meeting occurs
-	private $latestTime; //latest time a class meets, no matter what day that meeting occurs
-	private $meetsFriday; //true if the class has a meeting on Friday
-	public $meetingTime; //stores all times and days a section meets
-	private $lastTime; //absolute last time the class meets in a week
-	private $firstTime; //absolute first time the class meets in a week
-	private $crn = array(); //stores all registration numbers used in the section, ie. the main CRN and the CRN for a lab section
-	private $multiple = false; //true if there are multiple options of lab or drill sections for each lecture section
+	/** @var array $earliestTime earliest time a class meets, no matter what day that meeting occurs */
+	private $earliestTime;
+	/** @var  array $latestTime latest time a class meets, no matter what day that meeting occurs */
+	private $latestTime;
+	/** @var bool $meetsFriday true if the class has a meeting on Friday */
+	private $meetsFriday;
+	/** @var array $meetingTime stores all times and days a section meets */
+	public $meetingTime;
+	/** @var array $lastTime absolute last time the class meets in a week */
+	private $lastTime;
+	/** @var array $firstTime absolute first time the class meets in a week */
+	private $firstTime;
+	/** @var array stores all registration numbers used in the section, ie. the main CRN and the CRN for a lab section */
+	private $crn = [];
+	/** @var bool true if there are multiple options of lab or drill sections for each lecture section */
+	private $multiple = false;
+	/** @var String $prof Name of the professor teaching the section */
 	private $prof;
+	/** @var bool $preregistered true if this Section was preregistered */
 	public $preregistered = false;
-	
+
 	/**
-	Constructor for Section that includes all the necessary parameters for the Course constructor as well as the CRN(s)
-	**/
+	 * Section constructor.
+	 * Constructor for Section that includes all the necessary parameters for the Course constructor as well as the CRN(s)
+	 *
+	 * @param String $courseTitle
+	 * @param String $fos
+	 * @param String $courseNum
+	 * @param Integer $units
+	 * @param array|String $crn
+	 */
 	public function __construct($courseTitle, $fos, $courseNum, $units, $crn){
 		parent::__construct($courseTitle, $fos, $courseNum, $units);
 		$this->meetsFriday = false;
@@ -33,17 +50,23 @@ class Section extends Course{
 	}
 	
 	/**
-	add additional CRN to the CRN array
+	 * Add additional CRN to the CRN array
+	 * @param String $crn
 	**/
 	public function addCRN($crn){
 		array_push($this->crn, $crn);
 	}
 	
+
 	/**
-	add a single day/time to a Section
-	
-	In addition to adding a day and time to $meetingTime, it also updates $meetsFriday, $earliestTime, $latestTime, and $lastTime as appropriate
-	**/
+	 * Add a single day/time to a Section
+	 *
+	 * In addition to adding a day and time to $meetingTime, it also updates $meetsFriday, $earliestTime, $latestTime,
+	 * and $lastTime as appropriate
+	 * @param String $day day of the week
+	 * @param String $from time the class starts
+	 * @param String $to time the class ends
+	 */
 	public function addTime($day, $from, $to){
 		$day = $this->dayToInt($day); //convert day to int in order to convert whatever format $day is in, into the globally recognized int version
 		$day = $this->intToDay($day); //convert day from int to string that is recognized easily and human readable
@@ -58,39 +81,39 @@ class Section extends Course{
 		
 		//update $earliestTime, $latestTime, and $lastTime
 		if(!isset($this->earliestTime)){//if earliestTime has not been set yet, just set it to the current value
-			$this->earliestTime = array($this->dayToInt($day), strtotime($from));
+			$this->earliestTime = [$this->dayToInt($day), strtotime($from)];
 		}
 		else if($this->earliestTime[1] > strtotime($from)){//if the preexisting time is later than the new time, set $earliestTime to the new day and time
-			$this->earliestTime = array($this->dayToInt($day), strtotime($from));
+			$this->earliestTime = [$this->dayToInt($day), strtotime($from)];
 		}
 
 		if(!isset($this->latestTime)){//if latestTime has not been set yet, just set it to the current value
-			$this->latestTime = array($this->dayToInt($day), strtotime($from));
+			$this->latestTime = [$this->dayToInt($day), strtotime($from)];
 		}
 		else if($this->latestTime[1] < strtotime($from)){//if the preexisting time is earlier than the new time, set $earliestTime to the new day and time
-			$this->latestTime = array($this->dayToInt($day), strtotime($from));
+			$this->latestTime = [$this->dayToInt($day), strtotime($from)];
 		}
 		
 		if(!isset($this->lastTime)){//if lastTime has not been set yet, just set it to the current value
-			$this->lastTime = array($this->dayToInt($day), strtotime($to));
+			$this->lastTime = [$this->dayToInt($day), strtotime($to)];
 		}
 		else if($this->lastTime[0] < $this->dayToInt($day)){//if the current day in lastTime is earlier in the week than the new day, then update latestTime to the new day and time
-			$this->lastTime = array($this->dayToInt($day), strtotime($to));
+			$this->lastTime = [$this->dayToInt($day), strtotime($to)];
 		}
 		else if($this->lastTime[0] == $this->dayToInt($day) && $this->lastTime[1] < strtotime($to)){//if the current day in lastTime is the same as the new day and the current time is earlier than the new time, update lastTime
-			$this->lastTime = array($this->dayToInt($day), strtotime($to));
+			$this->lastTime = [$this->dayToInt($day), strtotime($to)];
 		}
 
 		if(!isset($this->firstTime)){//if firstTime has not been set yet, just set it to the current value
-			$this->firstTime = array($this->dayToInt($day), strtotime($from));
+			$this->firstTime = [$this->dayToInt($day), strtotime($from)];
 		}
 		else if($this->firstTime[0] > $this->dayToInt($day)){//if the current day in firstTime is later in the week
 			// than the new day, then update firstTime to the new day and time
-			$this->firstTime = array($this->dayToInt($day), strtotime($from));
+			$this->firstTime = [$this->dayToInt($day), strtotime($from)];
 		}
 		else if($this->firstTime[0] == $this->dayToInt($day) && $this->firstTime[1] < strtotime($from)){//if the current
 			// day in firstTime is the same as the new day and the current time is earlier than the new time, update lastTime
-			$this->firstTime = array($this->dayToInt($day), strtotime($from));
+			$this->firstTime = [$this->dayToInt($day), strtotime($from)];
 		}
 		
 		if($day == "Friday"){
@@ -99,7 +122,10 @@ class Section extends Course{
 	}
 	
 	/**
-	returns boolean, true if $other conflicts with this section in time or in course (both sections are the same course)
+	 * returns boolean, true if $other conflicts with this section in time or in course (both sections are the same
+	 * course)
+	 * @param Section $other
+	 * @return boolean true if a conflict exists, false otherwise
 	**/
 	public function conflictsWith($other){
 		if($this->getFieldOfStudy() == $other->getFieldOfStudy() && $this->getCourseNumber() == $other->getCourseNumber()){ //check if the fields of study and course numbers are the same
@@ -115,27 +141,27 @@ class Section extends Course{
 		if(!isset($this->meetingTime)){//check that section has times
 			return false;
 		}
-		foreach($this->meetingTime as $k=>$a){ //iterate through each day in meetingTime
-			if(isset($other->meetingTime[$k])){ //if $other also has the same day in its meetingTime, then continue
-				foreach($this->meetingTime[$k] as $k2=>$v){ //iterate through each block of time for the current day in this section
-					foreach($other->meetingTime[$k] as $i=>$v2){ //iterate through each block of time for the current day in the other section
-						if($v["from"]<=$other->meetingTime[$k][$i]["to"] && $v["to"]>=$other->meetingTime[$k][$i]["from"]){
-							return true;
-						}
-					}
-				}
-			}
-		}
-		return false; //sections do not conflict in time or course
+		return $this->timeConflict($other);
 	}
 	
 	/**
-	does the same as conflictsWith, except it only checks for overlapping times, not course characteristics
+	 * Does the same as conflictsWith, except it only checks for overlapping times, not course characteristics
+	 * @param Section $other
+	 * @return boolean true if a a time conflict exists or there are multiple sections
 	**/
 	public function conflictsWithTime($other){
 		if($this->multiple){
 			return true;
 		}
+		return $this->timeConflict($other);
+	}
+
+	/**
+	 * Returns true if a time conflict exists between this Section and the $other section.
+	 * @param Section $other
+	 * @return bool
+	 */
+	private function timeConflict($other){
 		foreach($this->meetingTime as $k=>$a){ //iterate through each day in meetingTime
 			if(isset($other->meetingTime[$k])){ //if $other also has the same day in its meetingTime, then continue
 				foreach($this->meetingTime[$k] as $k2=>$v){ //iterate through each block of time for the current day in this section

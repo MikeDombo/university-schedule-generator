@@ -8,14 +8,19 @@ $numberOfClasses, $numberOfUnits, $earliestTime, $latestTime, $firstTime, $lastT
 **/
 
 class Schedule{
+	/** @var array|Section */
 	private $listOfSections;
+	/** @var int $numberOfClasses */
 	private $numberOfClasses;
+	/** @var int $numberOfUnits */
 	private $numberOfUnits;
 	private $earliestTime;
 	private $latestTime;
 	private $firstTime;
 	private $lastTime;
+	/** @var bool $fridayFree */
 	private $fridayFree;
+	/** @var int $score */
 	public $score;
 	
 	/**
@@ -30,11 +35,13 @@ class Schedule{
 	}
 	
 	/**
-	adds a single section to the list of sections and updates important variables, much like addTime in the Section class
+	 * Adds a single section to the list of sections and updates important variables, much like addTime in the Section
+	 * class
+	 *
+	 * @param Section $sec
 	**/
 	public function addSection($sec){
-		/** @var Section $sec */
-		array_push($this->listOfSections, $sec); //add the Section to the current list
+		$this->listOfSections[] = $sec; //add the Section to the current list
 		$this->numberOfClasses += 1;
 		$this->numberOfUnits += $sec->getNumUnits();
 		
@@ -79,8 +86,10 @@ class Schedule{
 	}
 	
 	/**
-	This function sets the score variable that is used to sort all schedules based on number of classes, number of units, classes per day, 
-	and the earliest time classes occur
+	 * This function sets the score variable that is used to sort all schedules based on number of classes, number of
+	 * units, classes per day, and the earliest time classes occur
+	 *
+	 * @param bool $morning
 	**/
 	public function setScore($morning){
 		$classes = $this->numberOfUnits+$this->numberOfClasses;
@@ -139,7 +148,7 @@ class Schedule{
 						$arr[$k] = 1;
 					}
 					else{
-							$arr[$k] +=1;
+						$arr[$k] += 1;
 					}
 				}
 			}
@@ -149,7 +158,7 @@ class Schedule{
 		$i = reset($arr);
 		foreach($arr as $k=>$v){
 			if($i == $v){
-				$arr2[$this->dayToInt($k)]=$v;
+				$arr2[$this->dayToInt($k)] = $v;
 			}
 		}
 		
@@ -160,16 +169,21 @@ class Schedule{
 		}
 		return $arr2;
 	}
-	
-	//Generic Accessor Methods
+
+	/**
+	 * @return array|Section
+	 */
 	public function getSchedule(){
 		return $this->listOfSections;
 	}
-	
+
+	/**
+	 * @return int
+	 */
 	public function getNumClasses(){
         return $this->numberOfClasses;
     }
-    
+
     public function getEarliestTime(){
         return $this->earliestTime;
     }
@@ -177,11 +191,17 @@ class Schedule{
     public function getlatestTime(){
         return $this->latestTime;
     }
-    
+
+	/**
+	 * @return bool
+	 */
     public function fridayFree(){
         return $this->fridayFree;
     }
-	
+
+	/**
+	 * @return int
+	 */
 	public function getNumUnits(){
         return $this->numberOfUnits;
     }
@@ -193,7 +213,11 @@ class Schedule{
 	public function getFirstTime(){
 		return $this->firstTime;
 	}
-	
+
+	/**
+	 * @param string $day
+	 * @return int
+	 */
 	public function dayToInt($day){
 		switch($day){
 			case "Monday":				
@@ -226,7 +250,11 @@ class Schedule{
 				return 6;
 		}
 	}
-	
+
+	/**
+	 * @param int $d
+	 * @return string
+	 */
 	public function intToDay($d){
 		switch($d){
 			case 0:

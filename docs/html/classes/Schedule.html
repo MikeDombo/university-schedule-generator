@@ -70,29 +70,29 @@
         <ul/>
         <h2 id="synopsis">Synopsis</h2>
         <div class="synopsis">class Schedule
-            {<br/><ul class="none"><li>// members</li><li>private  <a href="#members">$listOfSections</a>;
+            {<br/><ul class="none"><li>// members</li><li>private <span title="array|Section">array|Section</span> <a href="#members">$listOfSections</a>;
                     </li><li>private  <a href="#members">$numberOfClasses</a>;
                     </li><li>private  <a href="#members">$numberOfUnits</a>;
                     </li><li>private  <a href="#members">$earliestTime</a>;
                     </li><li>private  <a href="#members">$latestTime</a>;
                     </li><li>private  <a href="#members">$firstTime</a>;
                     </li><li>private  <a href="#members">$lastTime</a>;
-                    </li><li>private  <a href="#members">$fridayFree</a>;
+                    </li><li>private <span title="bool">bool</span> <a href="#members">$fridayFree</a>;
                     </li><li>public  <a href="#members">$score</a>;
                     </li></ul><ul class="none"><li>// methods</li><li>public void <a title="Schedule" href="../classes/Schedule/__construct.html">__construct</a>()
                     </li><li>public void <a title="Schedule" href="../classes/Schedule/addSection.html">addSection</a>()
                     </li><li>public void <a title="Schedule" href="../classes/Schedule/setScore.html">setScore</a>()
                     </li><li>public void <a title="Schedule" href="../classes/Schedule/getCPD.html">getCPD</a>()
-                    </li><li>public void <a title="Schedule" href="../classes/Schedule/getSchedule.html">getSchedule</a>()
-                    </li><li>public void <a title="Schedule" href="../classes/Schedule/getNumClasses.html">getNumClasses</a>()
+                    </li><li>public array|Section <a title="Schedule" href="../classes/Schedule/getSchedule.html">getSchedule</a>()
+                    </li><li>public int <a title="Schedule" href="../classes/Schedule/getNumClasses.html">getNumClasses</a>()
                     </li><li>public void <a title="Schedule" href="../classes/Schedule/getEarliestTime.html">getEarliestTime</a>()
                     </li><li>public void <a title="Schedule" href="../classes/Schedule/getlatestTime.html">getlatestTime</a>()
-                    </li><li>public void <a title="Schedule" href="../classes/Schedule/fridayFree.html">fridayFree</a>()
-                    </li><li>public void <a title="Schedule" href="../classes/Schedule/getNumUnits.html">getNumUnits</a>()
+                    </li><li>public bool <a title="Schedule" href="../classes/Schedule/fridayFree.html">fridayFree</a>()
+                    </li><li>public int <a title="Schedule" href="../classes/Schedule/getNumUnits.html">getNumUnits</a>()
                     </li><li>public void <a title="Schedule" href="../classes/Schedule/getLastTime.html">getLastTime</a>()
                     </li><li>public void <a title="Schedule" href="../classes/Schedule/getFirstTime.html">getFirstTime</a>()
-                    </li><li>public void <a title="Schedule" href="../classes/Schedule/dayToInt.html">dayToInt</a>()
-                    </li><li>public void <a title="Schedule" href="../classes/Schedule/intToDay.html">intToDay</a>()
+                    </li><li>public int <a title="Schedule" href="../classes/Schedule/dayToInt.html">dayToInt</a>()
+                    </li><li>public string <a title="Schedule" href="../classes/Schedule/intToDay.html">intToDay</a>()
                     </li></ul>
 
             }<br/></div>
@@ -106,30 +106,30 @@
             <li id="firstTime">
               <strong>$firstTime</strong>
             </li>
-            <li id="fridayFree">
-              <strong>$fridayFree</strong>
-            </li>
+            <li id="fridayFree"><strong>$fridayFree</strong>
+                —
+                <a title="bool" href="../classes/bool.html">bool</a></li>
             <li id="lastTime">
               <strong>$lastTime</strong>
             </li>
             <li id="latestTime">
               <strong>$latestTime</strong>
             </li>
-            <li id="listOfSections">
-              <strong>$listOfSections</strong>
-            </li>
-            <li id="numberOfClasses">
-              <strong>$numberOfClasses</strong>
-            </li>
-            <li id="numberOfUnits">
-              <strong>$numberOfUnits</strong>
-            </li>
+            <li id="listOfSections"><strong>$listOfSections</strong>
+                —
+                <a title="array|Section" href="../classes/array|Section.html">array|Section</a></li>
+            <li id="numberOfClasses"><strong>$numberOfClasses</strong>
+                —
+                int</li>
+            <li id="numberOfUnits"><strong>$numberOfUnits</strong>
+                —
+                int</li>
           </ul>
           <h4>public</h4>
           <ul class="members">
-            <li id="score">
-              <strong>$score</strong>
-            </li>
+            <li id="score"><strong>$score</strong>
+                —
+                int</li>
           </ul>
         </div>
         <h2 id="methods">Methods</h2>
@@ -139,7 +139,7 @@
             <li id="__construct"><a title="Schedule" href="../classes/Schedule/__construct.html">__construct()</a>
                 — Default constructor to initialize critical values</li>
             <li id="addSection"><a title="Schedule" href="../classes/Schedule/addSection.html">addSection()</a>
-                — adds a single section to the list of sections and updates important variables, much like addTime in the Section class</li>
+                — Adds a single section to the list of sections and updates important variables, much like addTime in the Section class</li>
             <li id="dayToInt">
               <a title="Schedule" href="../classes/Schedule/dayToInt.html">dayToInt()</a>
             </li>

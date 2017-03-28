@@ -76,22 +76,23 @@
                 extends <a title="Course" href="../classes/Course.html">Course</a>
             {<br/><ul class="none"><li>// members</li><li>private  <a href="#members">$earliestTime</a>;
                     </li><li>private  <a href="#members">$latestTime</a>;
-                    </li><li>private  <a href="#members">$meetsFriday</a>;
+                    </li><li>private <span title="bool">bool</span> <a href="#members">$meetsFriday</a>;
                     </li><li>public  <a href="#members">$meetingTime</a>;
                     </li><li>private  <a href="#members">$lastTime</a>;
                     </li><li>private  <a href="#members">$firstTime</a>;
                     </li><li>private array <a href="#members">$crn</a> =
                         ;
-                    </li><li>private boolean <a href="#members">$multiple</a> =
+                    </li><li>private <span title="bool">bool</span> <a href="#members">$multiple</a> =
                         false;
-                    </li><li>private  <a href="#members">$prof</a>;
-                    </li><li>public boolean <a href="#members">$preregistered</a> =
+                    </li><li>private <span title="String">String</span> <a href="#members">$prof</a>;
+                    </li><li>public <span title="bool">bool</span> <a href="#members">$preregistered</a> =
                         false;
                     </li></ul><ul class="none"><li>// methods</li><li>public void <a title="Section" href="../classes/Section/__construct.html">__construct</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/addCRN.html">addCRN</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/addTime.html">addTime</a>()
-                    </li><li>public void <a title="Section" href="../classes/Section/conflictsWith.html">conflictsWith</a>()
-                    </li><li>public void <a title="Section" href="../classes/Section/conflictsWithTime.html">conflictsWithTime</a>()
+                    </li><li>public boolean <a title="Section" href="../classes/Section/conflictsWith.html">conflictsWith</a>()
+                    </li><li>public boolean <a title="Section" href="../classes/Section/conflictsWithTime.html">conflictsWithTime</a>()
+                    </li><li>private bool <a title="Section" href="../classes/Section/timeConflict.html">timeConflict</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/setMultiples.html">setMultiples</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/setProf.html">setProf</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/getEarliestTime.html">getEarliestTime</a>()
@@ -129,39 +130,39 @@
         <div class="styled members">
           <h4>private</h4>
           <ul class="members">
-            <li id="crn">
-              <strong>$crn</strong>
-            </li>
-            <li id="earliestTime">
-              <strong>$earliestTime</strong>
-            </li>
-            <li id="firstTime">
-              <strong>$firstTime</strong>
-            </li>
-            <li id="lastTime">
-              <strong>$lastTime</strong>
-            </li>
-            <li id="latestTime">
-              <strong>$latestTime</strong>
-            </li>
-            <li id="meetsFriday">
-              <strong>$meetsFriday</strong>
-            </li>
-            <li id="multiple">
-              <strong>$multiple</strong>
-            </li>
-            <li id="prof">
-              <strong>$prof</strong>
-            </li>
+            <li id="crn"><strong>$crn</strong>
+                —
+                array</li>
+            <li id="earliestTime"><strong>$earliestTime</strong>
+                —
+                array</li>
+            <li id="firstTime"><strong>$firstTime</strong>
+                —
+                array</li>
+            <li id="lastTime"><strong>$lastTime</strong>
+                —
+                array</li>
+            <li id="latestTime"><strong>$latestTime</strong>
+                —
+                array</li>
+            <li id="meetsFriday"><strong>$meetsFriday</strong>
+                —
+                <a title="bool" href="../classes/bool.html">bool</a></li>
+            <li id="multiple"><strong>$multiple</strong>
+                —
+                <a title="bool" href="../classes/bool.html">bool</a></li>
+            <li id="prof"><strong>$prof</strong>
+                —
+                <a title="String" href="../classes/String.html">String</a></li>
           </ul>
           <h4>public</h4>
           <ul class="members">
-            <li id="meetingTime">
-              <strong>$meetingTime</strong>
-            </li>
-            <li id="preregistered">
-              <strong>$preregistered</strong>
-            </li>
+            <li id="meetingTime"><strong>$meetingTime</strong>
+                —
+                array</li>
+            <li id="preregistered"><strong>$preregistered</strong>
+                —
+                <a title="bool" href="../classes/bool.html">bool</a></li>
           </ul>
         </div>
         <h2 id="methods">Methods</h2>
@@ -174,22 +175,24 @@
             <li id="intToDay">
               <a title="Section" href="../classes/Section/intToDay.html">intToDay()</a>
             </li>
+            <li id="timeConflict"><a title="Section" href="../classes/Section/timeConflict.html">timeConflict()</a>
+                — Returns true if a time conflict exists between this Section and the $other section.</li>
           </ul>
           <h4>public</h4>
           <ul>
             <li id="__construct"><a title="Section" href="../classes/Section/__construct.html">__construct()</a>
-                — Constructor for Section that includes all the necessary parameters for the Course constructor as well as the CRN(s)</li>
+                — Section constructor.</li>
             <li id="__toString">
               <a title="Section" href="../classes/Section/__toString.html">__toString()</a>
             </li>
             <li id="addCRN"><a title="Section" href="../classes/Section/addCRN.html">addCRN()</a>
-                — add additional CRN to the CRN array</li>
+                — Add additional CRN to the CRN array</li>
             <li id="addTime"><a title="Section" href="../classes/Section/addTime.html">addTime()</a>
-                — add a single day/time to a Section</li>
+                — Add a single day/time to a Section</li>
             <li id="conflictsWith"><a title="Section" href="../classes/Section/conflictsWith.html">conflictsWith()</a>
                 — returns boolean, true if $other conflicts with this section in time or in course (both sections are the same course)</li>
             <li id="conflictsWithTime"><a title="Section" href="../classes/Section/conflictsWithTime.html">conflictsWithTime()</a>
-                — does the same as conflictsWith, except it only checks for overlapping times, not course characteristics</li>
+                — Does the same as conflictsWith, except it only checks for overlapping times, not course characteristics</li>
             <li id="getCRN">
               <a title="Section" href="../classes/Section/getCRN.html">getCRN()</a>
             </li>

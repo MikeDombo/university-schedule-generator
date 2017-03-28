@@ -1,16 +1,10 @@
 div.col-md-12
     div.page-header(style="margin-top:0px;")
         h2
-            strong #{numSchedules}&nbsp;
-            =$pluralize("Schedule", $numSchedules)
-            |&nbsp;Generated
+            strong #{numSchedules.num}
+            |&nbsp;#{numSchedules.string} Generated
         h3
-            |from #{sectionCount}&nbsp;
-            =$pluralize('Section', $sectionCount)
-            |&nbsp;of&nbsp;
-            =$number_format($classCount)
-            |&nbsp;
-            =$pluralize("Course", $classCount)
+            |from #{sectionCount.num} #{sectionCount.string} of #{classCount.num} #{classCount.string}
 
     include calendarScheduleViewer.pug
     include listScheduleViewer.pug
