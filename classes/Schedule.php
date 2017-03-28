@@ -108,7 +108,7 @@ class Schedule{
 			}
 			if(isset($v->meetingTime)){
 				foreach($v->meetingTime as $day=>$times){
-					foreach($times as $k2=>$time){
+					foreach($times as $time){
 						if(isset($earliest[$day])){
 							if($earliest[$day] > $time["from"]){
 								$earliest[$day] = $time["from"];

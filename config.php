@@ -10,6 +10,21 @@ define("DB_USER", "root");
 define("DB_PASSWORD", "");
 define("DB_HOST", "localhost");
 
+// Database column name variables
+define("COLUMNS_CRN", "CRN");
+define("COLUMNS_COURSE_NUM", "CRSE");
+define("COLUMNS_FOS", "SUBJ");
+define("COLUMNS_UNITS", "UNITS");
+define("COLUMNS_TIME_BEGIN", "BEGIN");
+define("COLUMNS_TIME_END", "END");
+define("COLUMNS_ENROLLMENT_MAX", "MAX");
+define("COLUMNS_ENROLLMENT_CURRENT", "ENRLLMNT");
+define("COLUMNS_COURSE_TITLE", "TITLE");
+define("COLUMNS_COURSE_SECTION", "SEC");
+define("COLUMNS_PROF_FN", "INSTR FN");
+define("COLUMNS_PROF_LN", "LASTNAME");
+
+
 /**
  * Returns Pug (Jade) rendered HTML for a given view and options
  * @param $view string Name of Pug view to be rendered

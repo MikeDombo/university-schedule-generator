@@ -2,16 +2,12 @@
 require __DIR__ . '/vendor/autoload.php';
 require_once("config.php");
 
-$get = false;
-if(isset($_GET["i"])){
-	$get = $_GET["i"];
-	$get = json_decode($get, true)["allCourses"];
-}
-
 $required = [];
 $optional = [];
 
-if($get != false){
+if(isset($_GET["i"])){
+	$get = $_GET["i"];
+	$get = json_decode($get, true)["allCourses"];
 	foreach($get as $k=>$v){
 		$c = [];
 		// Required courses

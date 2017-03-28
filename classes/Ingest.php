@@ -27,6 +27,8 @@ class Ingest{
 	private $classCount;
 	/** @var array $daysWithUnwantedTimes */
 	private $daysWithUnwantedTimes = [];
+	/** @var string $timeFormatCode time format */
+	private $timeFormatCode = "g:i a";
 
 
 	/**
@@ -89,18 +91,18 @@ class Ingest{
 	 * @return \Section
 	 */
 	private function makeNewSection($section, $title, $rows){
-		$tempSec = new Section($title, $rows["SUBJ"], $rows["CRSE"], floatval($rows["UNITS"]), [$rows["CRN"]]);
+		$tempSec = new Section($title, $rows[COLUMNS_FOS], $rows[COLUMNS_COURSE_NUM], floatval($rows[COLUMNS_UNITS]),[$rows[COLUMNS_CRN]]);
 		if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
 			$tempSec->setRequiredCourse(true);
 		}
 		foreach($rows as $k=>$v){
 			if($k == $v){
-				$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
+				$tempSec->addTime($v, $rows[COLUMNS_TIME_BEGIN], $rows[COLUMNS_TIME_END]);
 			}
 		}
-		$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
-		if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
-			$tempSec->addCRN($rows["CRN"]);
+		$tempSec->setProf($rows[COLUMNS_PROF_FN]." ".$rows[COLUMNS_PROF_LN]);
+		if(!(array_search($rows[COLUMNS_CRN], $tempSec->getCRN()) > -1)){
+			$tempSec->addCRN($rows[COLUMNS_CRN]);
 		}
 		return $tempSec;
 	}
@@ -111,7 +113,7 @@ class Ingest{
 	private function setDaysWithUnwantedTimes(){
 		if(isset($this->unwantedTimes)){
 			$t = new Schedule();
-			foreach($this->unwantedTimes as $k=>$v){
+			foreach($this->unwantedTimes as $v){
 				foreach($v as $k2=>$v2){
 					if(!in_array($k2, $this->daysWithUnwantedTimes)){
 						$this->daysWithUnwantedTimes[] = $t->intToDay($t->dayToInt($k2));
@@ -132,27 +134,28 @@ class Ingest{
 			$courseColor = $this->generateColor([255, 255, 255]);
 			$crn = $v;
 
-			$q = $this->link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `CRN` = :crn");
+			$q = $this->link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `".COLUMNS_CRN."` = :crn");
 			$q->bindValue(":crn", $crn, PDO::PARAM_INT);
 			$q->execute();
 			$result = $q->fetchAll(PDO::FETCH_ASSOC);
 
 			foreach($result as $rows){
-				if(!isset($rows["INSTR FN"])){
-					$rows["INSTR FN"] = "";
+				if(!isset($rows[COLUMNS_PROF_FN])){
+					$rows[COLUMNS_PROF_FN] = "";
 				}
-				if(!isset($rows["LASTNAME"])){
-					$rows["LASTNAME"] = "";
+				if(!isset($rows[COLUMNS_PROF_LN])){
+					$rows[COLUMNS_PROF_LN] = "";
 				}
 
-				$tempSec = new Section($rows["TITLE"], $rows["SUBJ"], $rows["CRSE"], floatval($rows["UNITS"]), [$rows["CRN"]]);
+				$tempSec = new Section($rows[COLUMNS_COURSE_TITLE], $rows[COLUMNS_FOS],
+					$rows[COLUMNS_COURSE_NUM], floatval($rows[COLUMNS_UNITS]), [$rows[COLUMNS_CRN]]);
 
 				foreach($rows as $k=>$v){
 					if($k == $v){
-						$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
+						$tempSec->addTime($v, $rows[COLUMNS_TIME_BEGIN], $rows[COLUMNS_TIME_END]);
 					}
 				}
-				$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
+				$tempSec->setProf($rows[COLUMNS_PROF_FN]." ".$rows[COLUMNS_PROF_LN]);
 				$tempSec->setColor($courseColor);
 				$preregSections[] = $tempSec;
 			}
@@ -173,8 +176,8 @@ class Ingest{
 						}
 					}
 					foreach($v2->meetingTime as $day=>$times){
-						foreach($times as $timeKey=>$time){
-							$v->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
+						foreach($times as $time){
+							$v->addTime($day, date($this->timeFormatCode, $time["from"]), date($this->timeFormatCode,$time["to"]));
 						}
 					}
 					unset($preregSections[$j]);
@@ -234,7 +237,7 @@ class Ingest{
 	public function generateSections(){
 		$this->setDaysWithUnwantedTimes();
 
-		foreach($this->courseInput as $key=>$section){
+		foreach($this->courseInput as $section){
 			if(!isset($section["FOS"]) || !isset($section["CourseNum"]) || !isset($section["Title"])){
 				continue;
 			}
@@ -246,7 +249,7 @@ class Ingest{
 			$title = $section["Title"];
 			$courseColor = $this->generateColor([255, 255, 255]);
 
-			$q = $this->link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `CRSE` = :num AND `SUBJ` = :subj");
+			$q = $this->link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `".COLUMNS_COURSE_NUM."` = :num AND `".COLUMNS_FOS."` = :subj");
 			$q->bindValue(":num", $num, PDO::PARAM_INT);
 			$q->bindValue(":subj", $subj, PDO::PARAM_STR);
 			$q->execute();
@@ -256,20 +259,23 @@ class Ingest{
 			$manyOptions = [];
 			$multipleOptions = false;
 			foreach($result as $rows){
-				if(!$this->allowFull){
-					if($rows["MAX"] <= $rows["ENRLLMNT"]){
-						continue;
-					}
+				if(!$this->allowFull && $rows[COLUMNS_ENROLLMENT_MAX] <= $rows[COLUMNS_ENROLLMENT_CURRENT]){
+					continue;
 				}
-				if(($rows["SUBJ"] == "FYS" || $rows["SUBJ"] == "WELL" || strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1 || ($rows["SUBJ"] == "HIST" && $rows["CRSE"] == "199") || ($rows["SUBJ"] == "BIOL" && $rows["CRSE"] == "199") || ($rows["SUBJ"] == "ENGL" && $rows["CRSE"] == "299")) && $rows["TITLE"] != $title){
-					if(!(strpos($rows["TITLE"], " LAB") > -1 || strpos($title, " LAB") > -1)){
+				if((($rows[COLUMNS_FOS] == "FYS" || $rows[COLUMNS_FOS] == "WELL" ||
+						strpos($title, "ST:") > -1 || strpos($title, "SP:") > -1 ||
+						($rows[COLUMNS_FOS] == "HIST" && $rows[COLUMNS_COURSE_NUM] == "199") ||
+						($rows[COLUMNS_FOS] == "BIOL" && $rows[COLUMNS_COURSE_NUM] == "199") ||
+						($rows[COLUMNS_FOS] == "ENGL" && $rows[COLUMNS_COURSE_NUM] == "299")) &&
+						$rows[COLUMNS_COURSE_TITLE] != $title) &&
+						(!(strpos($rows[COLUMNS_COURSE_TITLE], " LAB") > -1 ||
+							strpos($title, " LAB") > -1))){
 						continue;
-					}
 				}
 				if(isset($section["displayTitle"])){
 					$title = $section["displayTitle"];
 				}
-				$sectionNum = $rows["SEC"];
+				$sectionNum = $rows[COLUMNS_COURSE_SECTION];
 
 				if(substr($sectionNum, 0, 1) == "L" || substr($sectionNum, 0, 1) == "P" || substr($sectionNum, 0, 1) == "D"){
 					$sectionNum = substr($sectionNum, 1);
@@ -282,11 +288,11 @@ class Ingest{
 					$sectionNum = "0".intval($sectionNum);
 				}
 
-				if(!isset($rows["INSTR FN"])){
-					$rows["INSTR FN"] = "";
+				if(!isset($rows[COLUMNS_PROF_FN])){
+					$rows[COLUMNS_PROF_FN] = "";
 				}
-				if(!isset($rows["LASTNAME"])){
-					$rows["LASTNAME"] = "";
+				if(!isset($rows[COLUMNS_PROF_LN])){
+					$rows[COLUMNS_PROF_LN] = "";
 				}
 
 				if(!isset($tempSection[$sectionNum]) && !$multipleOptions){
@@ -296,13 +302,13 @@ class Ingest{
 					$tempSec = $tempSection[$sectionNum];
 					foreach($rows as $k => $v){
 						if($k == $v){
-							$tempSec->addTime($v, $rows["BEGIN"], $rows["END"]);
+							$tempSec->addTime($v, $rows[COLUMNS_TIME_BEGIN], $rows[COLUMNS_TIME_END]);
 						}
 					}
-					if(!(array_search($rows["CRN"], $tempSec->getCRN()) > -1)){
-						$tempSec->addCRN($rows["CRN"]);
+					if(!(array_search($rows[COLUMNS_CRN], $tempSec->getCRN()) > -1)){
+						$tempSec->addCRN($rows[COLUMNS_CRN]);
 					}
-					$tempSec->setProf($rows["INSTR FN"]." ".$rows["LASTNAME"]);
+					$tempSec->setProf($rows[COLUMNS_PROF_FN]." ".$rows[COLUMNS_PROF_LN]);
 					$tempSection[$sectionNum] = $tempSec;
 				}
 				else if($multipleOptions){
@@ -324,13 +330,13 @@ class Ingest{
 							}
 							foreach($optionalSection->meetingTime as $day=>$times){
 								foreach($times as $timeKey=>$time){
-									$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
+									$newSec->addTime($day, date($this->timeFormatCode, $time["from"]), date($this->timeFormatCode, $time["to"]));
 									$newSec->setMultiples(true);
 								}
 							}
 							foreach($v->meetingTime as $day=>$times){
 								foreach($times as $timeKey=>$time){
-									$newSec->addTime($day, date("g:i a", $time["from"]), date("g:i a", $time["to"]));
+									$newSec->addTime($day, date($this->timeFormatCode, $time["from"]), date($this->timeFormatCode,$time["to"]));
 								}
 							}
 							foreach($optionalSection->getCRN() as $crn){

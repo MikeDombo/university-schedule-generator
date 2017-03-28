@@ -164,7 +164,7 @@ class Section extends Course{
 	private function timeConflict($other){
 		foreach($this->meetingTime as $k=>$a){ //iterate through each day in meetingTime
 			if(isset($other->meetingTime[$k])){ //if $other also has the same day in its meetingTime, then continue
-				foreach($this->meetingTime[$k] as $k2=>$v){ //iterate through each block of time for the current day in this section
+				foreach($this->meetingTime[$k] as $v){ //iterate through each block of time for the current day in this section
 					foreach($other->meetingTime[$k] as $i=>$v2){ //iterate through each block of time for the current day in the other section
 						if($v["from"]<=$other->meetingTime[$k][$i]["to"] && $v["to"]>=$other->meetingTime[$k][$i]["from"]){
 							return true;
@@ -217,8 +217,7 @@ class Section extends Course{
 	}
 	
 	public function __toString(){
-		$me = $this->getCourseTitle()." on ".$this->intToDay($this->getEarliestTime()[0])." at ".date("g:i A", $this->getEarliestTime()[1]);
-		return $me;
+		return $this->getCourseTitle()." on ".$this->intToDay($this->getEarliestTime()[0])." at ".date("g:i A", $this->getEarliestTime()[1]);
 	}	
 	
 	private function dayToInt($day){

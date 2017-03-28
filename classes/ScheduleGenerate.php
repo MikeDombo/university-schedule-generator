@@ -119,7 +119,7 @@ class ScheduleGenerate{
 		$weekSchedule = [];
 		$listSchedule = [];
 		$num = 0;
-		foreach($schedules as $k => $a){
+		foreach($schedules as $a){
 			$cpd = $a->getCPD();
 			$daysString = [];
 
@@ -162,7 +162,7 @@ class ScheduleGenerate{
 			$timeArray = [];
 			foreach($a->getSchedule() as $b){
 				foreach($b->meetingTime as $day => $times){
-					foreach($times as $key => $time){
+					foreach($times as $time){
 						$timeArray[$time["from"]][$day] = $b;
 					}
 				}

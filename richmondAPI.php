@@ -31,7 +31,7 @@ if(isset($_GET['search'])){
 			$num = $num[0];
 		}
 		try{
-			$q = $link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `CRSE` like :num AND `SUBJ` LIKE :subj");
+			$q = $link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `".COLUMNS_COURSE_NUM."` like :num AND `".COLUMNS_FOS."` LIKE :subj");
 			$q->bindValue(":num", "%".$num."%", PDO::PARAM_INT);
 			$q->bindValue(":subj", "%".$subj."%", PDO::PARAM_STR);
 			$q->execute();
@@ -52,7 +52,7 @@ if(isset($_GET['search'])){
 	else{
 		$searchStr = urldecode($_GET['search']);
 		try{
-			$q = $link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `TITLE` LIKE :searchStr");
+			$q = $link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `".COLUMNS_COURSE_TITLE."` LIKE :searchStr");
 			$q->bindValue(":searchStr", "%".$searchStr."%", PDO::PARAM_STR);
 			$q->execute();
 			$result = $q->fetchAll(PDO::FETCH_ASSOC);
@@ -75,7 +75,7 @@ if(isset($_GET["subj"])){
 	$err="";
 	$subj = $_GET["subj"];
 	try{
-		$q = $link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `SUBJ` = :subj");
+		$q = $link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `".COLUMNS_FOS."` = :subj");
 		$q->bindValue(":subj", $subj, PDO::PARAM_STR);
 		$q->execute();
 		$result = $q->fetchAll(PDO::FETCH_ASSOC);
@@ -98,13 +98,13 @@ if(isset($_GET["subj"])){
 function getResponseArrayFromDB($result){
 	$response = [];
 	foreach($result as $rows){
-		$temp = array();
-		$temp["Title"] = $rows["TITLE"];
-		$temp["Course Number"] = $rows["CRSE"];
-		$temp["FOS"] = $rows["SUBJ"];
+		$temp = [];
+		$temp["Title"] = $rows[COLUMNS_COURSE_TITLE];
+		$temp["Course Number"] = $rows[COLUMNS_COURSE_NUM];
+		$temp["FOS"] = $rows[COLUMNS_FOS];
 		$temp["Available"] = true;
-		$temp["crns"] = array();
-		array_push($temp["crns"], $rows["CRN"]);
+		$temp["crns"] = [];
+		array_push($temp["crns"], $rows[COLUMNS_CRN]);
 
 		if($rows["M"] == "" && $rows["T"] == "" && $rows["W"] == "" && $rows["R"] == "" && $rows["F"] == ""){
 			$temp["Available"] = false;
@@ -112,24 +112,24 @@ function getResponseArrayFromDB($result){
 		$skip = false;
 		foreach($response as $k=>$v){
 			if($temp["Course Number"] == $v["Course Number"] && $temp["FOS"] == $v["FOS"]){
-				if(testCourseOverlap($temp, $rows, $v)){
+				if(testCourseOverlap($temp, $v)){
 					$skip = true;
 				}
 				if($temp["Title"] == $v["Title"] || similar_text($v["Title"], $temp["Title"]) >= 10){
-					array_push($response[$k]["crns"], $rows["CRN"]);
+					$response[$k]["crns"][] = $rows[COLUMNS_CRN];
 				}
 			}
 		}
 
 		if(!$skip){
-			if($rows["SUBJ"] == "FYS"){
-				$fys = getFYSDescr($rows["CRN"]);
+			if($rows[COLUMNS_FOS] == "FYS"){
+				$fys = getFYSDescr($rows[COLUMNS_CRN]);
 				if(isset($fys["displayTitle"])){
 					$temp["displayTitle"] = $fys["displayTitle"];
 					$temp["description"] = $fys["description"];
 				}
 			}
-			array_push($response, $temp);
+			$response[] =  $temp;
 		}
 	}
 	return $response;
@@ -154,7 +154,7 @@ function getFYSDescr($crn){
 	}
 }
 
-function testCourseOverlap($temp, $rows, $v){
+function testCourseOverlap($temp, $v){
 	if(($v["FOS"] == "WELL" || $v["FOS"] == "FYS" || (strpos($v["Title"], "ST:") > -1) || (strpos($v["Title"], "SP:") > -1) || ($v["FOS"] == "HIST" && $v["Course Number"] == "199") || ($v["FOS"] == "BIOL" && $v["Course Number"] == "199") || ($v["FOS"] == "ENGL" && $v["Course Number"] == "299") || ($v["FOS"] == "HIST" && $v["Course Number"] == "299")) && ($temp["Title"] == $v["Title"]  || strpos($temp["Title"], " LAB")>-1)){
 		return true;
 	}
@@ -168,4 +168,3 @@ function testCourseOverlap($temp, $rows, $v){
 		return false;
 	}
 }
-?>
