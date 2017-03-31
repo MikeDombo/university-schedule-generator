@@ -294,7 +294,7 @@ $(document).on("click", ".btn-generate", function (e){
 		});
 		unwantedTimes.push(tempTime);
 	});
-	var crns = $("#crns").val().replace(/\\D+/g, ',').split(",");
+	var crns = $("#crns").val().replace(/\D+/g, ',').split(",");
 	getCourses = {
 		allCourses: getCourses,
 		timePref: $("#time-pref").prop('checked'),
