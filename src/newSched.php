@@ -39,14 +39,18 @@ $scheduleGenerator->generateSchedules();
 $numSchedules = $scheduleGenerator->getNumSchedules();
 
 // Write number of generated schedules to a local text file
-$scheduleFile = intval(file_get_contents("schedules-created.txt"));
+$numSchedulesCreatedFile = "schedules-created.txt";
+$scheduleFile = 0;
+if(file_exists($numSchedulesCreatedFile)){
+	$scheduleFile = intval(file_get_contents($numSchedulesCreatedFile));
+}
 file_put_contents("schedules-created.txt", $scheduleFile+$numSchedules);
 
 // Update history cookie
 updateHistoryCookie($numSchedules, json_decode(urldecode($_GET["i"]), true)["allCourses"]);
 
 // Get schedules as an array in order of highest score to lowest
-$schedules = array_reverse($scheduleGenerator->getSchedules()->getArray());
+$schedules = $scheduleGenerator->getSchedules()->getMaxArray();
 $d = $scheduleGenerator->makeDataForCalendarAndList($schedules);
 
 // Generate runtime and max memory used

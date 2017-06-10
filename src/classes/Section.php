@@ -95,11 +95,11 @@ class Section extends Course{
 
 		//if latestTime has not been set yet, just set it to the current value
 		if(!isset($this->latestTime)){
-			$this->latestTime = [$dayInt, strtotime($from)];
+			$this->latestTime = [$dayInt, strtotime($to)];
 		}
-		//if the preexisting time is earlier than the new time, set $earliestTime to the new day and time
-		else if($this->latestTime[1] < strtotime($from)){
-			$this->latestTime = [$dayInt, strtotime($from)];
+		//if the preexisting time is earlier than the new time, set $latestTime to the new day and time
+		else if($this->latestTime[1] < strtotime($to)){
+			$this->latestTime = [$dayInt, strtotime($to)];
 		}
 
 		//if lastTime has not been set yet, just set it to the current value

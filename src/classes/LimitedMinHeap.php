@@ -48,16 +48,23 @@ class LimitedMinHeap {
 	}
 
 	public function pop(){
-		$a = $this->minHeap->top();
-		$this->minHeap->extract();
-		return $a;
+		return $this->minHeap->extract();
 	}
 
-	public function getArray(){
+	public function getMinArray(){
 		$temp = [];
 		$schedCount = $this->count();
 		for($i=0; $i<$schedCount; $i++){
 			$temp[] = $this->pop();
+		}
+		return $temp;
+	}
+
+	public function getMaxArray(){
+		$temp = [];
+		$schedCount = $this->count();
+		for($i=0; $i<$schedCount; $i++){
+			array_unshift($temp, $this->pop());
 		}
 		return $temp;
 	}

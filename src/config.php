@@ -1,9 +1,11 @@
 <?php
 spl_autoload_register(function ($class) { //load all external classes to run the algorithm
-	require_once("classes/".$class.".php");
+	if(file_exists(__DIR__."/classes/".$class.".php")){
+		require_once(__DIR__."/classes/".$class.".php");
+	}
 });
 
-define("SUBDIR", "/ur");
+define("SUBDIR", "/ur/src");
 define("DB_DATABASE", "schedule");
 define("DB_DATABASE_TABLE", "schedule");
 define("DB_USER", "root");
