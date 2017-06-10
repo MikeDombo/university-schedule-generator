@@ -51,7 +51,7 @@ class Schedule{
 		}
 		//if the current set time is later than the earliest time of the new section, change earliestTime
 		else if($this->earliestTime[1] > $sec->getEarliestTime()[1]){
-			$this->earliestTime = array($sec->getEarliestTime()[0], $sec->getEarliestTime()[1]);
+			$this->earliestTime = [$sec->getEarliestTime()[0], $sec->getEarliestTime()[1]];
 		}
 
 		//if the latest time isn't set, just set it
@@ -60,7 +60,7 @@ class Schedule{
 		}
 		//if the current latest time is earlier than the latest time of the new section, change latestTime
 		else if($this->latestTime[1] < $sec->getLatestTime()[1]){
-			$this->latestTime = array($sec->getLatestTime()[0], $sec->getLatestTime()[1]);
+			$this->latestTime = [$sec->getLatestTime()[0], $sec->getLatestTime()[1]];
 		}
 
 		//if the first time isn't set, then set it
@@ -69,11 +69,11 @@ class Schedule{
 		}
 		//if the current first time's day is later than the earliest time's day, then set the first time
 		else if($this->firstTime[0] > $sec->getFirstTime()[0]){
-			$this->firstTime = array($sec->getFirstTime()[0], $sec->getFirstTime()[1]);
+			$this->firstTime = [$sec->getFirstTime()[0], $sec->getFirstTime()[1]];
 		}
 		//if the current first time's day is the same as the earliest time's day, and the time of firstTime is later than earliestTime, then set it
 		else if($this->firstTime[0] == $sec->getFirstTime()[0] && $this->firstTime[1] > $sec->getFirstTime()[1]){
-			$this->firstTime = array($sec->getFirstTime()[0], $sec->getFirstTime()[1]);
+			$this->firstTime = [$sec->getFirstTime()[0], $sec->getFirstTime()[1]];
 		}
 
 		//if the last time isn't set, then set it
@@ -82,11 +82,11 @@ class Schedule{
 		}
 		//if the current last time's day is earlier than the last time's day, then set the last time
 		else if($this->lastTime[0] < $sec->getLastTime()[0]){
-			$this->lastTime = array($sec->getLastTime()[0], $sec->getLastTime()[1]);
+			$this->lastTime = [$sec->getLastTime()[0], $sec->getLastTime()[1]];
 		}
 		//if the current last time's day is the same as the latest time's day, and the time of lastTime is earlier than latestTime, then set it
 		else if($this->lastTime[0] == $sec->getLastTime()[0] && $this->lastTime[1] < $sec->getLastTime()[1]){
-			$this->lastTime = array($sec->getLastTime()[0], $sec->getLastTime()[1]);
+			$this->lastTime = [$sec->getLastTime()[0], $sec->getLastTime()[1]];
 		}
 		
 		if($sec->meetsFriday()){
@@ -111,7 +111,7 @@ class Schedule{
 		}
 		
 		//This section calculates the score to add due to classes being later than 10:00am
-		$earliest = array();
+		$earliest = [];
 		foreach($this->listOfSections as $k=>$v){
 			if($v->preregistered){
 				$this->score += .25;
@@ -125,7 +125,7 @@ class Schedule{
 							}
 						}
 						else{
-							$earliest[$day] = array();
+							$earliest[$day] = [];
 							$earliest[$day] = $time["from"];
 						}
 					}
@@ -151,8 +151,8 @@ class Schedule{
 	This function calculates the number of classes on each day
 	**/
 	public function getCPD(){
-		$arr = array();
-		$arr2 = array();
+		$arr = [];
+		$arr2 = [];
 		foreach($this->listOfSections as $v){
 			if(isset($v->meetingTime)){
 				foreach($v->meetingTime as $k=>$m){

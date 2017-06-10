@@ -30,13 +30,13 @@ class LimitedMinHeapTest extends TestCase{
 		$heap->insert(4);
 		$heap->insert(3);
 		$heap->insert(100);
-		$this->assertEquals(3, $heap->peek());
-		$this->assertEquals([3, 4], $heap->getMinArray());
+		$this->assertEquals(5, $heap->peek());
+		$this->assertEquals([5, 100], $heap->getMinArray());
 
 		$heap->insert(5);
 		$heap->insert(4);
 		$heap->insert(3);
 		$heap->insert(100);
-		$this->assertEquals([4, 3], $heap->getMaxArray());
+		$this->assertEquals([100, 5], $heap->getMaxArray());
 	}
 }

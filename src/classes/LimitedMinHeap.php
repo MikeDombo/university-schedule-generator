@@ -18,25 +18,14 @@ class LimitedMinHeap {
 	public function insert($a){
 		if($this->minHeap->count() >= $this->maxSize){ //if heap is full
 			//if the minimum of the heap is less than $a's score, then remove the minimum and add $a to the heap
-			if($this->minHeap->compare($this->minHeap->top(), $a) < 0){
-				$this->removeMax();
+			if($this->minHeap->compare($this->minHeap->top(), $a) > 0){
+				$this->minHeap->extract();
 			}
 			else{
 				return;
 			}
 		}
 		$this->minHeap->insert($a);
-	}
-
-	private function removeMax(){
-		$temp = [];
-		while($this->minHeap->count() > 0){
-			$temp[] = $this->minHeap->extract();
-		}
-		array_pop($temp);
-		foreach($temp as $t){
-			$this->minHeap->insert($t);
-		}
 	}
 
 	public function count(){

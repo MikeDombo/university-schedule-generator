@@ -101,9 +101,6 @@ class Ingest{
 			}
 		}
 		$tempSec->setProf($rows[COLUMNS_PROF_FN]." ".$rows[COLUMNS_PROF_LN]);
-		if(!(array_search($rows[COLUMNS_CRN], $tempSec->getCRN()) > -1)){
-			$tempSec->addCRN($rows[COLUMNS_CRN]);
-		}
 		return $tempSec;
 	}
 

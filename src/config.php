@@ -4,6 +4,7 @@ spl_autoload_register(function ($class) { //load all external classes to run the
 		require_once(__DIR__."/classes/".$class.".php");
 	}
 });
+require_once(__DIR__ . '/vendor/autoload.php');
 
 define("SUBDIR", "/ur/src");
 define("DB_DATABASE", "schedule");
@@ -36,13 +37,13 @@ define("COLUMNS_PROF_LN", "LASTNAME");
  * @return string Pug generated HTML
  */
 function generatePug($view, $title, $options = [], $prettyPrint = false){
-		$initialOptions = array(
+		$initialOptions = [
 		'title' => $title,
-		'subdir' => SUBDIR
-	);
+		'subdir' => SUBDIR,
+	];
 
 	$options = array_merge($initialOptions, $options);
 
-	$pug = new Pug\Pug(array('prettyprint' => $prettyPrint));
+	$pug = new Pug\Pug(['prettyprint' => $prettyPrint]);
 	return $pug->render($view, $options);
 }
