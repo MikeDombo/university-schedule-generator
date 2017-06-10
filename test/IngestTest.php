@@ -45,8 +45,54 @@ class IngestTest extends TestCase{
 	}
 
 	public function testMakeSection(){
+		require_once(__DIR__."/../src/config.php");
 		$ingest = new Ingest(new PDO('sqlite:test.sqlite'), $this->makeTestData());
-		$color = $this->invokeMethod($ingest, 'makeNewSection', []);
+		$newSection = $this->invokeMethod($ingest, 'makeNewSection', [
+			["requiredCourse" => true],
+			"Course Title",
+			[   COLUMNS_FOS => "MyFOS", COLUMNS_COURSE_NUM => "100", COLUMNS_UNITS => 1, COLUMNS_CRN => "123456",
+				COLUMNS_TIME_BEGIN => "1030", COLUMNS_TIME_END => "1330", COLUMNS_PROF_FN => "FirstName",
+				COLUMNS_PROF_LN => "LastName", "M" => "M", "W" => "W"
+			]
+		]);
+		/** @var $newSection Section */
+		$this->assertFalse($newSection->preregistered);
+		$this->assertFalse($newSection->meetsFriday());
+		$this->assertEquals(1, $newSection->getNumUnits());
+		$this->assertEquals(["123456"], $newSection->getCRN());
+		$this->assertTrue($newSection->isRequiredCourse());
+		$this->assertEquals("Course Title", $newSection->getCourseTitle());
+		$this->assertEquals("100", $newSection->getCourseNumber());
+		$this->assertEquals("MyFOS", $newSection->getFieldOfStudy());
+		$this->assertEquals([0, strtotime("1030")], $newSection->getFirstTime());
+		$this->assertEquals([2, strtotime("1330")], $newSection->getLastTime());
+		$this->assertEquals([0, strtotime("1030")], $newSection->getEarliestTime());
+		$this->assertEquals([0, strtotime("1330")], $newSection->getLatestTime());
+		$this->assertEquals("FirstName LastName", $newSection->getProf());
+	}
+
+	public function testMakeMultipleSections(){
+		require_once(__DIR__."/../src/config.php");
+		$ingest = new Ingest(new PDO('sqlite:test.sqlite'), $this->makeTestData());
+		$newSection1 = $this->invokeMethod($ingest, 'makeNewSection', [
+			["requiredCourse" => true],
+			"Course Title",
+			[   COLUMNS_FOS => "MyFOS", COLUMNS_COURSE_NUM => "100", COLUMNS_UNITS => 1, COLUMNS_CRN => "123456",
+				COLUMNS_TIME_BEGIN => "1030", COLUMNS_TIME_END => "1330", COLUMNS_PROF_FN => "FirstName",
+				COLUMNS_PROF_LN => "LastName", "M" => "M", "W" => "W"
+			]
+		]);
+		/** @var $newSection1 Section */
+		$newSection2 = $this->invokeMethod($ingest, 'makeNewSection', [
+			["requiredCourse" => true],
+			"Course Title",
+			[   COLUMNS_FOS => "MyFOS", COLUMNS_COURSE_NUM => "100", COLUMNS_UNITS => 1, COLUMNS_CRN => "123457",
+				COLUMNS_TIME_BEGIN => "1030", COLUMNS_TIME_END => "1330", COLUMNS_PROF_FN => "FirstName",
+				COLUMNS_PROF_LN => "LastName", "M" => "M", "W" => "W"
+			]
+		]);
+		/** @var $newSection2 Section */
+
 	}
 
 	private function makeTestData(){
