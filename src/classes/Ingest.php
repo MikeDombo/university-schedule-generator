@@ -37,7 +37,7 @@ class Ingest{
 	 * @param string $data
 	 * @param PDO $pdo
 	 */
-	public function __construct($pdo, $data){
+	public function __construct(PDO $pdo, $data){
 		$this->requestData = json_decode($data, true);
 		$this->courseInput = $this->requestData["allCourses"];
 		$this->preregistered = $this->requestData["preregistered"];
@@ -112,15 +112,13 @@ class Ingest{
 	 */
 	private function setDaysWithUnwantedTimes(){
 		if(isset($this->unwantedTimes)){
-			$t = new Schedule();
 			foreach($this->unwantedTimes as $v){
 				foreach($v as $k2=>$v2){
 					if(!in_array($k2, $this->daysWithUnwantedTimes)){
-						$this->daysWithUnwantedTimes[] = $t->intToDay($t->dayToInt($k2));
+						$this->daysWithUnwantedTimes[] = Schedule::intToDay(Schedule::dayToInt($k2));
 					}
 				}
 			}
-			unset($t);
 		}
 	}
 
@@ -200,13 +198,12 @@ class Ingest{
 	 * ie. it is on a day, during a time that is blacked out, or it occurs outside of the start and end times chosen
 	 */
 	private function removeSectionsForTime(){
-		$t = new Schedule();
 		/** @var Section $section */
 		foreach($this->allSections as $key=>$section){
 			if($section->preregistered){
 				continue;
 			}
-			if($this->startTime > $section->getEarliestTime()[1]|| $this->endTime < $section->getLatestTime()[1]){
+			if($this->startTime > $section->getEarliestTime()[1] || $this->endTime < $section->getLatestTime()[1]){
 				unset($this->allSections[$key]);
 				continue;
 			}
@@ -217,7 +214,7 @@ class Ingest{
 				foreach($times as $days=>$time){
 					foreach($this->unwantedTimes as $dayVal){
 						foreach($dayVal as $val){
-							if($t->intToDay($t->dayToInt($val)) != $days){
+							if(Schedule::intToDay(Schedule::dayToInt($val)) != $days){
 								continue;
 							}
 							else if(strtotime($dayVal["startTime"]) <= $time["to"] && strtotime($dayVal["endTime"]) >= $time["from"]){

@@ -40,15 +40,9 @@ if(isset($_GET["i"]) && isset(json_decode($_GET["i"], true)["preregistered"])){
 	$preregisteredCRNs = substr($print, 0, -2);
 }
 
-$fullClasses = true;
-if(isset($_GET["i"]) && !json_decode($_GET["i"], true)["fullClasses"]){
-	$fullClasses = false;
-}
+$fullClasses = !(isset($_GET["i"]) && !json_decode($_GET["i"], true)["fullClasses"]);
 
-$timePref = false;
-if(isset($_GET["i"]) && json_decode($_GET["i"], true)["timePref"]){
-	$timePref = true;
-}
+$timePref = (isset($_GET["i"]) && json_decode($_GET["i"], true)["timePref"]);
 
 $slider = ["start"=>480, "end"=>1320];
 if(isset($_GET["i"]) && isset(json_decode($_GET["i"], true)["startTime"])){

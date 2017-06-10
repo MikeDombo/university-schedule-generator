@@ -64,7 +64,7 @@ if(isset($_GET['search'])){
 		$response = getResponseArrayFromDB($result);
 	}
 	
-	if(count($response>50)){
+	if(count($response) > 50){
 		$response = array_slice($response, 0, 50);
 	}
 	$arr = ["response"=>$response, "error"=>$err];
@@ -104,7 +104,7 @@ function getResponseArrayFromDB($result){
 		$temp["FOS"] = $rows[COLUMNS_FOS];
 		$temp["Available"] = true;
 		$temp["crns"] = [];
-		array_push($temp["crns"], $rows[COLUMNS_CRN]);
+		$temp["crns"][] = $rows[COLUMNS_CRN];
 
 		if($rows["M"] == "" && $rows["T"] == "" && $rows["W"] == "" && $rows["R"] == "" && $rows["F"] == ""){
 			$temp["Available"] = false;

@@ -11,12 +11,16 @@ class Course{
 	private $courseNumber;
 	private $fieldOfStudy;
 	private $numUnits;
-	private $color = array(0, 0, 0); //RGB color representing the course
+	private $color = [0, 0, 0]; //RGB color representing the course
 	private $required = false;
-	
+
 	/**
-	Constructor accepting course title, field of study, course number, and number of units
-	**/
+	 * Constructor accepting course title, field of study, course number, and number of units
+	 * @param $courseTitle
+	 * @param $fos
+	 * @param $courseNum
+	 * @param $units
+	 */
 	public function __construct($courseTitle, $fos, $courseNum, $units){
 		$this->courseName = $courseTitle;
 		$this->fieldOfStudy = $fos;
@@ -24,9 +28,9 @@ class Course{
 		$this->courseNumber = $courseNum;
 	}
 	
-	/**
+	/*
 	Accessors of variables
-	**/
+	*/
 	public function setColor($a){
 		$this->color = $a;
 	}

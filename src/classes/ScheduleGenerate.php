@@ -17,7 +17,7 @@ class ScheduleGenerate{
 	 */
 	public function __construct($ingest){
 		$this->ingest = $ingest;
-		$this->schedules = new LimitedMinHeap(100);
+		$this->schedules = new LimitedMinHeap();
 	}
 
 	/**
@@ -125,7 +125,7 @@ class ScheduleGenerate{
 
 			$numDays = $a->getLastTime()[0] - $a->getFirstTime()[0] + 1;
 			for($i = $a->getFirstTime()[0]; $i < ($numDays + $a->getFirstTime()[0]); $i++){
-				$daysString[] = $a->intToDay($i);
+				$daysString[] = Schedule::intToDay($i);
 			}
 
 			$crnList = "";
@@ -177,20 +177,20 @@ class ScheduleGenerate{
 				$rows[$rowCount]["rowData"] = [];
 
 				for($i = $a->getFirstTime()[0]; $i < ($numDays + $a->getFirstTime()[0]); $i++){
-					/** @var array|Section $v */
-					if(isset($v[$a->intToDay($i)])){
-						$crns = $v[$a->intToDay($i)]->getCRN()[0];
-						foreach($v[$a->intToDay($i)]->getCRN() as $j => $crn){
+					/** @var array|\Section $v */
+					if(isset($v[Schedule::intToDay($i)])){
+						$crns = $v[Schedule::intToDay($i)]->getCRN()[0];
+						foreach($v[Schedule::intToDay($i)]->getCRN() as $j => $crn){
 							if($j == 0){
 								continue;
 							}
 							$crns = $crns.", ".$crn;
 						}
-						$rows[$rowCount]["rowData"][] = ["color" => $this->makeColorString($v[$a->intToDay($i)]->getColor()),
-							"crns" => $crns, "coursenum" => $v[$a->intToDay($i)]->getCourseNumber(),
-							"fos" => $v[$a->intToDay($i)]->getFieldOfStudy(),
-							"preregistered" => $v[$a->intToDay($i)]->preregistered,
-							"title" => $v[$a->intToDay($i)]->getCourseTitle(), "prof" => $v[$a->intToDay($i)]->getProf()];
+						$rows[$rowCount]["rowData"][] = ["color" => $this->makeColorString($v[Schedule::intToDay($i)]->getColor()),
+							"crns" => $crns, "coursenum" => $v[Schedule::intToDay($i)]->getCourseNumber(),
+							"fos" => $v[Schedule::intToDay($i)]->getFieldOfStudy(),
+							"preregistered" => $v[Schedule::intToDay($i)]->preregistered,
+							"title" => $v[Schedule::intToDay($i)]->getCourseTitle(), "prof" => $v[Schedule::intToDay($i)]->getProf()];
 					}else{
 						$rows[$rowCount]["rowData"][] = ["empty" => true];
 					}

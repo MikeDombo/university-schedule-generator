@@ -27,7 +27,7 @@ class Schedule{
 	Default constructor to initialize critical values
 	**/
 	public function __construct(){
-		$this->listOfSections = array();
+		$this->listOfSections = [];
 		$this->numberOfClasses = 0;
 		$this->numberOfUnits = 0;
 		$this->fridayFree = true;
@@ -44,38 +44,48 @@ class Schedule{
 		$this->listOfSections[] = $sec; //add the Section to the current list
 		$this->numberOfClasses += 1;
 		$this->numberOfUnits += $sec->getNumUnits();
-		
-		if(!isset($this->earliestTime)){//if there is no earliest time, just set it
+
+		//if there is no earliest time, just set it
+		if(!isset($this->earliestTime)){
 			$this->earliestTime = $sec->getEarliestTime();
 		}
-		else if($this->earliestTime[1] > $sec->getEarliestTime()[1]){//if the current set time is later than the earliest time of the new section, change earliestTime
+		//if the current set time is later than the earliest time of the new section, change earliestTime
+		else if($this->earliestTime[1] > $sec->getEarliestTime()[1]){
 			$this->earliestTime = array($sec->getEarliestTime()[0], $sec->getEarliestTime()[1]);
 		}
-		
-		if(!isset($this->latestTime)){//if the latest time isn't set, just set it
+
+		//if the latest time isn't set, just set it
+		if(!isset($this->latestTime)){
 			$this->latestTime = $sec->getLatestTime();
 		}
-		else if($this->latestTime[1] < $sec->getLatestTime()[1]){//if the current latest time is earlier than the latest time of the new section, change latestTime
+		//if the current latest time is earlier than the latest time of the new section, change latestTime
+		else if($this->latestTime[1] < $sec->getLatestTime()[1]){
 			$this->latestTime = array($sec->getLatestTime()[0], $sec->getLatestTime()[1]);
 		}
-		
-		if(!isset($this->firstTime)){//if the first time isn't set, then set it
+
+		//if the first time isn't set, then set it
+		if(!isset($this->firstTime)){
 			$this->firstTime = $sec->getFirstTime();
 		}
-		else if($this->firstTime[0] > $sec->getFirstTime()[0]){//if the current first time's day is later than the earliest time's day, then set the first time
+		//if the current first time's day is later than the earliest time's day, then set the first time
+		else if($this->firstTime[0] > $sec->getFirstTime()[0]){
 			$this->firstTime = array($sec->getFirstTime()[0], $sec->getFirstTime()[1]);
 		}
-		else if($this->firstTime[0] == $sec->getFirstTime()[0] && $this->firstTime[1] > $sec->getFirstTime()[1]){//if the current first time's day is the same as the earliest time's day, and the time of firstTime is later than earliestTime, then set it
+		//if the current first time's day is the same as the earliest time's day, and the time of firstTime is later than earliestTime, then set it
+		else if($this->firstTime[0] == $sec->getFirstTime()[0] && $this->firstTime[1] > $sec->getFirstTime()[1]){
 			$this->firstTime = array($sec->getFirstTime()[0], $sec->getFirstTime()[1]);
 		}
-		
-		if(!isset($this->lastTime)){//if the last time isn't set, then set it
+
+		//if the last time isn't set, then set it
+		if(!isset($this->lastTime)){
 			$this->lastTime = $sec->getLastTime();
 		}
-		else if($this->lastTime[0] < $sec->getLastTime()[0]){//if the current last time's day is earlier than the last time's day, then set the last time
+		//if the current last time's day is earlier than the last time's day, then set the last time
+		else if($this->lastTime[0] < $sec->getLastTime()[0]){
 			$this->lastTime = array($sec->getLastTime()[0], $sec->getLastTime()[1]);
 		}
-		else if($this->lastTime[0] == $sec->getLastTime()[0] && $this->lastTime[1] < $sec->getLastTime()[1]){//if the current last time's day is the same as the latest time's day, and the time of lastTime is earlier than latestTime, then set it
+		//if the current last time's day is the same as the latest time's day, and the time of lastTime is earlier than latestTime, then set it
+		else if($this->lastTime[0] == $sec->getLastTime()[0] && $this->lastTime[1] < $sec->getLastTime()[1]){
 			$this->lastTime = array($sec->getLastTime()[0], $sec->getLastTime()[1]);
 		}
 		
@@ -128,10 +138,12 @@ class Schedule{
 			$timeScore += ($v - strtotime("10:00 AM"))/3600;
 		}
 		if($morning){
-			$this->score -= ($timeScore/$this->numberOfClasses)*.1; //scale the timeScore by the number of classes and then only add 10% of that because it isn't very important
+			//scale the timeScore by the number of classes and then only add 10% of that because it isn't very important
+			$this->score -= ($timeScore/$this->numberOfClasses)*.1;
 		}
 		else{
-			$this->score += ($timeScore/$this->numberOfClasses)*.1; //scale the timeScore by the number of classes and then only add 10% of that because it isn't very important
+			//scale the timeScore by the number of classes and then only add 10% of that because it isn't very important
+			$this->score += ($timeScore/$this->numberOfClasses)*.1;
 		}
 	}
 	
@@ -218,7 +230,7 @@ class Schedule{
 	 * @param string $day
 	 * @return int
 	 */
-	public function dayToInt($day){
+	public static function dayToInt($day){
 		switch($day){
 			case "Monday":				
 				return 0;
@@ -255,7 +267,7 @@ class Schedule{
 	 * @param int $d
 	 * @return string
 	 */
-	public function intToDay($d){
+	public static function intToDay($d){
 		switch($d){
 			case 0:
 				return "Monday";
