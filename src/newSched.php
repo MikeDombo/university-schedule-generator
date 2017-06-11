@@ -31,7 +31,7 @@ catch(PDOException $e){
 	exit;
 }
 
-$ingest = new Ingest($link, urldecode($_GET["i"]));
+$ingest = new Ingest(new MySQLDAL($link), urldecode($_GET["i"]));
 $ingest->generateSections();
 
 $scheduleGenerator = new ScheduleGenerate($ingest);

@@ -21,8 +21,8 @@ class Ingest{
 	private $allSections = [];
 	/** @var int $requiredCourseNum */
 	private $requiredCourseNum = 0;
-	/** @var \PDO $link */
-	private $link;
+	/** @var \MySQLDAL $dal */
+	private $dal;
 	/** @var int $classCount */
 	private $classCount;
 	/** @var array $daysWithUnwantedTimes */
@@ -34,10 +34,11 @@ class Ingest{
 	/**
 	 * Ingest constructor.
 	 *
+	 * @param \MySQLDAL $dal
 	 * @param string $data
-	 * @param PDO $pdo
+	 * @internal param \PDO $pdo
 	 */
-	public function __construct(PDO $pdo, $data){
+	public function __construct(MySQLDAL $dal, $data){
 		$this->requestData = json_decode($data, true);
 		$this->courseInput = $this->requestData["allCourses"];
 		$this->preregistered = $this->requestData["preregistered"];
@@ -46,7 +47,7 @@ class Ingest{
 		$this->startTime = strtotime($this->requestData["startTime"]);
 		$this->endTime = strtotime($this->requestData["endTime"]);
 		$this->unwantedTimes = $this->requestData["unwantedTimes"];
-		$this->link = $pdo;
+		$this->dal = $dal;
 	}
 
 	public function getAllSections(){
@@ -106,34 +107,37 @@ class Ingest{
 
 	/**
 	 * Generates the daysWithUnwatedTimes array which is an array of all the days which may have blacked out times
+	 *
+	 * @param $unwantedTimes
+	 * @return array
 	 */
-	private function setDaysWithUnwantedTimes(){
-		if(isset($this->unwantedTimes)){
-			foreach($this->unwantedTimes as $v){
-				foreach($v as $k2=>$v2){
-					if(!in_array($k2, $this->daysWithUnwantedTimes)){
-						$this->daysWithUnwantedTimes[] = Schedule::intToDay(Schedule::dayToInt($k2));
-					}
+	private function setDaysWithUnwantedTimes($unwantedTimes){
+		$daysWithUnwantedTimes = [];
+		foreach($unwantedTimes as $v){
+			foreach($v as $k2=>$v2){
+				$intDay = Schedule::intToDay(Schedule::dayToInt($k2));
+				if(!in_array($intDay, $daysWithUnwantedTimes)){
+					$daysWithUnwantedTimes[] = $intDay;
 				}
 			}
 		}
+		return $daysWithUnwantedTimes;
 	}
 
 	/**
 	 * Generates the section variables for all preregistered classes and adds them to $allSections
 	 * Also sets the class count variable
+	 *
+	 * @param array|string $preregistered
+	 * @return array|Section
 	 */
-	private function generatePreregisteredSections(){
+	private function generatePreregisteredSections($preregistered){
 		$preregSections = [];
-		foreach($this->preregistered as $k=>$v){
-			$courseColor = $this->generateColor([255, 255, 255]);
-			$crn = $v;
-
-			$q = $this->link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `".COLUMNS_CRN."` = :crn");
-			$q->bindValue(":crn", $crn, PDO::PARAM_INT);
-			$q->execute();
-			$result = $q->fetchAll(PDO::FETCH_ASSOC);
-
+		foreach($preregistered as $crn){
+			$result = $this->dal->fetchByCRN($crn);
+			if($result == null){
+				continue;
+			}
 			foreach($result as $rows){
 				if(!isset($rows[COLUMNS_PROF_FN])){
 					$rows[COLUMNS_PROF_FN] = "";
@@ -151,7 +155,7 @@ class Ingest{
 					}
 				}
 				$tempSec->setProf($rows[COLUMNS_PROF_FN]." ".$rows[COLUMNS_PROF_LN]);
-				$tempSec->setColor($courseColor);
+				$tempSec->setColor($this->generateColor([255, 255, 255]));
 				$preregSections[] = $tempSec;
 			}
 		}
@@ -164,7 +168,8 @@ class Ingest{
 				}
 				$v = $preregSections[$i];
 				$v2 = $preregSections[$j];
-				if(similar_text($v->getCourseTitle(), $v2->getCourseTitle()) >= 10 && $v->getCourseNumber() == $v2->getCourseNumber() && $v->getFieldOfStudy() == $v2->getFieldOfStudy()){
+				if((similar_text($v->getCourseTitle(), $v2->getCourseTitle()) >= 10 || $v->getCourseTitle() == $v2->getCourseTitle())
+					&& $v->getCourseNumber() == $v2->getCourseNumber() && $v->getFieldOfStudy() == $v2->getFieldOfStudy()){
 					foreach($v2->getCRN() as $crn){
 						if(!(array_search($crn, $v->getCRN()) > -1)){
 							$v->addCRN($crn);
@@ -183,39 +188,44 @@ class Ingest{
 
 		foreach($preregSections as $v){
 			$v->preregistered = true;
-			$this->allSections[] = $v;
 		}
 
-		// Set the count of classes to know if a schedule has all the requested classes
-		$this->classCount = count($this->courseInput)+count($preregSections);
+		return $preregSections;
 	}
 
 	/**
 	 * Removes sections from the $allSections list if there is a problem with the time it meets
 	 * ie. it is on a day, during a time that is blacked out, or it occurs outside of the start and end times chosen
+	 *
+	 * @param $allSections
+	 * @param $startTime
+	 * @param $endTime
+	 * @param $daysWithUnwantedTimes
+	 * @param $unwantedTimes
+	 * @return mixed
 	 */
-	private function removeSectionsForTime(){
+	private function removeSectionsForTime($allSections, $startTime, $endTime, $daysWithUnwantedTimes, $unwantedTimes){
 		/** @var Section $section */
-		foreach($this->allSections as $key=>$section){
+		foreach($allSections as $key => $section){
 			if($section->preregistered){
 				continue;
 			}
-			if($this->startTime > $section->getEarliestTime()[1] || $this->endTime < $section->getLatestTime()[1]){
-				unset($this->allSections[$key]);
+			if($startTime > $section->getEarliestTime()[1] || $endTime < $section->getLatestTime()[1]){
+				unset($allSections[$key]);
 				continue;
 			}
-			foreach($section->meetingTime as $day=>$times){
-				if(!in_array($day, $this->daysWithUnwantedTimes)){
+			foreach($section->meetingTime as $day => $times){
+				if(!in_array($day, $daysWithUnwantedTimes)){
 					continue;
 				}
-				foreach($times as $days=>$time){
-					foreach($this->unwantedTimes as $dayVal){
+				foreach($times as $days => $time){
+					foreach($unwantedTimes as $dayVal){
 						foreach($dayVal as $val){
 							if(Schedule::intToDay(Schedule::dayToInt($val)) != $days){
 								continue;
 							}
-							else if(strtotime($dayVal["startTime"]) <= $time["to"] && strtotime($dayVal["endTime"]) >= $time["from"]){
-								unset($this->allSections[$key]);
+							else if(strtotime($dayVal["startTime"]) < $time["to"] && strtotime($dayVal["endTime"]) > $time["from"]){
+								unset($allSections[$key]);
 								continue 5;
 							}
 						}
@@ -223,13 +233,14 @@ class Ingest{
 				}
 			}
 		}
+		return $allSections;
 	}
 
 	/**
 	 * Generates entries in the private variable $allSections
 	 */
 	public function generateSections(){
-		$this->setDaysWithUnwantedTimes();
+		$this->daysWithUnwantedTimes = $this->setDaysWithUnwantedTimes($this->unwantedTimes);
 
 		foreach($this->courseInput as $section){
 			if(!isset($section["FOS"]) || !isset($section["CourseNum"]) || !isset($section["Title"])){
@@ -238,20 +249,16 @@ class Ingest{
 			if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
 				$this->requiredCourseNum++;
 			}
-			$subj = $section["FOS"];
-			$num = $section["CourseNum"];
-			$title = $section["Title"];
-			$courseColor = $this->generateColor([255, 255, 255]);
 
-			$q = $this->link->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `".COLUMNS_COURSE_NUM."` = :num AND `".COLUMNS_FOS."` = :subj");
-			$q->bindValue(":num", $num, PDO::PARAM_INT);
-			$q->bindValue(":subj", $subj, PDO::PARAM_STR);
-			$q->execute();
-			$result = $q->fetchAll(PDO::FETCH_ASSOC);
+			$result = $this->dal->fetchBySubjAndNumber($section["CourseNum"], $section["FOS"]);
+			if($result == null){
+				continue;
+			}
 
 			$tempSection = [];
 			$manyOptions = [];
 			$multipleOptions = false;
+			$title = $section["Title"];
 			foreach($result as $rows){
 				if(!$this->allowFull && $rows[COLUMNS_ENROLLMENT_MAX] <= $rows[COLUMNS_ENROLLMENT_CURRENT]){
 					continue;
@@ -310,6 +317,7 @@ class Ingest{
 				}
 			}
 
+			$courseColor = $this->generateColor([255, 255, 255]);
 			/** @var array|Section $tempSection **/
 			foreach($tempSection as $k=>$v){
 				if($multipleOptions){
@@ -350,8 +358,14 @@ class Ingest{
 			}
 		}
 
-		$this->generatePreregisteredSections();
-		$this->removeSectionsForTime();
+		$preregSections = $this->generatePreregisteredSections($this->preregistered);
+		foreach($preregSections as $v){
+			$this->allSections[] = $v;
+		}
+		// Set the count of classes to know if a schedule has all the requested classes
+		$this->classCount = count($this->courseInput)+count($preregSections);
+		$this->allSections = $this->removeSectionsForTime($this->allSections, $this->startTime, $this->endTime,
+			$this->daysWithUnwantedTimes, $this->unwantedTimes);
 	}
 
 }
