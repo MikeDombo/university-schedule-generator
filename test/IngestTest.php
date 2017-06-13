@@ -74,19 +74,19 @@ class IngestTest extends TestCase{
 
 	public function testMakeUnwantedTimes(){
 		$ingest = new Ingest(new FakeDAL(), $this->makeTestData());
-		$days = $this->invokeMethod($ingest, 'setDaysWithUnwantedTimes', [[]]);
+		$days = $this->invokeMethod($ingest, 'makeDaysWithUnwantedTimes', [[]]);
 		$this->assertEmpty($days);
-		$days = $this->invokeMethod($ingest, 'setDaysWithUnwantedTimes', [[["M" => ["from", "to"]]]]);
+		$days = $this->invokeMethod($ingest, 'makeDaysWithUnwantedTimes', [[["M" => ["from", "to"]]]]);
 		$this->assertEquals(["Monday"], $days);
-		$days = $this->invokeMethod($ingest, 'setDaysWithUnwantedTimes', [
+		$days = $this->invokeMethod($ingest, 'makeDaysWithUnwantedTimes', [
 			[["M" => ["from", "to"]], ["T" => ["from",  "to"]]]
 		]);
 		$this->assertEquals(["Monday", "Tuesday"], $days);
-		$days = $this->invokeMethod($ingest, 'setDaysWithUnwantedTimes', [
+		$days = $this->invokeMethod($ingest, 'makeDaysWithUnwantedTimes', [
 			[["R" => ["from", "to"]], ["R" => ["from",  "to"]]]
 		]);
 		$this->assertEquals(["Thursday"], $days);
-		$days = $this->invokeMethod($ingest, 'setDaysWithUnwantedTimes', [
+		$days = $this->invokeMethod($ingest, 'makeDaysWithUnwantedTimes', [
 			[["R" => ["from", "to"]], ["T" => ["from",  "to"]]]
 		]);
 		$this->assertEquals(["Thursday", "Tuesday"], $days);
@@ -163,7 +163,7 @@ class IngestTest extends TestCase{
 	public function testGenerateSections(){
 		$ingest = new Ingest(new FakeDAL(), $this->makeTestData());
 		$this->invokeMethod($ingest, 'generateSections', [
-			
+
 		]);
 	}
 

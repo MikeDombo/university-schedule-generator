@@ -15,7 +15,7 @@ class ScheduleGenerate{
 	 *
 	 * @param Ingest $ingest
 	 */
-	public function __construct($ingest){
+	public function __construct(Ingest $ingest){
 		$this->ingest = $ingest;
 		$this->schedules = new LimitedMinHeap();
 	}
@@ -32,18 +32,18 @@ class ScheduleGenerate{
 
 	/**
 	 * Generate all schedules
+	 *
+	 * @param array|Section $allSections
 	 */
-	public function generateSchedules(){
-		$allSections = $this->ingest->getAllSections();
+	public function generateSchedules($allSections){
 		$this->sectionCount = count($allSections);
 
-		foreach($allSections as $k=>$v){
+		foreach($allSections as $k => $v){
 			unset($allSections[$k]);
 			if(!isset($v->meetingTime)){
 				continue;
 			}
-			$curr = [];
-			$this->run($allSections, $curr, $v);
+			$this->run($allSections, $v);
 		}
 	}
 
@@ -51,17 +51,19 @@ class ScheduleGenerate{
 	 * Generate all schedules recursively
 	 *
 	 * @param array|Section $sections list of all sections that can be added
-	 * @param array|Section $curr current list of sections in the schedule being generated
 	 * @param Section $pick
+	 * @param array|Section $curr current list of sections in the schedule being generated
 	 */
-	private function run($sections, $curr, $pick){
+	private function run($sections, $pick, $curr = []){
 		$curr[] =  $pick;
 		$temp = $sections;
-		foreach($temp as $k=>$v){
+
+		foreach($temp as $k => $v){
 			if($v->conflictsWith($pick)){
 				unset($temp[$k]);
 			}
 		}
+
 		if(count($temp) == 0){
 			$a = new Schedule();
 			$requiredCourses = 0;
@@ -71,6 +73,7 @@ class ScheduleGenerate{
 				}
 				$a->addSection($b);
 			}
+
 			if($requiredCourses == $this->ingest->getRequiredCourseNum()){
 				$a->setScore($this->ingest->getMorning());
 				$this->schedules->insert($a);
@@ -78,9 +81,9 @@ class ScheduleGenerate{
 			}
 		}
 		else{
-			foreach($temp as $k=>$v){
+			foreach($temp as $k => $v){
 				unset($temp[$k]);
-				$this->run($temp, $curr, $v);
+				$this->run($temp, $v, $curr);
 			}
 		}
 	}

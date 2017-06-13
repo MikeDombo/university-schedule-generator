@@ -111,7 +111,7 @@ class Ingest{
 	 * @param $unwantedTimes
 	 * @return array
 	 */
-	private function setDaysWithUnwantedTimes($unwantedTimes){
+	private function makeDaysWithUnwantedTimes($unwantedTimes){
 		$daysWithUnwantedTimes = [];
 		foreach($unwantedTimes as $v){
 			foreach($v as $k2=>$v2){
@@ -240,8 +240,6 @@ class Ingest{
 	 * Generates entries in the private variable $allSections
 	 */
 	public function generateSections(){
-		$this->daysWithUnwantedTimes = $this->setDaysWithUnwantedTimes($this->unwantedTimes);
-
 		foreach($this->courseInput as $section){
 			if(!isset($section["FOS"]) || !isset($section["CourseNum"]) || !isset($section["Title"])){
 				continue;
@@ -362,8 +360,10 @@ class Ingest{
 		foreach($preregSections as $v){
 			$this->allSections[] = $v;
 		}
+
 		// Set the count of classes to know if a schedule has all the requested classes
 		$this->classCount = count($this->courseInput)+count($preregSections);
+		$this->daysWithUnwantedTimes = $this->makeDaysWithUnwantedTimes($this->unwantedTimes);
 		$this->allSections = $this->removeSectionsForTime($this->allSections, $this->startTime, $this->endTime,
 			$this->daysWithUnwantedTimes, $this->unwantedTimes);
 	}

@@ -7,3 +7,5 @@ vendor/*
 build/
 build/*
 schedules-created.txt
+error_log
+*.sqlite

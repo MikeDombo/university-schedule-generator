@@ -74,11 +74,11 @@ class Section extends Course{
 		$dayDay = Schedule::intToDay($dayInt); //convert day from int to string that is recognized easily and human
 		// readable
 		if(isset($this->meetingTime[$dayDay])){ //if the day is existing in $meetingTime, add the time to that day
-			$this->meetingTime[$dayDay][] = ["from"=>strtotime($from),  "to"=>strtotime($to)];
+			$this->meetingTime[$dayDay][] = ["from" => strtotime($from),  "to" => strtotime($to)];
 		}
 		else{ //the day does not exist already in $meetingTime
 			$temp = [];
-			$temp[] = ["from"=>strtotime($from),  "to"=>strtotime($to)];
+			$temp[] = ["from" => strtotime($from),  "to" => strtotime($to)];
 			$this->meetingTime[$dayDay] = $temp;
 		}
 		

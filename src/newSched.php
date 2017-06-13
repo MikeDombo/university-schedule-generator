@@ -35,7 +35,7 @@ $ingest = new Ingest(new MySQLDAL($link), urldecode($_GET["i"]));
 $ingest->generateSections();
 
 $scheduleGenerator = new ScheduleGenerate($ingest);
-$scheduleGenerator->generateSchedules();
+$scheduleGenerator->generateSchedules($ingest->getAllSections());
 $numSchedules = $scheduleGenerator->getNumSchedules();
 
 // Write number of generated schedules to a local text file
