@@ -11,7 +11,6 @@ our algorithm, generates all possible non-conflicting schedules.
 
 ## Where It Is
 Right now the PHP version is available at http://mikedombrowski.com/ur/.
-We are currently still developing the Java version which will then be used to make the Android version.
 
 ## Run Your Own
 Although there are many customizations that are probabily specific to only the University of Richmond, if you wanted to run your own here's how.
