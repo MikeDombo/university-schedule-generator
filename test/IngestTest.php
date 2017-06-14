@@ -19,7 +19,7 @@ class IngestTest extends TestCase{
 	 *
 	 * @return mixed Method return.
 	 */
-	public function invokeMethod(&$object, $methodName, array $parameters = [])
+	public static function invokeMethod(&$object, $methodName, array $parameters = [])
 	{
 		$reflection = new \ReflectionClass(get_class($object));
 		$method = $reflection->getMethod($methodName);
@@ -160,14 +160,182 @@ class IngestTest extends TestCase{
 		$this->assertEquals([1 => $section2], $sections);
 	}
 
-	public function testGenerateSections(){
-		$ingest = new Ingest(new FakeDAL(), $this->makeTestData());
-		$this->invokeMethod($ingest, 'generateSections', [
-
-		]);
+	public function testGenerateSectionsSingleCourse(){
+		$courseData1 = "{\"allCourses\":[{\"CourseNum\":323,\"FOS\":\"CMSC\",\"Title\":\"Design and Implementation of Programming Languages\"}],\"timePref\":false,\"fullClasses\":true,\"preregistered\":[\"\"],\"startTime\":\"8:00 AM\",\"endTime\":\"10:00 PM\",\"unwantedTimes\":[]}";
+		$ingest = new Ingest(new FakeDAL(), $courseData1);
+		$ingest->generateSections();
+		$section1 = new Section("Design and Implementation of Programming Languages", "CMSC", "323", 1.0, ["10006"]);
+		$section1->addTime("F", "0900", "1015");
+		$section1->addTime("M", "0900", "1015");
+		$section1->addTime("W", "0900", "1015");
+		$section1->setProf(" Charlesworth");
+		$this->assertEquals(1, count($ingest->getAllSections()));
+		$this->assertTrue($this->compareSections($section1, $ingest->getAllSections()[0]));
 	}
 
-	private function makeTestData(){
+	public function testGenerateSectionsMultipleCourses(){
+		$courseData = "{\"allCourses\":[{\"CourseNum\":323,\"FOS\":\"CMSC\",\"Title\":\"Design and Implementation of Programming Languages\",\"displayTitle\":\"Design and Implementation of Programming Languages\"},{\"CourseNum\":331,\"FOS\":\"CMSC\",\"Title\":\"Introduction to Compiler Construction\"}],\"timePref\":false,\"fullClasses\":true,\"preregistered\":[\"\"],\"startTime\":\"8:00 AM\",\"endTime\":\"10:00 PM\",\"unwantedTimes\":[]}";
+		$ingest = new Ingest(new FakeDAL(), $courseData);
+		$ingest->generateSections();
+
+		$section1 = new Section("Design and Implementation of Programming Languages", "CMSC", "323", 1.0, ["10006"]);
+		$section1->addTime("F", "0900", "1015");
+		$section1->addTime("M", "0900", "1015");
+		$section1->addTime("W", "0900", "1015");
+		$section1->setProf(" Charlesworth");
+
+		$section2 = new Section("Introduction to Compiler Construction", "CMSC", "331", 1.0, ["17069"]);
+		$section2->addTime("W", "1500", "1550");
+		$section2->addTime("T", "1200", "1315");
+		$section2->addTime("R", "1200", "1315");
+		$section2->setProf(" Szajda");
+		$mySections = [$section1, $section2];
+
+		$this->assertEquals(2, count($ingest->getAllSections()));
+		$this->assertEquals(2, count($mySections));
+		foreach($mySections as $k=>$v){
+			$this->assertTrue($this->compareSections($v, $ingest->getAllSections()[$k]));
+		}
+
+		$courseData = "{\"allCourses\":[{\"CourseNum\":323,\"FOS\":\"CMSC\",\"Title\":\"Design and Implementation of Programming Languages\",\"displayTitle\":\"Design and Implementation of Programming Languages\"},{\"CourseNum\":331,\"FOS\":\"CMSC\",\"Title\":\"Introduction to Compiler Construction\",\"displayTitle\":\"Introduction to Compiler Construction\"},{\"CourseNum\":326,\"FOS\":\"CHEM\",\"Title\":\"Biochemistry\"}],\"timePref\":false,\"fullClasses\":true,\"preregistered\":[\"\"],\"startTime\":\"8:00 AM\",\"endTime\":\"10:00 PM\",\"unwantedTimes\":[]}";
+		$ingest = new Ingest(new FakeDAL(), $courseData);
+		$this->invokeMethod($ingest, 'generateSections', []);
+		$section3 = new Section("Biochemistry", "CHEM", "326", 1.0, ["10302"]);
+		$section3->addTime("M", "0900", "1000");
+		$section3->addTime("W", "0900", "1000");
+		$section3->addTime("F", "0900", "1000");
+		$section3->setProf(" Hamm");
+
+		$section4 = new Section("Biochemistry", "CHEM", "326", 1.0, ["16465"]);
+		$section4->addTime("M", "1030", "1130");
+		$section4->addTime("W", "1030", "1130");
+		$section4->addTime("F", "1030", "1130");
+		$section4->setProf(" Hamm");
+		$mySections[] = $section3;
+		$mySections[] = $section4;
+
+		$this->assertEquals(4, count($ingest->getAllSections()));
+		$this->assertEquals(4, count($mySections));
+		foreach($mySections as $k=>$v){
+			$this->assertTrue($this->compareSections($v, $ingest->getAllSections()[$k]));
+		}
+	}
+
+	public function testGenerateSectionsMultipleOptions(){
+		$courseData = "{\"allCourses\":[{\"CourseNum\":121,\"FOS\":\"LAIS\",\"Title\":\"Intensive Elementary Spanish\"}],\"timePref\":false,\"fullClasses\":true,\"preregistered\":[\"\"],\"startTime\":\"8:00 AM\",\"endTime\":\"10:00 PM\",\"unwantedTimes\":[]}";
+		$ingest = new Ingest(new FakeDAL(), $courseData);
+		$ingest->generateSections();
+
+		$section1 = new Section("Intensive Elementary Spanish", "LAIS", "121", 2.0, ["11254", "11311"]);
+		$section1->addTime("M", "1630", "1715");
+		$section1->addTime("W", "1630", "1715");
+		$section1->addTime("T", "1030", "1145");
+		$section1->addTime("R", "1030", "1145");
+		$section1->addTime("M", "1030", "1120");
+		$section1->addTime("W", "1030", "1120");
+		$section1->addTime("F", "1030", "1120");
+		$section1->setMultiples(true);
+
+		$section2 = new Section("Intensive Elementary Spanish", "LAIS", "121", 2.0, ["11254", "11256"]);
+		$section2->addTime("T", "0900", "0945");
+		$section2->addTime("R", "0900", "0945");
+		$section2->addTime("T", "1030", "1145");
+		$section2->addTime("R", "1030", "1145");
+		$section2->addTime("M", "1030", "1120");
+		$section2->addTime("W", "1030", "1120");
+		$section2->addTime("F", "1030", "1120");
+		$section2->setMultiples(true);
+
+		$mySections = [$section1, $section2];
+
+		$this->assertEquals(2, count($ingest->getAllSections()));
+		$this->assertEquals(2, count($mySections));
+		foreach($mySections as $k=>$v){
+			$this->assertTrue($this->compareSections($v, $ingest->getAllSections()[$k]));
+		}
+	}
+
+	public function testGenerateSectionsRequiredCourse(){
+		$courseData = "{\"allCourses\":[{\"CourseNum\":121,\"FOS\":\"LAIS\",\"Title\":\"Intensive Elementary Spanish\",\"displayTitle\":\"Intensive Elementary Spanish\"},{\"CourseNum\":323,\"FOS\":\"CMSC\",\"Title\":\"Design and Implementation of Programming Languages\",\"requiredCourse\":true}],\"timePref\":false,\"fullClasses\":true,\"preregistered\":[\"\"],\"startTime\":\"8:00 AM\",\"endTime\":\"10:00 PM\",\"unwantedTimes\":[]}";
+		$ingest = new Ingest(new FakeDAL(), $courseData);
+		$ingest->generateSections();
+
+		$section1 = new Section("Design and Implementation of Programming Languages", "CMSC", "323", 1.0, ["10006"]);
+		$section1->addTime("F", "0900", "1015");
+		$section1->addTime("M", "0900", "1015");
+		$section1->addTime("W", "0900", "1015");
+		$section1->setProf(" Charlesworth");
+		$section1->setRequiredCourse(true);
+
+		$section2 = new Section("Intensive Elementary Spanish", "LAIS", "121", 2.0, ["11254", "11311"]);
+		$section2->addTime("M", "1630", "1715");
+		$section2->addTime("W", "1630", "1715");
+		$section2->addTime("T", "1030", "1145");
+		$section2->addTime("R", "1030", "1145");
+		$section2->addTime("M", "1030", "1120");
+		$section2->addTime("W", "1030", "1120");
+		$section2->addTime("F", "1030", "1120");
+		$section2->setMultiples(true);
+
+		$section3 = new Section("Intensive Elementary Spanish", "LAIS", "121", 2.0, ["11254", "11256"]);
+		$section3->addTime("T", "0900", "0945");
+		$section3->addTime("R", "0900", "0945");
+		$section3->addTime("T", "1030", "1145");
+		$section3->addTime("R", "1030", "1145");
+		$section3->addTime("M", "1030", "1120");
+		$section3->addTime("W", "1030", "1120");
+		$section3->addTime("F", "1030", "1120");
+		$section3->setMultiples(true);
+		$mySections = [$section2, $section3, $section1];
+
+		$this->assertEquals(3, count($ingest->getAllSections()));
+		$this->assertEquals(3, count($mySections));
+		foreach($mySections as $k=>$v){
+			$this->assertTrue($this->compareSections($v, $ingest->getAllSections()[$k]));
+		}
+	}
+
+	private function compareSections(Section $a, Section $b){
+		if($a->getProf() != $b->getProf()){
+			return false;
+		}
+		else if($a->getLatestTime() != $b->getLatestTime()){
+			return false;
+		}
+		else if($a->getLastTime() != $b->getLastTime()){
+			return false;
+		}
+		else if($a->getEarliestTime() != $b->getEarliestTime()){
+			return false;
+		}
+		else if($a->getFirstTime() != $b->getFirstTime()){
+			return false;
+		}
+		else if($a->getCourseTitle() != $b->getCourseTitle()){
+			return false;
+		}
+		else if($a->getFieldOfStudy() != $b->getFieldOfStudy()){
+			return false;
+		}
+		else if($a->getCourseNumber() != $b->getCourseNumber()){
+			return false;
+		}
+		else if($a->getCRN() != $b->getCRN()){
+			return false;
+		}
+		else if($a->getNumUnits() != $b->getNumUnits()){
+			return false;
+		}
+		else if($a->isRequiredCourse() != $b->isRequiredCourse()){
+			return false;
+		}
+		else if($a->preregistered != $b->preregistered){
+			return false;
+		}
+		return true;
+	}
+
+	public static function makeTestData(){
 		$a = ["allCourses" => [], "preregistered" => [], "timePref" => "", "fullClasses" => false,
 			"startTime" => "8:00am", "endTime" => "10:00pm", "unwantedTimes" => []];
 		return json_encode($a);
@@ -176,6 +344,22 @@ class IngestTest extends TestCase{
 
 class FakeDAL extends MySQLDAL{
 	public function __construct(){
+	}
+
+	public function fetchBySubjAndNumber($num, $subj){
+		if($num == "323" && $subj == "CMSC"){
+			return json_decode('[{"ID":"336","CRN":"10006","SUBJ":"CMSC","CRSE":"323","SEC":"01","TITLE":"DSGN\/IMPLEMNTN PROG LANG W\/LAB","M":"","T":"","W":"","R":"","F":"F","BEGIN":"0900","END":"1015","LASTNAME":"Charlesworth","BLDG":"JPSN","ROOM":"120","MAX":"18","GMOD":"S","ARPVL":"","UNITS":"1","ENROLLMENT":"17"},{"ID":"337","CRN":"10006","SUBJ":"CMSC","CRSE":"323","SEC":"01","TITLE":"DSGN\/IMPLEMNTN PROG LANG W\/LAB","M":"M","T":"","W":"W","R":"","F":"","BEGIN":"0900","END":"1015","LASTNAME":"Charlesworth","BLDG":"JPSN","ROOM":"120","MAX":"18","GMOD":"S","ARPVL":"","UNITS":"1","ENROLLMENT":"17"}]', true);
+		}
+		else if($num == "331" && $subj == "CMSC"){
+			return json_decode('[{"ID":"338","CRN":"17069","SUBJ":"CMSC","CRSE":"331","SEC":"01","TITLE":"INTRO TO COMPLR CNSTRCTN W\/LAB","M":"","T":"","W":"W","R":"","F":"","BEGIN":"1500","END":"1550","LASTNAME":"Szajda","BLDG":"JPSN","ROOM":"G22","MAX":"18","GMOD":"S","ARPVL":"","UNITS":"1","ENROLLMENT":"8"},{"ID":"339","CRN":"17069","SUBJ":"CMSC","CRSE":"331","SEC":"01","TITLE":"INTRO TO COMPLR CNSTRCTN W\/LAB","M":"","T":"T","W":"","R":"R","F":"","BEGIN":"1200","END":"1315","LASTNAME":"Szajda","BLDG":"JPSN","ROOM":"231","MAX":"18","GMOD":"S","ARPVL":"","UNITS":"1","ENROLLMENT":"8"}]', true);
+		}
+		else if($num == "326" && $subj == "CHEM"){
+			return json_decode('[{"ID":"276","CRN":"10302","SUBJ":"CHEM","CRSE":"326","SEC":"01","TITLE":"BIOCHEMISTRY","M":"M","T":"","W":"W","R":"","F":"F","BEGIN":"0900","END":"1000","LASTNAME":"Hamm","BLDG":"GOTW","ROOM":"E303","MAX":"25","GMOD":"S","ARPVL":"","UNITS":"1","ENROLLMENT":"7"},{"ID":"277","CRN":"16465","SUBJ":"CHEM","CRSE":"326","SEC":"02","TITLE":"BIOCHEMISTRY","M":"M","T":"","W":"W","R":"","F":"F","BEGIN":"1030","END":"1130","LASTNAME":"Hamm","BLDG":"GOTW","ROOM":"E303","MAX":"25","GMOD":"S","ARPVL":"","UNITS":"1","ENROLLMENT":"15"}]', true);
+		}
+		else if($num == "121" && $subj == "LAIS"){
+			return json_decode('[{"ID":"721","CRN":"11254","SUBJ":"LAIS","CRSE":"121","SEC":"01","TITLE":"INTENSIVE ELEM SPAN W\/ DRILL","M":"","T":"T","W":"","R":"R","F":"","BEGIN":"1030","END":"1145","LASTNAME":"Corradini","BLDG":"PURH","ROOM":"G13","MAX":"20","GMOD":"S","ARPVL":"DP","UNITS":"2","ENROLLMENT":""},{"ID":"722","CRN":"11254","SUBJ":"LAIS","CRSE":"121","SEC":"01","TITLE":"INTENSIVE ELEM SPAN W\/ DRILL","M":"M","T":"","W":"W","R":"","F":"F","BEGIN":"1030","END":"1120","LASTNAME":"Corradini","BLDG":"PURH","ROOM":"G13","MAX":"20","GMOD":"S","ARPVL":"DP","UNITS":"2","ENROLLMENT":""},{"ID":"723","CRN":"11311","SUBJ":"LAIS","CRSE":"121","SEC":"D1A","TITLE":"INTENSIVE ELEM SPANISH DRILL","M":"M","T":"","W":"W","R":"","F":"","BEGIN":"1630","END":"1715","LASTNAME":"Corradini","BLDG":"","ROOM":"","MAX":"10","GMOD":"S","ARPVL":"","UNITS":"","ENROLLMENT":""},{"ID":"724","CRN":"11256","SUBJ":"LAIS","CRSE":"121","SEC":"D1B","TITLE":"INTENSIVE ELEM SPANISH DRILL","M":"","T":"T","W":"","R":"R","F":"","BEGIN":"0900","END":"0945","LASTNAME":"Corradini","BLDG":"","ROOM":"","MAX":"10","GMOD":"S","ARPVL":"","UNITS":"","ENROLLMENT":""}]', true);
+		}
+		return null;
 	}
 
 	public function fetchByCRN($crn){

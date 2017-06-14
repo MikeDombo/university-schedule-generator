@@ -95,20 +95,19 @@ class ScheduleGenerate{
 	 * @param int $num number that the word is referring to
 	 * @return string
 	 */
-	public function plural($word, $num){
+	public static function plural($word, $num){
+		$vowels = ["a", "e", "i", "o", "u"];
 		if($num == 1){
 			return $word;
 		}
+		if(mb_substr($word, -1, 1) == "y" && !in_array(mb_substr($word, -2, 1), $vowels, true)){
+			return mb_substr($word, 0, mb_strlen($word)-1)."ies";
+		}
+		else if(mb_substr($word, -1, 1) == "s" || mb_substr($word, -1, 1) == "o"){
+			return $word."es";
+		}
 		else{
-			if(substr($word, -1) == "y"){
-				return substr($word, 0, strlen($word)-1)."ies";
-			}
-			else if(substr($word, -1) == "s"){
-				return $word."es";
-			}
-			else{
-				return $word."s";
-			}
+			return $word."s";
 		}
 	}
 
