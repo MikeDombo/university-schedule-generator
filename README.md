@@ -1,5 +1,10 @@
 # University of Richmond - Schedule Generator
 
+[![build status](http://git.home.mikedombrowski.com/mdombrowski/university-schedule-generator/badges/master/build.svg)](http://git.home.mikedombrowski.com/mdombrowski/university-schedule-generator/commits/master)
+[![coverage report](http://git.home.mikedombrowski.com/mdombrowski/university-schedule-generator/badges/master/coverage.svg)](http://git.home.mikedombrowski.com/mdombrowski/university-schedule-generator/commits/master)
+
+
+
 ## What It Is
 Our app accepts as many courses as a student may want to take along with all the offered sections of each course.  Then, with
 our algorithm, generates all possible non-conflicting schedules.
