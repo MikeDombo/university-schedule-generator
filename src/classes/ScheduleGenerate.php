@@ -1,6 +1,6 @@
 <?php
 
-class ScheduleGenerate{
+class ScheduleGenerate {
 	/** @var Ingest $ingest */
 	private $ingest;
 	/** @var \LimitedMinHeap $schedules */
@@ -27,7 +27,7 @@ class ScheduleGenerate{
 	 * @return string
 	 */
 	private function makeColorString($color){
-		return $color[0].", ".$color[1].", ".$color[2];
+		return $color[0] . ", " . $color[1] . ", " . $color[2];
 	}
 
 	/**
@@ -55,7 +55,7 @@ class ScheduleGenerate{
 	 * @param array|Section $curr current list of sections in the schedule being generated
 	 */
 	private function run($sections, $pick, $curr = []){
-		$curr[] =  $pick;
+		$curr[] = $pick;
 		$temp = $sections;
 
 		foreach($temp as $k => $v){
@@ -101,13 +101,13 @@ class ScheduleGenerate{
 			return $word;
 		}
 		if(mb_substr($word, -1, 1) == "y" && !in_array(mb_substr($word, -2, 1), $vowels, true)){
-			return mb_substr($word, 0, mb_strlen($word)-1)."ies";
+			return mb_substr($word, 0, mb_strlen($word) - 1) . "ies";
 		}
 		else if(mb_substr($word, -1, 1) == "s" || mb_substr($word, -1, 1) == "o"){
-			return $word."es";
+			return $word . "es";
 		}
 		else{
-			return $word."s";
+			return $word . "s";
 		}
 	}
 
@@ -136,19 +136,19 @@ class ScheduleGenerate{
 				/** @var Section $b */
 				foreach($b->getCRN() as $crn){
 					if($b->preregistered){
-						$crn = "<em>".$crn."</em>";
+						$crn = "<em>" . $crn . "</em>";
 					}
-					$crnList = $crnList.", ".$crn;
+					$crnList = $crnList . ", " . $crn;
 				}
 				$crns = $b->getCRN()[0];
 				foreach($b->getCRN() as $j => $crn){
 					if($j == 0){
 						continue;
 					}
-					$crns = $crns.", ".$crn;
+					$crns = $crns . ", " . $crn;
 				}
 				$listRows[] = ["color" => $this->makeColorString($b->getColor()), "crns" => $crns,
-					"coursenum" =>  $b->getCourseNumber(), "fos" => $b->getFieldOfStudy(),
+					"coursenum" => $b->getCourseNumber(), "fos" => $b->getFieldOfStudy(),
 					"preregistered" => $b->preregistered, "prof" => $b->getProf(),
 					"title" => $b->getCourseTitle(), "titleWithDate" => $b->__toString()];
 			}
@@ -186,14 +186,15 @@ class ScheduleGenerate{
 							if($j == 0){
 								continue;
 							}
-							$crns = $crns.", ".$crn;
+							$crns = $crns . ", " . $crn;
 						}
 						$rows[$rowCount]["rowData"][] = ["color" => $this->makeColorString($v[Schedule::intToDay($i)]->getColor()),
 							"crns" => $crns, "coursenum" => $v[Schedule::intToDay($i)]->getCourseNumber(),
 							"fos" => $v[Schedule::intToDay($i)]->getFieldOfStudy(),
 							"preregistered" => $v[Schedule::intToDay($i)]->preregistered,
 							"title" => $v[Schedule::intToDay($i)]->getCourseTitle(), "prof" => $v[Schedule::intToDay($i)]->getProf()];
-					}else{
+					}
+					else{
 						$rows[$rowCount]["rowData"][] = ["empty" => true];
 					}
 				}

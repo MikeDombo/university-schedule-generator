@@ -1,16 +1,17 @@
 <?php
+
 /**
-Authored by Michael Dombrowski, http://mikedombrowski.com
-Original repository available at http://github.com/md100play/university-schedule-generator
-
-LimitedMinHeap is a min heap that has a maximum size in order to find the $maxSize number of highest values in the heap
+ * Authored by Michael Dombrowski, http://mikedombrowski.com
+ * Original repository available at http://github.com/md100play/university-schedule-generator
+ *
+ * LimitedMinHeap is a min heap that has a maximum size in order to find the $maxSize number of highest values in the
+ * heap
  **/
-
 class LimitedMinHeap {
 	private $minHeap;
 	private $maxSize;
 
-	public function __construct($maxSize=100){
+	public function __construct($maxSize = 100){
 		$this->minHeap = new MinHeap();
 		$this->maxSize = $maxSize;
 	}
@@ -43,18 +44,20 @@ class LimitedMinHeap {
 	public function getMinArray(){
 		$temp = [];
 		$schedCount = $this->count();
-		for($i=0; $i<$schedCount; $i++){
+		for($i = 0; $i < $schedCount; $i++){
 			$temp[] = $this->pop();
 		}
+
 		return $temp;
 	}
 
 	public function getMaxArray(){
 		$temp = [];
 		$schedCount = $this->count();
-		for($i=0; $i<$schedCount; $i++){
+		for($i = 0; $i < $schedCount; $i++){
 			array_unshift($temp, $this->pop());
 		}
+
 		return $temp;
 	}
 }

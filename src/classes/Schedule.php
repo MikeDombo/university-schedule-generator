@@ -1,13 +1,14 @@
 <?php
+
 /**
-Authored by Michael Dombrowski, http://mikedombrowski.com
-Original repository available at http://github.com/md100play/university-schedule-generator
-
-This class essentially holds many sections that represent a single schedule option.  It includes variables for ease of use like,
-$numberOfClasses, $numberOfUnits, $earliestTime, $latestTime, $firstTime, $lastTime, $fridayFree, and $score.
-**/
-
-class Schedule{
+ * Authored by Michael Dombrowski, http://mikedombrowski.com
+ * Original repository available at http://github.com/md100play/university-schedule-generator
+ *
+ * This class essentially holds many sections that represent a single schedule option.  It includes variables for ease
+ * of use like,
+ * $numberOfClasses, $numberOfUnits, $earliestTime, $latestTime, $firstTime, $lastTime, $fridayFree, and $score.
+ **/
+class Schedule {
 	/** @var array|Section */
 	private $listOfSections;
 	/** @var int $numberOfClasses */
@@ -22,10 +23,10 @@ class Schedule{
 	private $fridayFree;
 	/** @var int $score */
 	public $score;
-	
+
 	/**
-	Default constructor to initialize critical values
-	**/
+	 * Default constructor to initialize critical values
+	 **/
 	public function __construct(){
 		$this->listOfSections = [];
 		$this->numberOfClasses = 0;
@@ -33,13 +34,13 @@ class Schedule{
 		$this->fridayFree = true;
 		$this->score = 0;
 	}
-	
+
 	/**
 	 * Adds a single section to the list of sections and updates important variables, much like addTime in the Section
 	 * class
 	 *
 	 * @param Section $sec
-	**/
+	 **/
 	public function addSection($sec){
 		$this->listOfSections[] = $sec; //add the Section to the current list
 		$this->numberOfClasses += 1;
@@ -88,36 +89,36 @@ class Schedule{
 		else if($this->lastTime[0] == $sec->getLastTime()[0] && $this->lastTime[1] < $sec->getLastTime()[1]){
 			$this->lastTime = [$sec->getLastTime()[0], $sec->getLastTime()[1]];
 		}
-		
+
 		if($sec->meetsFriday()){
 			$this->fridayFree = false;
 		}
 
 	}
-	
+
 	/**
 	 * This function sets the score variable that is used to sort all schedules based on number of classes, number of
 	 * units, classes per day, and the earliest time classes occur
 	 *
 	 * @param bool $morning
-	**/
+	 **/
 	public function setScore($morning){
-		$classes = $this->numberOfUnits+$this->numberOfClasses;
-		$this->score = $classes*2;//set score to number of classes and units, then scale by a factor of 2
+		$classes = $this->numberOfUnits + $this->numberOfClasses;
+		$this->score = $classes * 2;//set score to number of classes and units, then scale by a factor of 2
 		$cpd = $this->getCPD();
-		$this->score += ($this->numberOfClasses - reset($cpd))*1.5;//add then number of classes minus the greatest number of classes in a day and scale by 1.5
+		$this->score += ($this->numberOfClasses - reset($cpd)) * 1.5;//add then number of classes minus the greatest number of classes in a day and scale by 1.5
 		if($this->fridayFree){
 			$this->score += 2;
 		}
-		
+
 		//This section calculates the score to add due to classes being later than 10:00am
 		$earliest = [];
-		foreach($this->listOfSections as $k=>$v){
+		foreach($this->listOfSections as $k => $v){
 			if($v->preregistered){
 				$this->score += .25;
 			}
 			if(isset($v->meetingTime)){
-				foreach($v->meetingTime as $day=>$times){
+				foreach($v->meetingTime as $day => $times){
 					foreach($times as $time){
 						if(isset($earliest[$day])){
 							if($earliest[$day] > $time["from"]){
@@ -132,30 +133,30 @@ class Schedule{
 				}
 			}
 		}
-		
+
 		$timeScore = 0;
-		foreach($earliest as $k=>$v){
-			$timeScore += ($v - strtotime("10:00 AM"))/3600;
+		foreach($earliest as $k => $v){
+			$timeScore += ($v - strtotime("10:00 AM")) / 3600;
 		}
 		if($morning){
 			//scale the timeScore by the number of classes and then only add 10% of that because it isn't very important
-			$this->score -= ($timeScore/$this->numberOfClasses)*.1;
+			$this->score -= ($timeScore / $this->numberOfClasses) * .1;
 		}
 		else{
 			//scale the timeScore by the number of classes and then only add 10% of that because it isn't very important
-			$this->score += ($timeScore/$this->numberOfClasses)*.1;
+			$this->score += ($timeScore / $this->numberOfClasses) * .1;
 		}
 	}
-	
+
 	/**
-	This function calculates the number of classes on each day
-	**/
+	 * This function calculates the number of classes on each day
+	 **/
 	public function getCPD(){
 		$arr = [];
 		$arr2 = [];
 		foreach($this->listOfSections as $v){
 			if(isset($v->meetingTime)){
-				foreach($v->meetingTime as $k=>$m){
+				foreach($v->meetingTime as $k => $m){
 					if(!isset($arr[$k])){
 						$arr[$k] = 1;
 					}
@@ -165,20 +166,21 @@ class Schedule{
 				}
 			}
 		}
-		
+
 		arsort($arr);
 		$i = reset($arr);
-		foreach($arr as $k=>$v){
+		foreach($arr as $k => $v){
 			if($i == $v){
 				$arr2[$this->dayToInt($k)] = $v;
 			}
 		}
-		
+
 		ksort($arr2);
-		foreach($arr2 as $k=>$v){
+		foreach($arr2 as $k => $v){
 			unset($arr2[$k]);
 			$arr2[$this->intToDay($k)] = $v;
 		}
+
 		return $arr2;
 	}
 
@@ -193,35 +195,35 @@ class Schedule{
 	 * @return int
 	 */
 	public function getNumClasses(){
-        return $this->numberOfClasses;
-    }
+		return $this->numberOfClasses;
+	}
 
-    public function getEarliestTime(){
-        return $this->earliestTime;
-    }
-    
-    public function getlatestTime(){
-        return $this->latestTime;
-    }
+	public function getEarliestTime(){
+		return $this->earliestTime;
+	}
+
+	public function getlatestTime(){
+		return $this->latestTime;
+	}
 
 	/**
 	 * @return bool
 	 */
-    public function fridayFree(){
-        return $this->fridayFree;
-    }
+	public function fridayFree(){
+		return $this->fridayFree;
+	}
 
 	/**
 	 * @return int
 	 */
 	public function getNumUnits(){
-        return $this->numberOfUnits;
-    }
-	
+		return $this->numberOfUnits;
+	}
+
 	public function getLastTime(){
 		return $this->lastTime;
 	}
-	
+
 	public function getFirstTime(){
 		return $this->firstTime;
 	}
@@ -232,19 +234,19 @@ class Schedule{
 	 */
 	public static function dayToInt($day){
 		switch($day){
-			case "Monday":				
+			case "Monday":
 				return 0;
-			case "Tuesday":				
+			case "Tuesday":
 				return 1;
-			case "Wednesday":				
+			case "Wednesday":
 				return 2;
-			case "Thursday":				
+			case "Thursday":
 				return 3;
-			case "Friday":				
+			case "Friday":
 				return 4;
-			case "Saturday":				
+			case "Saturday":
 				return 5;
-			case "Sunday":				
+			case "Sunday":
 				return 6;
 			case "M":
 				return 0;
@@ -277,7 +279,7 @@ class Schedule{
 				return "Wednesday";
 			case 3:
 				return "Thursday";
-			case 4:	
+			case 4:
 				return "Friday";
 			case 5:
 				return "Saturday";

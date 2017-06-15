@@ -6,7 +6,7 @@
  * Date: 6/11/2017
  * Time: 3:31 PM
  */
-class MySQLDAL{
+class MySQLDAL {
 	private $pdo;
 
 	public function __construct(PDO $pdo){
@@ -15,7 +15,7 @@ class MySQLDAL{
 
 	public function fetchByCRN($crn){
 		try{
-			$q = $this->pdo->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `".COLUMNS_CRN."` = :crn");
+			$q = $this->pdo->prepare("SELECT * FROM `" . DB_DATABASE_TABLE . "` WHERE `" . COLUMNS_CRN . "` = :crn");
 			$q->bindValue(":crn", $crn, PDO::PARAM_INT);
 			$q->execute();
 
@@ -28,8 +28,8 @@ class MySQLDAL{
 
 	public function fetchBySubjAndNumber($num, $subj){
 		try{
-			$q = $this->pdo->prepare("SELECT * FROM `".DB_DATABASE_TABLE."` WHERE `".COLUMNS_COURSE_NUM."` = :num AND `"
-				.COLUMNS_FOS."` = :subj");
+			$q = $this->pdo->prepare("SELECT * FROM `" . DB_DATABASE_TABLE . "` WHERE `" . COLUMNS_COURSE_NUM . "` = :num AND `"
+				. COLUMNS_FOS . "` = :subj");
 			$q->bindValue(":num", $num, PDO::PARAM_INT);
 			$q->bindValue(":subj", $subj, PDO::PARAM_STR);
 			$q->execute();
