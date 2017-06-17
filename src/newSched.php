@@ -65,7 +65,7 @@ else{
 $maxMemoryUsed = number_format(memory_get_peak_usage() / 1024, 2);
 
 $options = ["time_used" => $timeUsed, "max_memory_used" => $maxMemoryUsed,
-	"numSchedules" => ["num" => number_format($numSchedules),
+	"numSchedules" => ["num" => $numSchedules, "numStr" => number_format($numSchedules),
 		"string" => $scheduleGenerator->plural("Schedule", $numSchedules)],
 	"sectionCount" => ["num" => number_format($scheduleGenerator->getSectionCount()),
 		"string" => $scheduleGenerator->plural("Section", $scheduleGenerator->getSectionCount())],

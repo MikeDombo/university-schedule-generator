@@ -65,8 +65,8 @@ class ScheduleGenerate {
 		}
 
 		if(count($temp) == 0){
-			$a = new Schedule();
 			$requiredCourses = 0;
+			$a = new Schedule();
 			foreach($curr as $b){
 				if($b->isRequiredCourse()){
 					$requiredCourses++;
@@ -77,7 +77,7 @@ class ScheduleGenerate {
 			if($requiredCourses == $this->ingest->getRequiredCourseNum()){
 				$a->setScore($this->ingest->getMorning());
 				$this->schedules->insert($a);
-				$this->numSchedules += 1;
+				$this->numSchedules++;
 			}
 		}
 		else{
@@ -121,7 +121,9 @@ class ScheduleGenerate {
 		$weekSchedule = [];
 		$listSchedule = [];
 		$num = 0;
+		/** @var \Schedule $a */
 		foreach($schedules as $a){
+			$a->generateFirstLastTimes();
 			$cpd = $a->getCPD();
 			$daysString = [];
 

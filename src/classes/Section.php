@@ -147,11 +147,10 @@ class Section extends Course {
 	 **/
 	public function conflictsWith($other){
 		//check if the fields of study and course numbers are the same
-		if($this->getFieldOfStudy() == $other->getFieldOfStudy() && $this->getCourseNumber() == $other->getCourseNumber()){
-			//if the field of study is FYS and the course titles and the same, then the sections must conflict
-			if($this->getCourseTitle() == $other->getCourseTitle() || $this->preregistered || $other->preregistered){
-				return true;
-			}
+		//if the field of study is FYS and the course titles and the same, then the sections must conflict
+		if($this->getCourseNumber() == $other->getCourseNumber() && $this->getFieldOfStudy() == $other->getFieldOfStudy()
+			&& ($this->getCourseTitle() == $other->getCourseTitle() || $this->preregistered || $other->preregistered)){
+			return true;
 		}
 
 		// Sections do not conflict in course, so we must now check if they conflict in time

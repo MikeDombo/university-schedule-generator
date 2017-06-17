@@ -41,59 +41,62 @@ class Schedule {
 	 *
 	 * @param Section $sec
 	 **/
-	public function addSection($sec){
+	public function addSection(Section $sec){
 		$this->listOfSections[] = $sec; //add the Section to the current list
 		$this->numberOfClasses += 1;
 		$this->numberOfUnits += $sec->getNumUnits();
 
-		//if there is no earliest time, just set it
-		if(!isset($this->earliestTime)){
-			$this->earliestTime = $sec->getEarliestTime();
-		}
-		//if the current set time is later than the earliest time of the new section, change earliestTime
-		else if($this->earliestTime[1] > $sec->getEarliestTime()[1]){
-			$this->earliestTime = [$sec->getEarliestTime()[0], $sec->getEarliestTime()[1]];
-		}
-
-		//if the latest time isn't set, just set it
-		if(!isset($this->latestTime)){
-			$this->latestTime = $sec->getLatestTime();
-		}
-		//if the current latest time is earlier than the latest time of the new section, change latestTime
-		else if($this->latestTime[1] < $sec->getLatestTime()[1]){
-			$this->latestTime = [$sec->getLatestTime()[0], $sec->getLatestTime()[1]];
-		}
-
-		//if the first time isn't set, then set it
-		if(!isset($this->firstTime)){
-			$this->firstTime = $sec->getFirstTime();
-		}
-		//if the current first time's day is later than the earliest time's day, then set the first time
-		else if($this->firstTime[0] > $sec->getFirstTime()[0]){
-			$this->firstTime = [$sec->getFirstTime()[0], $sec->getFirstTime()[1]];
-		}
-		//if the current first time's day is the same as the earliest time's day, and the time of firstTime is later than earliestTime, then set it
-		else if($this->firstTime[0] == $sec->getFirstTime()[0] && $this->firstTime[1] > $sec->getFirstTime()[1]){
-			$this->firstTime = [$sec->getFirstTime()[0], $sec->getFirstTime()[1]];
-		}
-
-		//if the last time isn't set, then set it
-		if(!isset($this->lastTime)){
-			$this->lastTime = $sec->getLastTime();
-		}
-		//if the current last time's day is earlier than the last time's day, then set the last time
-		else if($this->lastTime[0] < $sec->getLastTime()[0]){
-			$this->lastTime = [$sec->getLastTime()[0], $sec->getLastTime()[1]];
-		}
-		//if the current last time's day is the same as the latest time's day, and the time of lastTime is earlier than latestTime, then set it
-		else if($this->lastTime[0] == $sec->getLastTime()[0] && $this->lastTime[1] < $sec->getLastTime()[1]){
-			$this->lastTime = [$sec->getLastTime()[0], $sec->getLastTime()[1]];
-		}
-
-		if($sec->meetsFriday()){
+		if($this->fridayFree && $sec->meetsFriday()){
 			$this->fridayFree = false;
 		}
+	}
 
+	public function generateFirstLastTimes(){
+		foreach($this->listOfSections as $sec){
+			//if there is no earliest time, just set it
+			if(!isset($this->earliestTime)){
+				$this->earliestTime = $sec->getEarliestTime();
+			}
+			//if the current set time is later than the earliest time of the new section, change earliestTime
+			else if($this->earliestTime[1] > $sec->getEarliestTime()[1]){
+				$this->earliestTime = [$sec->getEarliestTime()[0], $sec->getEarliestTime()[1]];
+			}
+
+			//if the latest time isn't set, just set it
+			if(!isset($this->latestTime)){
+				$this->latestTime = $sec->getLatestTime();
+			}
+			//if the current latest time is earlier than the latest time of the new section, change latestTime
+			else if($this->latestTime[1] < $sec->getLatestTime()[1]){
+				$this->latestTime = [$sec->getLatestTime()[0], $sec->getLatestTime()[1]];
+			}
+
+			//if the first time isn't set, then set it
+			if(!isset($this->firstTime)){
+				$this->firstTime = $sec->getFirstTime();
+			}
+			//if the current first time's day is later than the earliest time's day, then set the first time
+			else if($this->firstTime[0] > $sec->getFirstTime()[0]){
+				$this->firstTime = [$sec->getFirstTime()[0], $sec->getFirstTime()[1]];
+			}
+			//if the current first time's day is the same as the earliest time's day, and the time of firstTime is later than earliestTime, then set it
+			else if($this->firstTime[0] == $sec->getFirstTime()[0] && $this->firstTime[1] > $sec->getFirstTime()[1]){
+				$this->firstTime = [$sec->getFirstTime()[0], $sec->getFirstTime()[1]];
+			}
+
+			//if the last time isn't set, then set it
+			if(!isset($this->lastTime)){
+				$this->lastTime = $sec->getLastTime();
+			}
+			//if the current last time's day is earlier than the last time's day, then set the last time
+			else if($this->lastTime[0] < $sec->getLastTime()[0]){
+				$this->lastTime = [$sec->getLastTime()[0], $sec->getLastTime()[1]];
+			}
+			//if the current last time's day is the same as the latest time's day, and the time of lastTime is earlier than latestTime, then set it
+			else if($this->lastTime[0] == $sec->getLastTime()[0] && $this->lastTime[1] < $sec->getLastTime()[1]){
+				$this->lastTime = [$sec->getLastTime()[0], $sec->getLastTime()[1]];
+			}
+		}
 	}
 
 	/**
