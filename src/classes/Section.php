@@ -184,13 +184,13 @@ class Section extends Course {
 	 */
 	private function timeConflict($other){
 		//iterate through each day in meetingTime
-		foreach($this->meetingTime as $k => $a){
+		foreach(array_keys($this->meetingTime) as $k){
 			//if $other also has the same day in its meetingTime, then continue
 			if(isset($other->meetingTime[$k])){
 				//iterate through each block of time for the current day in this section
 				foreach($this->meetingTime[$k] as $v){
 					//iterate through each block of time for the current day in the other section
-					foreach($other->meetingTime[$k] as $i => $v2){
+					foreach(array_keys($other->meetingTime[$k]) as $i){
 						if($v["from"] <= $other->meetingTime[$k][$i]["to"] && $v["to"] >= $other->meetingTime[$k][$i]["from"]){
 							return true;
 						}

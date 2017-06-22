@@ -115,7 +115,7 @@ class Ingest {
 	private function makeDaysWithUnwantedTimes($unwantedTimes){
 		$daysWithUnwantedTimes = [];
 		foreach($unwantedTimes as $v){
-			foreach($v as $k2 => $v2){
+			foreach(array_keys($v) as $k2){
 				$intDay = Schedule::intToDay(Schedule::dayToInt($k2));
 				if(!in_array($intDay, $daysWithUnwantedTimes)){
 					$daysWithUnwantedTimes[] = $intDay;

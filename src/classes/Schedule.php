@@ -159,7 +159,7 @@ class Schedule {
 		$arr2 = [];
 		foreach($this->listOfSections as $v){
 			if(isset($v->meetingTime)){
-				foreach($v->meetingTime as $k => $m){
+				foreach(array_keys($v->meetingTime) as $k){
 					if(!isset($arr[$k])){
 						$arr[$k] = 1;
 					}

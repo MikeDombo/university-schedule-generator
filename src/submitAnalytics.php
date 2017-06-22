@@ -47,7 +47,7 @@ if($row != null && count($row) > 0 && isset($row["history"])){
 }
 else{
 	$unique = intval(mysqli_fetch_array(mysqli_query($mysqlLink, "SELECT `id` from `byUser` ORDER BY `id` DESC LIMIT 1"))[0]) + 1;
-	$arr = array();
+	$arr = [];
 	array_push($arr, $inputData);
 	mysqli_query($mysqlLink, "INSERT INTO `byUser` (`id`, `userID`, `history`, `numLookups`, `First Time`, `Last Time`) VALUES ('" . $unique . "', '" . $uid . "', '" . json_encode($arr) . "', 1, " . time() . ", " . time() . ")");
 	$new = 1;
@@ -56,7 +56,7 @@ else{
 $unique = intval(mysqli_fetch_array(mysqli_query($mysqlLink, "SELECT `id` from `byLookup` ORDER BY `id` DESC LIMIT 1"))[0]) + 1;
 mysqli_query($mysqlLink, "INSERT INTO `byLookup` (`id`, `userID`, `lookup`, `timestamp`, `numCourses`) VALUES ('" . $unique . "', '" . $uid . "', '" . json_encode($inputData) . "', " . time() . ", " . count($inputData["allCourses"]) . ")");
 
-$fos = array();
+$fos = [];
 foreach($inputData["allCourses"] as $v){
 	if(!isset($fos[$v["FOS"]])){
 		$fos[$v["FOS"]] = 1;
@@ -85,4 +85,3 @@ else{
 }
 
 mysqli_close($mysqlLink);
-?>

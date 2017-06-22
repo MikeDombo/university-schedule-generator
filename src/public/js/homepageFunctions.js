@@ -231,7 +231,7 @@ $(document).on("keyup", "#searchField", function (){
 			search: loc
 		},
 		success: function (courseData){
-			courseData = eval(courseData.response);
+			courseData = courseData.response;
 			$.each(courseData, function (i, v){
 				var $newPanel = $defaultSearchResult.clone();
 				var cn;

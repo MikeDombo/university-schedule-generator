@@ -39,9 +39,10 @@ if(isset($_GET['search'])){
 		}
 		catch(PDOException $e){
 			echo "Exception " . $e->getMessage();
+			die("Database Exception " . $e->getMessage());
 		}
 
-		$response = array();
+		$response = [];
 		if(count($result) < 1){
 			$err = "Nothing returned";
 		}
@@ -59,6 +60,7 @@ if(isset($_GET['search'])){
 		}
 		catch(PDOException $e){
 			echo "Exception " . $e->getMessage();
+			die("Database Exception " . $e->getMessage());
 		}
 
 		$response = getResponseArrayFromDB($result);
