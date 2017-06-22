@@ -84,9 +84,10 @@ if(isset($_GET["subj"])){
 	}
 	catch(PDOException $e){
 		echo "Exception " . $e->getMessage();
+		die("Database Exception " . $e->getMessage());
 	}
 
-	$response = array();
+	$response = [];
 	if(count($result) < 1){
 		$err = "Nothing returned";
 	}
@@ -156,6 +157,7 @@ function getFYSDescr($crn){
 			}
 		}
 	}
+	return [];
 }
 
 function testCourseOverlap($temp, $v){
