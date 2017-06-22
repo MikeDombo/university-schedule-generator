@@ -3,8 +3,8 @@ mixin makeCalendar(schedule)
 		div.panel.panel-default(style='margin:4px;')
 			div.panel-heading.panel-title
 				h5(style='color: #000000;') #{schedule.numClasses.num} #{schedule.numClasses.string},
-					|#{schedule.numUnits.num} #{schedule.numUnits.string},
-					|with #{schedule.numCPD.num} #{schedule.numCPD.string} every #{schedule.dayCPD}
+					| #{schedule.numUnits.num} #{schedule.numUnits.string},
+					| with #{schedule.numCPD.num} #{schedule.numCPD.string} every #{schedule.dayCPD}
 					if schedule.hasAllClasses
 						span.glyphicon.glyphicon-ok.pull-right(style="color:#4CAF50;" data-toggle="tooltip" title="Has all classes you asked for")
 			div.panel-body.table-responsive(id='calendar#{schedule.num}')
