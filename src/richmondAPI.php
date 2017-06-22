@@ -157,6 +157,7 @@ function getFYSDescr($crn){
 			}
 		}
 	}
+
 	return [];
 }
 

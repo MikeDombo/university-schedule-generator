@@ -21,16 +21,6 @@ class ScheduleGenerate {
 	}
 
 	/**
-	 * Generates an RGB string from a given array of color values
-	 *
-	 * @param array|int $color
-	 * @return string
-	 */
-	private function makeColorString($color){
-		return $color[0] . ", " . $color[1] . ", " . $color[2];
-	}
-
-	/**
 	 * Generate all schedules
 	 *
 	 * @param array|Section $allSections
@@ -85,29 +75,6 @@ class ScheduleGenerate {
 				unset($temp[$k]);
 				$this->run($temp, $v, $curr);
 			}
-		}
-	}
-
-	/**
-	 * Returns the correctly pluralized version of the given word
-	 *
-	 * @param string $word singular form of the word to be pluralized (or kept singular)
-	 * @param int $num number that the word is referring to
-	 * @return string
-	 */
-	public static function plural($word, $num){
-		$vowels = ["a", "e", "i", "o", "u"];
-		if($num == 1){
-			return $word;
-		}
-		if(mb_substr($word, -1, 1) == "y" && !in_array(mb_substr($word, -2, 1), $vowels, true)){
-			return mb_substr($word, 0, mb_strlen($word) - 1) . "ies";
-		}
-		else if(mb_substr($word, -1, 1) == "s" || mb_substr($word, -1, 1) == "o"){
-			return $word . "es";
-		}
-		else{
-			return $word . "s";
 		}
 	}
 
@@ -215,6 +182,39 @@ class ScheduleGenerate {
 		}
 
 		return [$weekSchedule, $listSchedule];
+	}
+
+	/**
+	 * Generates an RGB string from a given array of color values
+	 *
+	 * @param array|int $color
+	 * @return string
+	 */
+	private function makeColorString($color){
+		return $color[0] . ", " . $color[1] . ", " . $color[2];
+	}
+
+	/**
+	 * Returns the correctly pluralized version of the given word
+	 *
+	 * @param string $word singular form of the word to be pluralized (or kept singular)
+	 * @param int $num number that the word is referring to
+	 * @return string
+	 */
+	public static function plural($word, $num){
+		$vowels = ["a", "e", "i", "o", "u"];
+		if($num == 1){
+			return $word;
+		}
+		if(mb_substr($word, -1, 1) == "y" && !in_array(mb_substr($word, -2, 1), $vowels, true)){
+			return mb_substr($word, 0, mb_strlen($word) - 1) . "ies";
+		}
+		else if(mb_substr($word, -1, 1) == "s" || mb_substr($word, -1, 1) == "o"){
+			return $word . "es";
+		}
+		else{
+			return $word . "s";
+		}
 	}
 
 	/**

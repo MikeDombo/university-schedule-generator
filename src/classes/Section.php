@@ -10,14 +10,16 @@
  * last day and time a class meets, and if the class meets on Fridays
  **/
 class Section extends Course {
+	/** @var array $meetingTime stores all times and days a section meets */
+	public $meetingTime;
+	/** @var bool $preregistered true if this Section was preregistered */
+	public $preregistered = false;
 	/** @var array $earliestTime earliest time a class meets, no matter what day that meeting occurs */
 	private $earliestTime;
 	/** @var  array $latestTime latest time a class meets, no matter what day that meeting occurs */
 	private $latestTime;
 	/** @var bool $meetsFriday true if the class has a meeting on Friday */
 	private $meetsFriday;
-	/** @var array $meetingTime stores all times and days a section meets */
-	public $meetingTime;
 	/** @var array $lastTime absolute last time the class meets in a week */
 	private $lastTime;
 	/** @var array $firstTime absolute first time the class meets in a week */
@@ -28,8 +30,6 @@ class Section extends Course {
 	private $multiple = false;
 	/** @var String $prof Name of the professor teaching the section */
 	private $prof;
-	/** @var bool $preregistered true if this Section was preregistered */
-	public $preregistered = false;
 
 	/**
 	 * Section constructor.
@@ -149,7 +149,8 @@ class Section extends Course {
 		//check if the fields of study and course numbers are the same
 		//if the field of study is FYS and the course titles and the same, then the sections must conflict
 		if($this->getCourseNumber() == $other->getCourseNumber() && $this->getFieldOfStudy() == $other->getFieldOfStudy()
-			&& ($this->getCourseTitle() == $other->getCourseTitle() || $this->preregistered || $other->preregistered)){
+			&& ($this->getCourseTitle() == $other->getCourseTitle() || $this->preregistered || $other->preregistered)
+		){
 			return true;
 		}
 
@@ -157,20 +158,6 @@ class Section extends Course {
 		// check that section has times
 		if(!isset($this->meetingTime)){
 			return false;
-		}
-
-		return $this->timeConflict($other);
-	}
-
-	/**
-	 * Does the same as conflictsWith, except it only checks for overlapping times, not course characteristics
-	 *
-	 * @param Section $other
-	 * @return boolean true if a a time conflict exists or there are multiple sections
-	 **/
-	public function conflictsWithTime($other){
-		if($this->multiple){
-			return true;
 		}
 
 		return $this->timeConflict($other);
@@ -202,20 +189,27 @@ class Section extends Course {
 		return false;
 	}
 
+	/**
+	 * Does the same as conflictsWith, except it only checks for overlapping times, not course characteristics
+	 *
+	 * @param Section $other
+	 * @return boolean true if a a time conflict exists or there are multiple sections
+	 **/
+	public function conflictsWithTime($other){
+		if($this->multiple){
+			return true;
+		}
+
+		return $this->timeConflict($other);
+	}
+
 
 	/*
 	General accessor methods
 	*/
+
 	public function setMultiples($a){
 		$this->multiple = $a;
-	}
-
-	public function setProf($a){
-		$this->prof = $a;
-	}
-
-	public function getEarliestTime(){
-		return $this->earliestTime;
 	}
 
 	public function getLatestTime(){
@@ -242,8 +236,16 @@ class Section extends Course {
 		return $this->prof;
 	}
 
+	public function setProf($a){
+		$this->prof = $a;
+	}
+
 	public function __toString(){
 		return $this->getCourseTitle() . " on " . Schedule::intToDay($this->getEarliestTime()[0]) . " at " . date("g:i A", $this->getEarliestTime()[1]);
+	}
+
+	public function getEarliestTime(){
+		return $this->earliestTime;
 	}
 
 }

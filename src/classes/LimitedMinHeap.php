@@ -29,16 +29,8 @@ class LimitedMinHeap {
 		$this->minHeap->insert($a);
 	}
 
-	public function count(){
-		return $this->minHeap->count();
-	}
-
 	public function peek(){
 		return $this->minHeap->top();
-	}
-
-	public function pop(){
-		return $this->minHeap->extract();
 	}
 
 	public function getMinArray(){
@@ -49,6 +41,14 @@ class LimitedMinHeap {
 		}
 
 		return $temp;
+	}
+
+	public function count(){
+		return $this->minHeap->count();
+	}
+
+	public function pop(){
+		return $this->minHeap->extract();
 	}
 
 	public function getMaxArray(){

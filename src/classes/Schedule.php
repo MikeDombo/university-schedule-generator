@@ -9,6 +9,8 @@
  * $numberOfClasses, $numberOfUnits, $earliestTime, $latestTime, $firstTime, $lastTime, $fridayFree, and $score.
  **/
 class Schedule {
+	/** @var int $score */
+	public $score;
 	/** @var array|Section */
 	private $listOfSections;
 	/** @var int $numberOfClasses */
@@ -21,8 +23,6 @@ class Schedule {
 	private $lastTime;
 	/** @var bool $fridayFree */
 	private $fridayFree;
-	/** @var int $score */
-	public $score;
 
 	/**
 	 * Default constructor to initialize critical values
@@ -188,50 +188,6 @@ class Schedule {
 	}
 
 	/**
-	 * @return array|Section
-	 */
-	public function getSchedule(){
-		return $this->listOfSections;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getNumClasses(){
-		return $this->numberOfClasses;
-	}
-
-	public function getEarliestTime(){
-		return $this->earliestTime;
-	}
-
-	public function getlatestTime(){
-		return $this->latestTime;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function fridayFree(){
-		return $this->fridayFree;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getNumUnits(){
-		return $this->numberOfUnits;
-	}
-
-	public function getLastTime(){
-		return $this->lastTime;
-	}
-
-	public function getFirstTime(){
-		return $this->firstTime;
-	}
-
-	/**
 	 * @param string $day
 	 * @return int
 	 */
@@ -289,5 +245,49 @@ class Schedule {
 			case 6:
 				return "Sunday";
 		}
+	}
+
+	/**
+	 * @return array|Section
+	 */
+	public function getSchedule(){
+		return $this->listOfSections;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getNumClasses(){
+		return $this->numberOfClasses;
+	}
+
+	public function getEarliestTime(){
+		return $this->earliestTime;
+	}
+
+	public function getlatestTime(){
+		return $this->latestTime;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function fridayFree(){
+		return $this->fridayFree;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getNumUnits(){
+		return $this->numberOfUnits;
+	}
+
+	public function getLastTime(){
+		return $this->lastTime;
+	}
+
+	public function getFirstTime(){
+		return $this->firstTime;
 	}
 }

@@ -67,180 +67,6 @@ class Ingest {
 	}
 
 	/**
-	 * Generates a random RGB array
-	 *
-	 * @param array|int $c array of 3 offsets
-	 * @return array|int
-	 */
-	private function generateColor($c){
-		$red = rand(0, 255);
-		$green = rand(0, 255);
-		$blue = rand(0, 255);
-		$red = ($red + $c[0]) / 2;
-		$green = ($green + $c[1]) / 2;
-		$blue = ($blue + $c[2]) / 2;
-
-		return [intval($red), intval($green), intval($blue)];
-	}
-
-	/**
-	 * Makes a new \Section using the data provided in $rows from the database
-	 *
-	 * @param array $section
-	 * @param string $title
-	 * @param array $rows
-	 * @return \Section
-	 */
-	private function makeNewSection($section, $title, $rows){
-		$tempSec = new Section($title, $rows[COLUMNS_FOS], $rows[COLUMNS_COURSE_NUM], floatval($rows[COLUMNS_UNITS]), [$rows[COLUMNS_CRN]]);
-		if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
-			$tempSec->setRequiredCourse(true);
-		}
-		foreach($rows as $k => $v){
-			if($k == $v){
-				$tempSec->addTime($v, $rows[COLUMNS_TIME_BEGIN], $rows[COLUMNS_TIME_END]);
-			}
-		}
-		$tempSec->setProf($rows[COLUMNS_PROF_FN] . " " . $rows[COLUMNS_PROF_LN]);
-
-		return $tempSec;
-	}
-
-	/**
-	 * Generates the daysWithUnwatedTimes array which is an array of all the days which may have blacked out times
-	 *
-	 * @param $unwantedTimes
-	 * @return array
-	 */
-	private function makeDaysWithUnwantedTimes($unwantedTimes){
-		$daysWithUnwantedTimes = [];
-		foreach($unwantedTimes as $v){
-			foreach(array_keys($v) as $k2){
-				$intDay = Schedule::intToDay(Schedule::dayToInt($k2));
-				if(!in_array($intDay, $daysWithUnwantedTimes)){
-					$daysWithUnwantedTimes[] = $intDay;
-				}
-			}
-		}
-
-		return $daysWithUnwantedTimes;
-	}
-
-	/**
-	 * Generates the section variables for all preregistered classes and adds them to $allSections
-	 * Also sets the class count variable
-	 *
-	 * @param array|string $preregistered
-	 * @return array|Section
-	 */
-	private function generatePreregisteredSections($preregistered){
-		$preregSections = [];
-		foreach($preregistered as $crn){
-			$result = $this->dal->fetchByCRN($crn);
-			if($result == null){
-				continue;
-			}
-			foreach($result as $rows){
-				if(!isset($rows[COLUMNS_PROF_FN])){
-					$rows[COLUMNS_PROF_FN] = "";
-				}
-				if(!isset($rows[COLUMNS_PROF_LN])){
-					$rows[COLUMNS_PROF_LN] = "";
-				}
-
-				$tempSec = new Section($rows[COLUMNS_COURSE_TITLE], $rows[COLUMNS_FOS],
-					$rows[COLUMNS_COURSE_NUM], floatval($rows[COLUMNS_UNITS]), [$rows[COLUMNS_CRN]]);
-
-				foreach($rows as $k => $v){
-					if($k == $v){
-						$tempSec->addTime($v, $rows[COLUMNS_TIME_BEGIN], $rows[COLUMNS_TIME_END]);
-					}
-				}
-				$tempSec->setProf($rows[COLUMNS_PROF_FN] . " " . $rows[COLUMNS_PROF_LN]);
-				$tempSec->setColor($this->generateColor([255, 255, 255]));
-				$preregSections[] = $tempSec;
-			}
-		}
-
-		// Try to merge preregistered sections if they are the same course (ex. class and a lab section)
-		for($i = 0; $i < count($preregSections); $i += 1){
-			for($j = 0; $j < count($preregSections); $j += 1){
-				if($i == $j){
-					continue;
-				}
-				$v = $preregSections[$i];
-				$v2 = $preregSections[$j];
-				if((similar_text($v->getCourseTitle(), $v2->getCourseTitle()) >= 10 || $v->getCourseTitle() == $v2->getCourseTitle())
-					&& $v->getCourseNumber() == $v2->getCourseNumber() && $v->getFieldOfStudy() == $v2->getFieldOfStudy()
-				){
-					foreach($v2->getCRN() as $crn){
-						if(!(array_search($crn, $v->getCRN()) > -1)){
-							$v->addCRN($crn);
-						}
-					}
-					foreach($v2->meetingTime as $day => $times){
-						foreach($times as $time){
-							$v->addTime($day, date($this->timeFormatCode, $time["from"]), date($this->timeFormatCode, $time["to"]));
-						}
-					}
-					unset($preregSections[$j]);
-					$preregSections = array_values($preregSections);
-				}
-			}
-		}
-
-		foreach($preregSections as $v){
-			$v->preregistered = true;
-		}
-
-		return $preregSections;
-	}
-
-	/**
-	 * Removes sections from the $allSections list if there is a problem with the time it meets
-	 * ie. it is on a day, during a time that is blacked out, or it occurs outside of the start and end times chosen
-	 *
-	 * @param $allSections
-	 * @param $startTime
-	 * @param $endTime
-	 * @param $daysWithUnwantedTimes
-	 * @param $unwantedTimes
-	 * @return mixed
-	 */
-	private function removeSectionsForTime($allSections, $startTime, $endTime, $daysWithUnwantedTimes, $unwantedTimes){
-		/** @var Section $section */
-		foreach($allSections as $key => $section){
-			if($section->preregistered){
-				continue;
-			}
-			if($startTime > $section->getEarliestTime()[1] || $endTime < $section->getLatestTime()[1]){
-				unset($allSections[$key]);
-				continue;
-			}
-			foreach($section->meetingTime as $day => $times){
-				if(!in_array($day, $daysWithUnwantedTimes)){
-					continue;
-				}
-				foreach($times as $days => $time){
-					foreach($unwantedTimes as $dayVal){
-						foreach($dayVal as $val){
-							if(Schedule::intToDay(Schedule::dayToInt($val)) != $days){
-								continue;
-							}
-							else if(strtotime($dayVal["startTime"]) < $time["to"] && strtotime($dayVal["endTime"]) > $time["from"]){
-								unset($allSections[$key]);
-								continue 5;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return $allSections;
-	}
-
-	/**
 	 * Generates entries in the private variable $allSections
 	 */
 	public function generateSections(){
@@ -372,6 +198,180 @@ class Ingest {
 		$this->daysWithUnwantedTimes = $this->makeDaysWithUnwantedTimes($this->unwantedTimes);
 		$this->allSections = $this->removeSectionsForTime($this->allSections, $this->startTime, $this->endTime,
 			$this->daysWithUnwantedTimes, $this->unwantedTimes);
+	}
+
+	/**
+	 * Makes a new \Section using the data provided in $rows from the database
+	 *
+	 * @param array $section
+	 * @param string $title
+	 * @param array $rows
+	 * @return \Section
+	 */
+	private function makeNewSection($section, $title, $rows){
+		$tempSec = new Section($title, $rows[COLUMNS_FOS], $rows[COLUMNS_COURSE_NUM], floatval($rows[COLUMNS_UNITS]), [$rows[COLUMNS_CRN]]);
+		if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
+			$tempSec->setRequiredCourse(true);
+		}
+		foreach($rows as $k => $v){
+			if($k == $v){
+				$tempSec->addTime($v, $rows[COLUMNS_TIME_BEGIN], $rows[COLUMNS_TIME_END]);
+			}
+		}
+		$tempSec->setProf($rows[COLUMNS_PROF_FN] . " " . $rows[COLUMNS_PROF_LN]);
+
+		return $tempSec;
+	}
+
+	/**
+	 * Generates a random RGB array
+	 *
+	 * @param array|int $c array of 3 offsets
+	 * @return array|int
+	 */
+	private function generateColor($c){
+		$red = rand(0, 255);
+		$green = rand(0, 255);
+		$blue = rand(0, 255);
+		$red = ($red + $c[0]) / 2;
+		$green = ($green + $c[1]) / 2;
+		$blue = ($blue + $c[2]) / 2;
+
+		return [intval($red), intval($green), intval($blue)];
+	}
+
+	/**
+	 * Generates the section variables for all preregistered classes and adds them to $allSections
+	 * Also sets the class count variable
+	 *
+	 * @param array|string $preregistered
+	 * @return array|Section
+	 */
+	private function generatePreregisteredSections($preregistered){
+		$preregSections = [];
+		foreach($preregistered as $crn){
+			$result = $this->dal->fetchByCRN($crn);
+			if($result == null){
+				continue;
+			}
+			foreach($result as $rows){
+				if(!isset($rows[COLUMNS_PROF_FN])){
+					$rows[COLUMNS_PROF_FN] = "";
+				}
+				if(!isset($rows[COLUMNS_PROF_LN])){
+					$rows[COLUMNS_PROF_LN] = "";
+				}
+
+				$tempSec = new Section($rows[COLUMNS_COURSE_TITLE], $rows[COLUMNS_FOS],
+					$rows[COLUMNS_COURSE_NUM], floatval($rows[COLUMNS_UNITS]), [$rows[COLUMNS_CRN]]);
+
+				foreach($rows as $k => $v){
+					if($k == $v){
+						$tempSec->addTime($v, $rows[COLUMNS_TIME_BEGIN], $rows[COLUMNS_TIME_END]);
+					}
+				}
+				$tempSec->setProf($rows[COLUMNS_PROF_FN] . " " . $rows[COLUMNS_PROF_LN]);
+				$tempSec->setColor($this->generateColor([255, 255, 255]));
+				$preregSections[] = $tempSec;
+			}
+		}
+
+		// Try to merge preregistered sections if they are the same course (ex. class and a lab section)
+		for($i = 0; $i < count($preregSections); $i += 1){
+			for($j = 0; $j < count($preregSections); $j += 1){
+				if($i == $j){
+					continue;
+				}
+				$v = $preregSections[$i];
+				$v2 = $preregSections[$j];
+				if((similar_text($v->getCourseTitle(), $v2->getCourseTitle()) >= 10 || $v->getCourseTitle() == $v2->getCourseTitle())
+					&& $v->getCourseNumber() == $v2->getCourseNumber() && $v->getFieldOfStudy() == $v2->getFieldOfStudy()
+				){
+					foreach($v2->getCRN() as $crn){
+						if(!(array_search($crn, $v->getCRN()) > -1)){
+							$v->addCRN($crn);
+						}
+					}
+					foreach($v2->meetingTime as $day => $times){
+						foreach($times as $time){
+							$v->addTime($day, date($this->timeFormatCode, $time["from"]), date($this->timeFormatCode, $time["to"]));
+						}
+					}
+					unset($preregSections[$j]);
+					$preregSections = array_values($preregSections);
+				}
+			}
+		}
+
+		foreach($preregSections as $v){
+			$v->preregistered = true;
+		}
+
+		return $preregSections;
+	}
+
+	/**
+	 * Generates the daysWithUnwatedTimes array which is an array of all the days which may have blacked out times
+	 *
+	 * @param $unwantedTimes
+	 * @return array
+	 */
+	private function makeDaysWithUnwantedTimes($unwantedTimes){
+		$daysWithUnwantedTimes = [];
+		foreach($unwantedTimes as $v){
+			foreach(array_keys($v) as $k2){
+				$intDay = Schedule::intToDay(Schedule::dayToInt($k2));
+				if(!in_array($intDay, $daysWithUnwantedTimes)){
+					$daysWithUnwantedTimes[] = $intDay;
+				}
+			}
+		}
+
+		return $daysWithUnwantedTimes;
+	}
+
+	/**
+	 * Removes sections from the $allSections list if there is a problem with the time it meets
+	 * ie. it is on a day, during a time that is blacked out, or it occurs outside of the start and end times chosen
+	 *
+	 * @param $allSections
+	 * @param $startTime
+	 * @param $endTime
+	 * @param $daysWithUnwantedTimes
+	 * @param $unwantedTimes
+	 * @return mixed
+	 */
+	private function removeSectionsForTime($allSections, $startTime, $endTime, $daysWithUnwantedTimes, $unwantedTimes){
+		/** @var Section $section */
+		foreach($allSections as $key => $section){
+			if($section->preregistered){
+				continue;
+			}
+			if($startTime > $section->getEarliestTime()[1] || $endTime < $section->getLatestTime()[1]){
+				unset($allSections[$key]);
+				continue;
+			}
+			foreach($section->meetingTime as $day => $times){
+				if(!in_array($day, $daysWithUnwantedTimes)){
+					continue;
+				}
+				foreach($times as $days => $time){
+					foreach($unwantedTimes as $dayVal){
+						foreach($dayVal as $val){
+							if(Schedule::intToDay(Schedule::dayToInt($val)) != $days){
+								continue;
+							}
+							else if(strtotime($dayVal["startTime"]) < $time["to"] && strtotime($dayVal["endTime"]) > $time["from"]){
+								unset($allSections[$key]);
+								continue 5;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $allSections;
 	}
 
 }

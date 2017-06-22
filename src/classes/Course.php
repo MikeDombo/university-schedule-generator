@@ -33,9 +33,6 @@ class Course {
 	/*
 	Accessors of variables
 	*/
-	public function setColor($a){
-		$this->color = $a;
-	}
 
 	public function getCourseTitle(){
 		return $this->courseName;
@@ -55,6 +52,10 @@ class Course {
 
 	public function getColor(){
 		return $this->color;
+	}
+
+	public function setColor($a){
+		$this->color = $a;
 	}
 
 	public function setRequiredCourse($required){
