@@ -59,14 +59,14 @@
             <a href="#history">History</a>
           </li>
           <li>
-            <a href="../source/classes/Schedule.php.html#line10">Source</a>
+            <a href="../source/src/classes/Schedule.php.html#line11">Source</a>
           </li>
         </ul>
       </nav>
       <section>
         <h1 id="introduction"><small>\</small>Schedule</h1>
         <h4>Authored by Michael Dombrowski, http://mikedombrowski.com Original repository available at http://github.com/md100play/university-schedule-generator</h4>
-        <p>This class essentially holds many sections that represent a single schedule option. It includes variables for ease of use like,<br/>$numberOfClasses, $numberOfUnits, $earliestTime, $latestTime, $firstTime, $lastTime, $fridayFree, and $score.</p>
+        <p>This class essentially holds many sections that represent a single schedule option. It includes variables for ease<br/>of use like,<br/>$numberOfClasses, $numberOfUnits, $earliestTime, $latestTime, $firstTime, $lastTime, $fridayFree, and $score.</p>
         <ul/>
         <h2 id="synopsis">Synopsis</h2>
         <div class="synopsis">class Schedule
@@ -81,6 +81,7 @@
                     </li><li>public  <a href="#members">$score</a>;
                     </li></ul><ul class="none"><li>// methods</li><li>public void <a title="Schedule" href="../classes/Schedule/__construct.html">__construct</a>()
                     </li><li>public void <a title="Schedule" href="../classes/Schedule/addSection.html">addSection</a>()
+                    </li><li>public void <a title="Schedule" href="../classes/Schedule/generateFirstLastTimes.html">generateFirstLastTimes</a>()
                     </li><li>public void <a title="Schedule" href="../classes/Schedule/setScore.html">setScore</a>()
                     </li><li>public void <a title="Schedule" href="../classes/Schedule/getCPD.html">getCPD</a>()
                     </li><li>public array|Section <a title="Schedule" href="../classes/Schedule/getSchedule.html">getSchedule</a>()
@@ -91,8 +92,8 @@
                     </li><li>public int <a title="Schedule" href="../classes/Schedule/getNumUnits.html">getNumUnits</a>()
                     </li><li>public void <a title="Schedule" href="../classes/Schedule/getLastTime.html">getLastTime</a>()
                     </li><li>public void <a title="Schedule" href="../classes/Schedule/getFirstTime.html">getFirstTime</a>()
-                    </li><li>public int <a title="Schedule" href="../classes/Schedule/dayToInt.html">dayToInt</a>()
-                    </li><li>public string <a title="Schedule" href="../classes/Schedule/intToDay.html">intToDay</a>()
+                    </li><li>public static int <a title="Schedule" href="../classes/Schedule/dayToInt.html">dayToInt</a>()
+                    </li><li>public static string <a title="Schedule" href="../classes/Schedule/intToDay.html">intToDay</a>()
                     </li></ul>
 
             }<br/></div>
@@ -146,6 +147,9 @@
             <li id="fridayFree">
               <a title="Schedule" href="../classes/Schedule/fridayFree.html">fridayFree()</a>
             </li>
+            <li id="generateFirstLastTimes">
+              <a title="Schedule" href="../classes/Schedule/generateFirstLastTimes.html">generateFirstLastTimes()</a>
+            </li>
             <li id="getCPD"><a title="Schedule" href="../classes/Schedule/getCPD.html">getCPD()</a>
                 — This function calculates the number of classes on each day</li>
             <li id="getEarliestTime">
@@ -178,6 +182,66 @@
         </div>
         <h2 id="history">History</h2>
         <ul class="styled history">
+          <li>
+            <h3>2017-06-17T07:17:19+02:00 (commit #<span title="47386104fa7df27af7eea3255a064d8733b37ebd">4738610</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">performance improvements</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-06-15T21:47:17+02:00 (commit #<span title="6467118523b8e90706a593ba3a4a597ac59592de">6467118</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Reformat and standardize code style</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-06-11T01:03:32+02:00 (commit #<span title="bbf1b9fc5aff8e889cad2b4d180cd7dd42331cd8">bbf1b9f</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Fix the fix to LimitedMinHeap</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-06-10T16:58:51+02:00 (commit #<span title="66bfc66b06d467e744599055683b110cb0b8491f">66bfc66</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Move files</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-03-28T05:05:22+02:00 (commit #<span title="5b5b6e30af174c56502e3d052848ad27601cb635">5b5b6e3</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Replace database column names with variables</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-03-28T04:05:19+02:00 (commit #<span title="ee5a162892c177828170a5550ae01af8142833ad">ee5a162</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Move schedule generation activites to separate classes</pre>
+            </div>
+          </li>
           <li>
             <h3>2017-03-26T04:35:30+02:00 (commit #<span title="c423c3ee8306b0b9e6a0cd46880d614a8231a4f4">c423c3e</span>)</h3>
             <div>

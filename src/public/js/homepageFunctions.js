@@ -1,5 +1,5 @@
 var crns = "";
-if($("#crns").val() !== undefined && $("#crns").val().length > 0){
+if(typeof $("#crns").val() !== "undefined" && $("#crns").val().length > 0){
 	crns = $("#crns").val().replace(/[,]+/g, '').replace(/ +(?= )/g, '').split(" ");
 }
 var subjects = {
@@ -76,6 +76,90 @@ function browse(){
 		$("#subj-list").append($subjPanel);
 	});
 }
+
+function loadCourses($newPanel, data, v, num){
+	var initial = data.substring(data.indexOf("</span>" + v.FOS + " " + num));
+	var end = initial.substring(0, initial.indexOf('<!--close inner-content-wrap'));
+	var title = end.substring(v.FOS.length + 9 + v["Course Number"].length, end.indexOf("</a>"));
+	var descr = end.substring(end.indexOf("Description</div>") + 17);
+	descr = descr.substring(0, descr.indexOf("</div>"));
+	var units = end.substring(end.indexOf("Units: ") + 7, end.indexOf("</div>"));
+	var hasDescr = true;
+	if(title.indexOf('Print Courses') > -1){
+		hasDescr = false;
+		title = v.Title;
+		descr = "Course has no description";
+		units = "units are unknown";
+	}
+	var prereq = "";
+	if(end.indexOf("Prerequisites</div>") > -1){
+		prereq = end.substring(end.indexOf("Prerequisites</div>") + 19);
+		prereq = prereq.substring(0, prereq.indexOf("</div>"));
+	}
+	if(!(v.Title.indexOf("ST:") > -1) && !(v.Title.indexOf("SP:") > -1) && v.FOS !== "FYS" &&
+		v["FOS"] !== "WELL" && !(v.FOS === "HIST" && v["Course Number"] === "199") && !(v.FOS === "HIST" &&
+		v["Course Number"] === "299") && !(v.FOS === "ENGL" && v["Course Number"] === "299") &&
+		!(v.FOS === "BIOL" && v["Course Number"] === "199")){
+		if(hasDescr){
+			v.Title = title;
+		}
+	}
+
+	if(v.FOS === "FYS" && "description" in v){
+		title = v.displayTitle;
+		descr = v.description;
+	}
+	else
+		if(!("description" in v)){
+			title = v.Title;
+		}
+
+	var html = "<h4>" + title + "</h4><p>" + descr + "</p><p>Units: " + units + "</p>";
+	if(prereq !== ""){
+		html = html + "<p>Prerequisites: " + prereq + "</p>";
+	}
+	$newPanel.find("#title").text(v.FOS + " " + v["Course Number"] + " | " + title);
+	$newPanel.find(".panel-body").html(html);
+	$newPanel.find("#button").attr("data-fos", v.FOS);
+	$newPanel.find("#button").attr("data-coursenum", v["Course Number"]);
+	$newPanel.find("#button").attr("data-coursename", v.Title);
+	$newPanel.find("#button").attr("data-displayTitle", v.displayTitle);
+	var inCRN = false;
+	$.each(v.crns, function (i, v2){
+		if(crns.indexOf(v2) > -1){
+			inCRN = true;
+		}
+	});
+	if(!v.Available){
+		$newPanel.find("#button").removeClass("btn-success");
+		$newPanel.find("#button").removeClass("btn-add-course");
+		$newPanel.find("#button").removeClass("glyphicon-plus");
+		$newPanel.find("#button").addClass("btn-disable");
+		$newPanel.find("#button").text("Course Not Available");
+	}
+	else
+		if(inCRN){
+			$newPanel.find("#button").removeClass("btn-success");
+			$newPanel.find("#button").removeClass("btn-add-course");
+			$newPanel.find("#button").removeClass("glyphicon-plus");
+			$newPanel.find("#button").addClass("btn-disable");
+			$newPanel.find("#button").text("Preregistered");
+		}
+	var $list = $("#course-basket, #course-basket-required").find("li");
+	$list.each(function (){
+		if($(this).data("fos") === v.FOS && $(this).data("coursenum") === parseInt(v["Course Number"]) &&
+			$(this).data("coursename") === v.Title){
+			$newPanel.find("#button").removeClass("glyphicon-plus");
+			$newPanel.find("#button").removeClass("btn-success");
+			$newPanel.find("#button").removeClass("btn-add-course");
+			$newPanel.find("#button").addClass("btn-danger");
+			$newPanel.find("#button").addClass("glyphicon-minus");
+			$newPanel.find("#button").addClass("btn-remove-course");
+		}
+	});
+	return $newPanel;
+}
+
 function fetchBySubj(k){
 	$.ajax({
 		url: "richmondAPI.php",
@@ -85,7 +169,7 @@ function fetchBySubj(k){
 			subj: k
 		},
 		success: function (courseData){
-			courseData = eval(courseData.response);
+			courseData = courseData.response;
 			$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2017&term=&catalogtype=ug&paginate=false&subj=' + k + '&level=&keyword=&callback=?', function (data){
 				data = data.courses;
 				$.each(courseData, function (i, v){
@@ -161,7 +245,7 @@ $(document).on("keyup", "#searchField", function (){
 				else{
 					cn = v["Course Number"];
 				}
-				$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2017&term=&catalogtype=ug&paginate=false&subj=' + v["FOS"] + '&level=' + cn + '&keyword=&callback=?', function (data){
+				$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2017&term=&catalogtype=ug&paginate=false&subj=' + v.FOS + '&level=' + cn + '&keyword=&callback=?', function (data){
 					data = data.courses;
 					$newPanel = loadCourses($newPanel, data, v, num).removeAttr('id').removeClass("hide");
 					if(i === 0){
@@ -173,87 +257,8 @@ $(document).on("keyup", "#searchField", function (){
 		}
 	});
 });
-function loadCourses($newPanel, data, v, num){
-	var initial = data.substring(data.indexOf("</span>" + v["FOS"] + " " + num));
-	var end = initial.substring(0, initial.indexOf('<!--close inner-content-wrap'));
-	var title = end.substring(v["FOS"].length + 9 + v["Course Number"].length, end.indexOf("</a>"));
-	var descr = end.substring(end.indexOf("Description</div>") + 17);
-	descr = descr.substring(0, descr.indexOf("</div>"));
-	var units = end.substring(end.indexOf("Units: ") + 7, end.indexOf("</div>"));
-	var hasDescr = true;
-	if(title.indexOf('Print Courses') > -1){
-		hasDescr = false;
-		title = v["Title"];
-		descr = "Course has no description";
-		units = "units are unknown";
-	}
-	if(end.indexOf("Prerequisites</div>") > -1){
-		var prereq = end.substring(end.indexOf("Prerequisites</div>") + 19);
-		prereq = prereq.substring(0, prereq.indexOf("</div>"));
-	}
-	if(!(v["Title"].indexOf("ST:") > -1) && !(v["Title"].indexOf("SP:") > -1) && v["FOS"] !== "FYS" &&
-		v["FOS"] !== "WELL" && !(v["FOS"] === "HIST" && v["Course Number"] === "199") && !(v["FOS"] === "HIST" &&
-		v["Course Number"] === "299") && !(v["FOS"] === "ENGL" && v["Course Number"] === "299") &&
-		!(v["FOS"] === "BIOL" && v["Course Number"] === "199")){
-		if(hasDescr){
-			v["Title"] = title;
-		}
-	}
 
-	if(v["FOS"] === "FYS" && "description" in v){
-		title = v["displayTitle"];
-		descr = v["description"];
-	}
-	else if(!("description" in v)){
-		title = v["Title"];
-	}
-	
-	var html = "<h4>" + title + "</h4><p>" + descr + "</p><p>Units: " + units + "</p>";
-	if(prereq !== undefined){
-		html = html + "<p>Prerequisites: " + prereq + "</p>";
-	}
-	$newPanel.find("#title").text(v["FOS"] + " " + v["Course Number"] + " | " + title);
-	$newPanel.find(".panel-body").html(html);
-	$newPanel.find("#button").attr("data-fos", v["FOS"]);
-	$newPanel.find("#button").attr("data-coursenum", v["Course Number"]);
-	$newPanel.find("#button").attr("data-coursename", v["Title"]);
-	$newPanel.find("#button").attr("data-displayTitle", v["displayTitle"]);
-	var inCRN = false;
-	$.each(v["crns"], function (i, v2){
-		if(crns.indexOf(v2) > -1){
-			inCRN = true;
-		}
-	});
-	if(!v["Available"]){
-		$newPanel.find("#button").removeClass("btn-success");
-		$newPanel.find("#button").removeClass("btn-add-course");
-		$newPanel.find("#button").removeClass("glyphicon-plus");
-		$newPanel.find("#button").addClass("btn-disable");
-		$newPanel.find("#button").text("Course Not Available");
-	}
-	else
-		if(inCRN){
-			$newPanel.find("#button").removeClass("btn-success");
-			$newPanel.find("#button").removeClass("btn-add-course");
-			$newPanel.find("#button").removeClass("glyphicon-plus");
-			$newPanel.find("#button").addClass("btn-disable");
-			$newPanel.find("#button").text("Preregistered");
-		}
-	var $list = $("#course-basket, #course-basket-required").find("li");
-	$list.each(function (){
-		if($(this).data("fos") === v["FOS"] && $(this).data("coursenum") === parseInt(v["Course Number"]) &&
-			$(this).data("coursename") === v["Title"]){
-			$newPanel.find("#button").removeClass("glyphicon-plus");
-			$newPanel.find("#button").removeClass("btn-success");
-			$newPanel.find("#button").removeClass("btn-add-course");
-			$newPanel.find("#button").addClass("btn-danger");
-			$newPanel.find("#button").addClass("glyphicon-minus");
-			$newPanel.find("#button").addClass("btn-remove-course");
-		}
-	});
-	return $newPanel;
-}
-$(document).on("click", ".btn-generate", function (e){
+$(document).on("click", ".btn-generate", function (){
 	var $courses = $("#course-basket").find("li");
 	var getCourses = [];
 	var count = 0;
@@ -283,10 +288,10 @@ $(document).on("click", ".btn-generate", function (e){
 	$("#block").find(".blocked-time").each(function (){
 		var tempTime = {};
 		$(this).find("input, .time-display").each(function (){
-			if($(this).text() !== "" && $(this).text() !== undefined){
+			if($(this).text() !== "" && typeof $(this).text() !== "undefined"){
 				var times = $(this).text().split(" - ");
-				tempTime["startTime"] = times[0];
-				tempTime["endTime"] = times[1];
+				tempTime.startTime = times[0];
+				tempTime.endTime = times[1];
 			}
 			if($(this).is(':checked')){
 				tempTime[$(this).attr('name')] = $(this).attr('name');
@@ -309,7 +314,6 @@ $(document).on("click", ".btn-generate", function (e){
 		window.alert("Trying to generate schedules with this many courses may take a long time, but I will try." +
 			"\n\nThe calculation is allowed take up to 5 minutes, if it takes longer, it will fail.");
 	}
-	console.log(json);
 	window.location.assign("makeSchedule.php?i=" + encodeURIComponent(json));
 });
 $(document).on("click", ".btn-jumbo-close", function (){
@@ -318,7 +322,7 @@ $(document).on("click", ".btn-jumbo-close", function (){
 });
 $(document).on("click", ".btn-remove-course", function (e){
 	var $course = $(e.target);
-	if($course.data("fos") === undefined){
+	if(typeof $course.data("fos") === "undefined"){
 		$course = $course.parent();
 	}
 	var fos = $course.data("fos");

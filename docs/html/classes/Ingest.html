@@ -59,7 +59,7 @@
             <a href="#history">History</a>
           </li>
           <li>
-            <a href="../source/classes/Ingest.php.html#line3">Source</a>
+            <a href="../source/src/classes/Ingest.php.html#line3">Source</a>
           </li>
         </ul>
       </nav>
@@ -81,7 +81,7 @@
                         ;
                     </li><li>private integer <a href="#members">$requiredCourseNum</a> =
                         0;
-                    </li><li>private <span title="\PDO">PDO</span> <a href="#members">$link</a>;
+                    </li><li>private <span title="\MySQLDAL">MySQLDAL</span> <a href="#members">$dal</a>;
                     </li><li>private  <a href="#members">$classCount</a>;
                     </li><li>private array <a href="#members">$daysWithUnwantedTimes</a> =
                         ;
@@ -94,9 +94,9 @@
                     </li><li>public void <a title="Ingest" href="../classes/Ingest/getRequiredCourseNum.html">getRequiredCourseNum</a>()
                     </li><li>private array|int <a title="Ingest" href="../classes/Ingest/generateColor.html">generateColor</a>()
                     </li><li>private Section <a title="Ingest" href="../classes/Ingest/makeNewSection.html">makeNewSection</a>()
-                    </li><li>private void <a title="Ingest" href="../classes/Ingest/setDaysWithUnwantedTimes.html">setDaysWithUnwantedTimes</a>()
-                    </li><li>private void <a title="Ingest" href="../classes/Ingest/generatePreregisteredSections.html">generatePreregisteredSections</a>()
-                    </li><li>private void <a title="Ingest" href="../classes/Ingest/removeSectionsForTime.html">removeSectionsForTime</a>()
+                    </li><li>private array <a title="Ingest" href="../classes/Ingest/makeDaysWithUnwantedTimes.html">makeDaysWithUnwantedTimes</a>()
+                    </li><li>private array|Section <a title="Ingest" href="../classes/Ingest/generatePreregisteredSections.html">generatePreregisteredSections</a>()
+                    </li><li>private mixed <a title="Ingest" href="../classes/Ingest/removeSectionsForTime.html">removeSectionsForTime</a>()
                     </li><li>public void <a title="Ingest" href="../classes/Ingest/generateSections.html">generateSections</a>()
                     </li></ul>
 
@@ -117,15 +117,15 @@
             <li id="courseInput"><strong>$courseInput</strong>
                 —
                 <a title="array|mixed" href="../classes/array|mixed.html">array|mixed</a></li>
+            <li id="dal"><strong>$dal</strong>
+                —
+                <a title="\MySQLDAL" href="../classes/_MySQLDAL.html">\MySQLDAL</a></li>
             <li id="daysWithUnwantedTimes"><strong>$daysWithUnwantedTimes</strong>
                 —
                 array</li>
             <li id="endTime"><strong>$endTime</strong>
                 —
                 string</li>
-            <li id="link"><strong>$link</strong>
-                —
-                <a title="\PDO" href="../classes/_PDO.html">\PDO</a></li>
             <li id="morning"><strong>$morning</strong>
                 —
                 <a title="bool" href="../classes/bool.html">bool</a></li>
@@ -157,12 +157,12 @@
                 — Generates a random RGB array</li>
             <li id="generatePreregisteredSections"><a title="Ingest" href="../classes/Ingest/generatePreregisteredSections.html">generatePreregisteredSections()</a>
                 — Generates the section variables for all preregistered classes and adds them to $allSections Also sets the class count variable</li>
+            <li id="makeDaysWithUnwantedTimes"><a title="Ingest" href="../classes/Ingest/makeDaysWithUnwantedTimes.html">makeDaysWithUnwantedTimes()</a>
+                — Generates the daysWithUnwatedTimes array which is an array of all the days which may have blacked out times</li>
             <li id="makeNewSection"><a title="Ingest" href="../classes/Ingest/makeNewSection.html">makeNewSection()</a>
                 — Makes a new \Section using the data provided in $rows from the database</li>
             <li id="removeSectionsForTime"><a title="Ingest" href="../classes/Ingest/removeSectionsForTime.html">removeSectionsForTime()</a>
                 — Removes sections from the $allSections list if there is a problem with the time it meets ie. it is on a day, during a time that is blacked out, or it occurs outside of the start and end times chosen</li>
-            <li id="setDaysWithUnwantedTimes"><a title="Ingest" href="../classes/Ingest/setDaysWithUnwantedTimes.html">setDaysWithUnwantedTimes()</a>
-                — Generates the daysWithUnwatedTimes array which is an array of all the days which may have blacked out times</li>
           </ul>
           <h4>public</h4>
           <ul>
@@ -185,7 +185,78 @@
           </ul>
         </div>
         <h2 id="history">History</h2>
-        <ul class="styled history"/>
+        <ul class="styled history">
+          <li>
+            <h3>2017-06-15T21:47:17+02:00 (commit #<span title="6467118523b8e90706a593ba3a4a597ac59592de">6467118</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Reformat and standardize code style</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-06-13T03:47:14+02:00 (commit #<span title="d8e55812a84810c8c92087c3bc1cb24b6ac2ca29">d8e5581</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Slight reformat</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-06-11T22:54:42+02:00 (commit #<span title="2d07739a7455119f1e2ba4715330f54b76136a1d">2d07739</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">More tests and move database access to a DAL class</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-06-11T01:03:32+02:00 (commit #<span title="bbf1b9fc5aff8e889cad2b4d180cd7dd42331cd8">bbf1b9f</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Fix the fix to LimitedMinHeap</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-06-10T16:58:51+02:00 (commit #<span title="66bfc66b06d467e744599055683b110cb0b8491f">66bfc66</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Move files</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-03-28T05:05:22+02:00 (commit #<span title="5b5b6e30af174c56502e3d052848ad27601cb635">5b5b6e3</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Replace database column names with variables</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-03-28T04:05:19+02:00 (commit #<span title="ee5a162892c177828170a5550ae01af8142833ad">ee5a162</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Move schedule generation activites to separate classes</pre>
+            </div>
+          </li>
+        </ul>
       </section>
     </div>
     <footer>
