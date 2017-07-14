@@ -74,10 +74,12 @@
         <h2 id="synopsis">Synopsis</h2>
         <div class="synopsis">class Section
                 extends <a title="Course" href="../classes/Course.html">Course</a>
-            {<br/><ul class="none"><li>// members</li><li>private  <a href="#members">$earliestTime</a>;
+            {<br/><ul class="none"><li>// members</li><li>public  <a href="#members">$meetingTime</a>;
+                    </li><li>public <span title="bool">bool</span> <a href="#members">$preregistered</a> =
+                        false;
+                    </li><li>private  <a href="#members">$earliestTime</a>;
                     </li><li>private  <a href="#members">$latestTime</a>;
                     </li><li>private <span title="bool">bool</span> <a href="#members">$meetsFriday</a>;
-                    </li><li>public  <a href="#members">$meetingTime</a>;
                     </li><li>private  <a href="#members">$lastTime</a>;
                     </li><li>private  <a href="#members">$firstTime</a>;
                     </li><li>private array <a href="#members">$crn</a> =
@@ -85,31 +87,29 @@
                     </li><li>private <span title="bool">bool</span> <a href="#members">$multiple</a> =
                         false;
                     </li><li>private <span title="String">String</span> <a href="#members">$prof</a>;
-                    </li><li>public <span title="bool">bool</span> <a href="#members">$preregistered</a> =
-                        false;
                     </li></ul><ul class="none"><li>// methods</li><li>public void <a title="Section" href="../classes/Section/__construct.html">__construct</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/addCRN.html">addCRN</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/addTime.html">addTime</a>()
                     </li><li>public boolean <a title="Section" href="../classes/Section/conflictsWith.html">conflictsWith</a>()
-                    </li><li>public boolean <a title="Section" href="../classes/Section/conflictsWithTime.html">conflictsWithTime</a>()
                     </li><li>private bool <a title="Section" href="../classes/Section/timeConflict.html">timeConflict</a>()
+                    </li><li>public boolean <a title="Section" href="../classes/Section/conflictsWithTime.html">conflictsWithTime</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/setMultiples.html">setMultiples</a>()
-                    </li><li>public void <a title="Section" href="../classes/Section/setProf.html">setProf</a>()
-                    </li><li>public void <a title="Section" href="../classes/Section/getEarliestTime.html">getEarliestTime</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/getLatestTime.html">getLatestTime</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/meetsFriday.html">meetsFriday</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/getLastTime.html">getLastTime</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/getFirstTime.html">getFirstTime</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/getCRN.html">getCRN</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/getProf.html">getProf</a>()
+                    </li><li>public void <a title="Section" href="../classes/Section/setProf.html">setProf</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/__toString.html">__toString</a>()
+                    </li><li>public void <a title="Section" href="../classes/Section/getEarliestTime.html">getEarliestTime</a>()
                     </li></ul><ul class="none"><li>// Inherited methods from <span title="Course">Course</span></li><li>public void <a title="Course" href="../classes/Course/__construct.html">__construct</a>()
-                        </li><li>public void <a title="Course" href="../classes/Course/setColor.html">setColor</a>()
                         </li><li>public void <a title="Course" href="../classes/Course/getCourseTitle.html">getCourseTitle</a>()
                         </li><li>public void <a title="Course" href="../classes/Course/getCourseNumber.html">getCourseNumber</a>()
                         </li><li>public void <a title="Course" href="../classes/Course/getFieldOfStudy.html">getFieldOfStudy</a>()
                         </li><li>public void <a title="Course" href="../classes/Course/getNumUnits.html">getNumUnits</a>()
                         </li><li>public void <a title="Course" href="../classes/Course/getColor.html">getColor</a>()
+                        </li><li>public void <a title="Course" href="../classes/Course/setColor.html">setColor</a>()
                         </li><li>public void <a title="Course" href="../classes/Course/setRequiredCourse.html">setRequiredCourse</a>()
                         </li><li>public void <a title="Course" href="../classes/Course/isRequiredCourse.html">isRequiredCourse</a>()
                         </li></ul>
