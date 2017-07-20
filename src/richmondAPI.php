@@ -97,6 +97,15 @@ if(isset($_GET["subj"])){
 	$arr = ["response" => $response, "error" => $err];
 	echo $_GET['callback'] . '(' . json_encode($arr) . ');';
 }
+if(isset($_GET["catalog-subj"]) && isset($_GET["callback"])){
+	$level = "";
+	$subj = urlencode(urldecode($_GET["catalog-subj"]));
+	if(isset($_GET["catalog-cn"])){
+		$level = urlencode(urldecode($_GET["catalog-cn"]));
+	}
+	$richmondURL = "http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2017&term=&catalogtype=ug&paginate=false&subj=$subj&level=$level&keyword=";
+	echo $_GET['callback'] . file_get_contents($richmondURL) . ';';
+}
 
 function getResponseArrayFromDB($result){
 	$response = [];

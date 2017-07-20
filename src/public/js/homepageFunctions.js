@@ -170,7 +170,7 @@ function fetchBySubj(k){
 		},
 		success: function (courseData){
 			courseData = courseData.response;
-			$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2017&term=&catalogtype=ug&paginate=false&subj=' + k + '&level=&keyword=&callback=?', function (data){
+			$.getJSON('richmondAPI.php?catalog-subj=' + k + '&callback=?', function (data){
 				data = data.courses;
 				$.each(courseData, function (i, v){
 					var $newPanel = $("#subj-list-template2").clone().removeAttr('id');
@@ -245,7 +245,7 @@ $(document).on("keyup", "#searchField", function (){
 				else{
 					cn = v["Course Number"];
 				}
-				$.getJSON('http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2017&term=&catalogtype=ug&paginate=false&subj=' + v.FOS + '&level=' + cn + '&keyword=&callback=?', function (data){
+				$.getJSON('richmondAPI.php?catalog-subj=' + v.FOS + '&catalog-level=' + cn + '&callback=?', function (data){
 					data = data.courses;
 					$newPanel = loadCourses($newPanel, data, v, num).removeAttr('id').removeClass("hide");
 					if(i === 0){
