@@ -2,7 +2,7 @@ mixin makeListView(schedule)
 	div.col-md-3
 		div.panel.panel-default
 			div.panel-heading.panel-title(data-toggle='collapse' data-target='#collapse#{schedule.num}'
-			style={cursor: 'pointer'})
+			style={cursor:'pointer'})
 				a(data-toggle='collapse' href='#collapse#{schedule.num}') #{schedule.numClasses.num} #{schedule.numClasses.string},
 					| #{schedule.numUnits.num} #{schedule.numUnits.string},
 					| with #{schedule.numCPD.num} #{schedule.numCPD.string} every #{schedule.dayCPD}
@@ -31,6 +31,6 @@ mixin listViewTable(schedule)
 
 div.panel-group.hide#list-view
 	each pageRow in listSchedule
-		div.row(style={margin: '2px'})
+		div.row(style={margin:'2px'})
 			each schedule in pageRow
 				+makeListView(schedule)

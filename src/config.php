@@ -47,3 +47,10 @@ function generatePug($view, $title, $options = [], $prettyPrint = false){
 	$pug = new Pug\Pug(['prettyprint' => $prettyPrint]);
 	return $pug->render($view, $options);
 }
+
+function SRIChecksum($input){
+	$hash = hash('sha256', $input, true);
+	$hashBase64 = base64_encode($hash);
+
+	return "sha256-$hashBase64";
+}

@@ -53,6 +53,6 @@ if(isset($_GET["i"]) && isset(json_decode($_GET["i"], true)["endTime"])){
 }
 
 $options = ["courses" => ["required" => $required, "optional" => $optional], "preregisteredCRNs" => $preregisteredCRNs,
-	"full_classes" => $fullClasses, "time_pref" => $timePref, "slider" => $slider];
+	"full_classes" => $fullClasses, "time_pref" => $timePref, "slider" => $slider, "homepageFunctionsMinCheck" => SRIChecksum(file_get_contents("public/js/homepageFunctions.min.js"))];
 
 echo generatePug("views/home.pug", "Student Schedule Creator", $options);
