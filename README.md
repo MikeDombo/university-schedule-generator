@@ -13,7 +13,7 @@ our algorithm, generates all possible non-conflicting schedules.
 Right now the PHP version is available at http://mikedombrowski.com/ur/.
 
 ## Run Your Own
-Although there are many customizations that are probabily specific to only the University of Richmond, if you wanted to run your own here's how.
+Although there are many customizations that are probably specific to only the University of Richmond, if you wanted to run your own here's how.
 1. Clone this repository
 2. Install dependencies using composer. `php composer.phar install`
 3. Edit `config.php` with the correct installation directory and database login details
