@@ -23,14 +23,14 @@ $inputData["timestamp"] = time();
 $new = 0;
 $returning = 0;
 
-$q = $link->prepare("SELECT `userID`, `history` from `byUser` WHERE `userID`=:uid");
+$q = $link->prepare("SELECT `userID`, `history` from `byUser` WHERE `userID`=':uid'");
 $q->bindValue(":uid", $uid);
 $q->execute();
 $row = $q->fetchAll(PDO::FETCH_ASSOC);
 if($row != null && count($row) > 0 && isset($row["history"])){
 	$prev = json_decode($row["history"], true);
 	array_push($prev, $inputData);
-	$q = $link->prepare("SELECT `Last Time` from `byUser` WHERE `userID`=:uid");
+	$q = $link->prepare("SELECT `Last Time` from `byUser` WHERE `userID`=':uid'");
 	$q->bindValue(":uid", $uid);
 	$q->execute();
 	if(intval($q->fetchAll(PDO::FETCH_ASSOC)["Last Time"]) >= $today){
@@ -40,7 +40,7 @@ if($row != null && count($row) > 0 && isset($row["history"])){
 		$returning = 1;
 	}
 	$q = $link->prepare("UPDATE `byUser` SET `history`=':history', `Last Time`=" . time() . ", `numLookups`=`numLookups`+1 
-	WHERE `userID`=:uid");
+	WHERE `userID`=':uid'");
 	$q->bindValue(":uid", $uid);
 	$q->bindValue(":history", json_encode($prev), PDO::PARAM_STR);
 	$q->execute();
