@@ -98,7 +98,7 @@ function loadCourses($newPanel, data, v, num){
 	}
 	if(!(v.Title.indexOf("ST:") > -1) && !(v.Title.indexOf("SP:") > -1) && v.FOS !== "FYS" &&
 		v["FOS"] !== "WELL" && !(v.FOS === "HIST" && v["Course Number"] === "199") && !(v.FOS === "HIST" &&
-		v["Course Number"] === "299") && !(v.FOS === "ENGL" && v["Course Number"] === "299") &&
+			v["Course Number"] === "299") && !(v.FOS === "ENGL" && v["Course Number"] === "299") &&
 		!(v.FOS === "BIOL" && v["Course Number"] === "199")){
 		if(hasDescr){
 			v.Title = title;
@@ -109,10 +109,9 @@ function loadCourses($newPanel, data, v, num){
 		title = v.displayTitle;
 		descr = v.description;
 	}
-	else
-		if(!("description" in v)){
-			title = v.Title;
-		}
+	else if(!("description" in v)){
+		title = v.Title;
+	}
 
 	var html = "<h4>" + title + "</h4><p>" + descr + "</p><p>Units: " + units + "</p>";
 	if(prereq !== ""){
@@ -120,43 +119,50 @@ function loadCourses($newPanel, data, v, num){
 	}
 	$newPanel.find("#title").text(v.FOS + " " + v["Course Number"] + " | " + title);
 	$newPanel.find(".panel-body").html(html);
-	$newPanel.find("#button").attr("data-fos", v.FOS);
-	$newPanel.find("#button").attr("data-coursenum", v["Course Number"]);
-	$newPanel.find("#button").attr("data-coursename", v.Title);
-	$newPanel.find("#button").attr("data-displayTitle", v.displayTitle);
+	$newPanel.find("#button")
+	         .attr("data-fos", v.FOS)
+	         .attr("data-coursenum", v["Course Number"])
+	         .attr("data-coursename", v.Title)
+	         .attr("data-displayTitle", v.displayTitle);
 	var inCRN = false;
 	$.each(v.crns, function (i, v2){
 		if(crns.indexOf(v2) > -1){
 			inCRN = true;
 		}
 	});
+
 	if(!v.Available){
-		$newPanel.find("#button").removeClass("btn-success");
-		$newPanel.find("#button").removeClass("btn-add-course");
-		$newPanel.find("#button").removeClass("glyphicon-plus");
-		$newPanel.find("#button").addClass("btn-disable");
-		$newPanel.find("#button").text("Course Not Available");
+		$newPanel.find("#button")
+		         .removeClass("btn-success")
+		         .removeClass("btn-add-course")
+		         .removeClass("glyphicon-plus")
+		         .addClass("btn-disable")
+		         .text("Course Not Available");
 	}
-	else
-		if(inCRN){
-			$newPanel.find("#button").removeClass("btn-success");
-			$newPanel.find("#button").removeClass("btn-add-course");
-			$newPanel.find("#button").removeClass("glyphicon-plus");
-			$newPanel.find("#button").addClass("btn-disable");
-			$newPanel.find("#button").text("Preregistered");
-		}
-	var $list = $("#course-basket, #course-basket-required").find("li");
-	$list.each(function (){
-		if($(this).data("fos") === v.FOS && $(this).data("coursenum") === parseInt(v["Course Number"]) &&
-			$(this).data("coursename") === v.Title){
-			$newPanel.find("#button").removeClass("glyphicon-plus");
-			$newPanel.find("#button").removeClass("btn-success");
-			$newPanel.find("#button").removeClass("btn-add-course");
-			$newPanel.find("#button").addClass("btn-danger");
-			$newPanel.find("#button").addClass("glyphicon-minus");
-			$newPanel.find("#button").addClass("btn-remove-course");
-		}
-	});
+	else if(inCRN){
+		$newPanel.find("#button")
+		         .removeClass("btn-success")
+		         .removeClass("btn-add-course")
+		         .removeClass("glyphicon-plus")
+		         .addClass("btn-disable")
+		         .text("Preregistered");
+	}
+
+	$("#course-basket, #course-basket-required")
+		.find("li")
+		.each(function (){
+			if($(this).data("fos") === v.FOS && $(this).data("coursenum") === parseInt(v["Course Number"]) &&
+				$(this).data("coursename") === v.Title){
+				$newPanel.find("#button")
+				         .removeClass("glyphicon-plus")
+				         .removeClass("btn-success")
+				         .removeClass("btn-add-course")
+				         .addClass("btn-danger")
+				         .addClass("glyphicon-minus")
+				         .addClass("btn-remove-course");
+			}
+		});
+
 	return $newPanel;
 }
 
@@ -175,8 +181,8 @@ function fetchBySubj(k){
 				$.each(courseData, function (i, v){
 					var $newPanel = $("#subj-list-template2").clone().removeAttr('id');
 					var num = v["Course Number"];
-					if(v["Course Number"] <= 99){
-						num = "0" + v["Course Number"];
+					if(num <= 99){
+						num = "0" + num;
 					}
 					$newPanel = loadCourses($newPanel, data, v, num).removeClass("hide");
 					$("#subj-list").find(".subj-" + k).find('.main-body').append($newPanel);
@@ -185,6 +191,7 @@ function fetchBySubj(k){
 		}
 	});
 }
+
 browse();
 var alreadyFetched = [];
 $(document).on("click", ".collapse-btn", function (){
@@ -199,6 +206,7 @@ $(document).on("click", ".collapse-btn", function (){
 $(document).on("click", ".collapse-btn-subj", function (){
 	$(this).parent().parent().find('.panel-collapse').collapse('toggle');
 });
+
 $(function (){
 	$('#time-pref').bootstrapToggle({
 		on: 'Morning',
@@ -212,9 +220,11 @@ $(function (){
 		onstyle: 'success'
 	});
 });
+
 var $defaultSearchResult = $("#searchResultTemplate");
 var $addedTemplate = $("#addedTemplate");
 var $buttonRemoveTemplate = $("#basket-remove");
+
 $(document).on("keyup", "#searchField", function (){
 	var loc = $("#searchField").val();
 	if(loc === ""){
@@ -234,17 +244,18 @@ $(document).on("keyup", "#searchField", function (){
 			courseData = courseData.response;
 			$.each(courseData, function (i, v){
 				var $newPanel = $defaultSearchResult.clone();
-				var cn;
 				var num = v["Course Number"];
+				var cn = num;
+
 				if(num <= 99){
-					num = "0" + v["Course Number"];
+					num = "0" + num;
 				}
+
+				// Transform course number to use in lookup against Richmond API
 				if(num > 99){
-					cn = v["Course Number"].substr(0, 1) + "00";
+					cn = cn.substr(0, 1) + "00";
 				}
-				else{
-					cn = v["Course Number"];
-				}
+
 				$.getJSON('richmondAPI.php?catalog-subj=' + v.FOS + '&catalog-level=' + cn + '&callback=?', function (data){
 					data = data.courses;
 					$newPanel = loadCourses($newPanel, data, v, num).removeAttr('id').removeClass("hide");
@@ -259,46 +270,47 @@ $(document).on("keyup", "#searchField", function (){
 });
 
 $(document).on("click", ".btn-generate", function (){
-	var $courses = $("#course-basket").find("li");
+	function basketItemsToDictionary(data){
+		return {
+			CourseNum: $(data).data("coursenum"),
+			FOS: $(data).data("fos"),
+			Title: $(data).data("coursename"),
+			displayTitle: $(data).data("displaytitle"),
+			requiredCourse: false
+		};
+	}
+
 	var getCourses = [];
-	var count = 0;
-	$courses.each(function (){
-		var temp = {
-			CourseNum: $(this).data("coursenum"),
-			FOS: $(this).data("fos"),
-			Title: $(this).data("coursename"),
-			displayTitle: $(this).data("displaytitle")
-		};
-		getCourses.push(temp);
-		count++;
+
+	var $courses = $("#course-basket li");
+	var count = $courses.size();
+	getCourses = getCourses.concat($courses.toArray().map(basketItemsToDictionary));
+
+	$courses = $("#course-basket-required li");
+	count += $courses.size();
+	getCourses = getCourses.concat($courses.toArray()
+	                                       .map(basketItemsToDictionary)
+	                                       .map(function (v){
+		                                       v.requiredCourse = true;
+		                                       return v;
+	                                       }));
+
+	var unwantedTimes = $("#block .blocked-time").toArray().map(function (value){
+		return $(value).find("input, .time-display").toArray()
+		               .reduce(function (accumulator, currentValue){
+			               if(typeof $(currentValue).text() !== "undefined" && $(currentValue).text() !== ""){
+				               var times = $(currentValue).text().split(" - ");
+				               accumulator.startTime = times[0];
+				               accumulator.endTime = times[1];
+			               }
+			               if($(currentValue).is(':checked')){
+				               accumulator[$(currentValue).attr('name')] = $(currentValue).attr('name');
+			               }
+
+			               return accumulator;
+		               }, {});
 	});
-	$courses = $("#course-basket-required").find("li");
-	$courses.each(function (){
-		var temp = {
-			CourseNum: $(this).data("coursenum"),
-			FOS: $(this).data("fos"),
-			Title: $(this).data("coursename"),
-			displayTitle: $(this).data("displaytitle"),
-			requiredCourse: true
-		};
-		getCourses.push(temp);
-		count++;
-	});
-	var unwantedTimes = [];
-	$("#block").find(".blocked-time").each(function (){
-		var tempTime = {};
-		$(this).find("input, .time-display").each(function (){
-			if($(this).text() !== "" && typeof $(this).text() !== "undefined"){
-				var times = $(this).text().split(" - ");
-				tempTime.startTime = times[0];
-				tempTime.endTime = times[1];
-			}
-			if($(this).is(':checked')){
-				tempTime[$(this).attr('name')] = $(this).attr('name');
-			}
-		});
-		unwantedTimes.push(tempTime);
-	});
+
 	var crns = $("#crns").val().replace(/\D+/g, ',').split(",");
 	getCourses = {
 		allCourses: getCourses,
@@ -309,17 +321,19 @@ $(document).on("click", ".btn-generate", function (){
 		endTime: $("#restrict-slider").text().split(" - ")[1],
 		unwantedTimes: unwantedTimes
 	};
-	var json = JSON.stringify(getCourses);
+
 	if(count > 5){
-		window.alert("Trying to generate schedules with this many courses may take a long time, but I will try." +
-			"\n\nThe calculation is allowed take up to 5 minutes, if it takes longer, it will fail.");
+		window.alert("Trying to generate schedules with this many courses may take a long time, but I will try."
+			+ "\n\nThe calculation is allowed take up to 5 minutes, if it takes longer, it will fail.");
 	}
-	window.location.assign("makeSchedule.php?i=" + encodeURIComponent(json));
+	window.location.assign("makeSchedule.php?i=" + encodeURIComponent(JSON.stringify(getCourses)));
 });
+
 $(document).on("click", ".btn-jumbo-close", function (){
 	$(this).parent().parent().hide();
 	document.cookie = "jumbotron=hidden";
 });
+
 $(document).on("click", ".btn-remove-course", function (e){
 	var $course = $(e.target);
 	if(typeof $course.data("fos") === "undefined"){
@@ -328,43 +342,36 @@ $(document).on("click", ".btn-remove-course", function (e){
 	var fos = $course.data("fos");
 	var num = $course.data("coursenum");
 	var name = $course.data("coursename");
-	$("#search-results").find("button").each(function (){
+
+	function changeClassesToAdd(){
 		if($(this).data("fos") === fos && $(this).data("coursenum") === num && $(this).data("coursename") === name){
-			$(this).addClass("glyphicon-plus");
-			$(this).addClass("btn-success");
-			$(this).addClass("btn-add-course");
-			$(this).removeClass("btn-danger");
-			$(this).removeClass("glyphicon-minus");
-			$(this).removeClass("btn-remove-course");
+			$(this).addClass("glyphicon-plus")
+			       .addClass("btn-success")
+			       .addClass("btn-add-course")
+			       .removeClass("btn-danger")
+			       .removeClass("glyphicon-minus")
+			       .removeClass("btn-remove-course");
 		}
-	});
-	$(".panel .panel-default button").each(function (){
-		if($(this).data("fos") === fos && $(this).data("coursenum") === num && $(this).data("coursename") === name){
-			$(this).addClass("glyphicon-plus");
-			$(this).addClass("btn-success");
-			$(this).addClass("btn-add-course");
-			$(this).removeClass("btn-danger");
-			$(this).removeClass("glyphicon-minus");
-			$(this).removeClass("btn-remove-course");
-		}
-	});
-	var $list = $("#course-basket").find("li").add("#course-basket-required li");
-	$list.each(function (){
+	}
+
+	$("#search-results").find("button").each(changeClassesToAdd);
+	$(".panel .panel-default button").each(changeClassesToAdd);
+	$("#course-basket li, #course-basket-required li").each(function (){
 		if($(this).data("fos") === fos && $(this).data("coursenum") === num && $(this).data("coursename") === name){
 			$(this).remove();
 		}
 	});
 });
+
 function addCourse(fos, num, name, displaytitle){
 	var continuing = true;
-	var $list = $("#course-basket, #course-basket-required").find("li");
-	$list.each(function (){
+	$("#course-basket li, #course-basket-required li").each(function (){
 		if($(this).data("fos") === fos && $(this).data("coursenum") === num && $(this).data("coursename") === name){
 			continuing = false;
 		}
 	});
 	if(continuing){
-		$("#search-results").find("button").each(function (){
+		function changeClassesToRemove(){
 			if($(this).data("fos") === fos && $(this).data("coursenum") === num && $(this).data("coursename") === name){
 				$(this).removeClass("glyphicon-plus");
 				$(this).removeClass("btn-success");
@@ -373,30 +380,25 @@ function addCourse(fos, num, name, displaytitle){
 				$(this).addClass("glyphicon-minus");
 				$(this).addClass("btn-remove-course");
 			}
-		});
-		$(".panel .panel-default button").each(function (){
-			if($(this).data("fos") === fos && $(this).data("coursenum") === num && $(this).data("coursename") === name){
-				$(this).removeClass("glyphicon-plus");
-				$(this).removeClass("btn-success");
-				$(this).removeClass("btn-add-course");
-				$(this).addClass("btn-danger");
-				$(this).addClass("glyphicon-minus");
-				$(this).addClass("btn-remove-course");
-			}
-		});
+		}
+
+		$("#search-results button").each(changeClassesToRemove);
+		$(".panel .panel-default button").each(changeClassesToRemove);
+
 		var $add = $addedTemplate.clone();
 		var $button = $buttonRemoveTemplate.clone().removeClass("hide");
-		$add.removeClass("hide");
-		$add.attr("id", "");
-		$add.text(fos + " " + num + " | " + name);
-		$add.append("&nbsp; &nbsp; &nbsp; &nbsp;", $button);
-		$add.attr("data-fos", fos);
-		$add.attr("data-coursenum", num);
-		$add.attr("data-coursename", name);
-		$add.attr("data-displayTitle", displaytitle);
+		$add.removeClass("hide")
+		    .attr("id", "")
+		    .text(fos + " " + num + " | " + name)
+		    .append("&nbsp; &nbsp; &nbsp; &nbsp;", $button)
+		    .attr("data-fos", fos)
+		    .attr("data-coursenum", num)
+		    .attr("data-coursename", name)
+		    .attr("data-displayTitle", displaytitle);
 		$("#course-basket").append($add);
 	}
 }
+
 $(document).on("click", ".btn-add-course", function (e){
 	var $course = $(e.target);
 	var fos = $course.data("fos");
