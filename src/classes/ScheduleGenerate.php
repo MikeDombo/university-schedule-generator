@@ -48,11 +48,10 @@ class ScheduleGenerate {
 		$curr[] = $pick;
 		$temp = $sections;
 
-		foreach($temp as $k => $v){
-			if($v->conflictsWith($pick)){
-				unset($temp[$k]);
-			}
-		}
+		$temp = array_filter($temp, function($v) use($pick){
+			/** @var $v \Section */
+			return !$v->conflictsWith($pick);
+		});
 
 		if(count($temp) == 0){
 			$requiredCourses = 0;
