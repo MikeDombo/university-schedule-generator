@@ -9,6 +9,8 @@ class ScheduleGenerate {
 	private $numSchedules = 0;
 	/** @var int $sectionCount */
 	private $sectionCount = 0;
+	/** @var array $conflictMatrix sparse boolean matrix true if a conflict exists */
+	private $conflictMatrix = [];
 
 	/**
 	 * ScheduleGenerate constructor.
@@ -37,6 +39,22 @@ class ScheduleGenerate {
 		}
 	}
 
+	private function conflictMatrixLookup(\Section $a, \Section $b){
+		if(!isset($this->conflictMatrix[$a->getId()]) || !isset($this->conflictMatrix[$a->getId()][$b->getId()])){
+			if(!isset($this->conflictMatrix[$a->getId()])){
+				$this->conflictMatrix[$a->getId()] = [];
+				$this->conflictMatrix[$b->getId()] = [];
+			}
+
+			$conflictStatus = !$a->conflictsWith($b);
+			// Put it in both ways because there is a reciprocal relationship
+			$this->conflictMatrix[$a->getId()][$b->getId()] = $conflictStatus;
+			$this->conflictMatrix[$b->getId()][$a->getId()] = $conflictStatus;
+		}
+
+		return $this->conflictMatrix[$a->getId()][$b->getId()];
+	}
+
 	/**
 	 * Generate all schedules recursively
 	 *
@@ -49,8 +67,7 @@ class ScheduleGenerate {
 		$temp = $sections;
 
 		$temp = array_filter($temp, function($v) use($pick){
-			/** @var $v \Section */
-			return !$v->conflictsWith($pick);
+			return $this->conflictMatrixLookup($v, $pick);
 		});
 
 		if(count($temp) == 0){

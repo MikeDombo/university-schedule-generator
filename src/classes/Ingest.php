@@ -1,6 +1,8 @@
 <?php
 
 class Ingest {
+	/** @var int $sectionId ID for the next section */
+	private $sectionId = 0;
 	/** @var array|string $requestData Store the GET request */
 	private $requestData;
 	/** @var bool $morning */
@@ -156,7 +158,9 @@ class Ingest {
 							!$v->conflictsWithTime($optionalSection)
 						){
 
-							$newSec = new Section($v->getCourseTitle(), $v->getFieldOfStudy(), $v->getCourseNumber(), $v->getNumUnits(), $v->getCRN());
+							$newSec = new Section($this->sectionId, $v->getCourseTitle(), $v->getFieldOfStudy(),
+							$v->getCourseNumber(), $v->getNumUnits(), $v->getCRN());
+							$this->sectionId++;
 							if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
 								$newSec->setRequiredCourse(true);
 							}
@@ -209,7 +213,10 @@ class Ingest {
 	 * @return \Section
 	 */
 	private function makeNewSection($section, $title, $rows){
-		$tempSec = new Section($title, $rows[COLUMNS_FOS], $rows[COLUMNS_COURSE_NUM], floatval($rows[COLUMNS_UNITS]), [$rows[COLUMNS_CRN]]);
+		$tempSec = new Section($this->sectionId, $title, $rows[COLUMNS_FOS], $rows[COLUMNS_COURSE_NUM], floatval
+		($rows[COLUMNS_UNITS]), [$rows[COLUMNS_CRN]]);
+		$this->sectionId++;
+
 		if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
 			$tempSec->setRequiredCourse(true);
 		}
@@ -262,8 +269,9 @@ class Ingest {
 					$rows[COLUMNS_PROF_LN] = "";
 				}
 
-				$tempSec = new Section($rows[COLUMNS_COURSE_TITLE], $rows[COLUMNS_FOS],
+				$tempSec = new Section($this->sectionId, $rows[COLUMNS_COURSE_TITLE], $rows[COLUMNS_FOS],
 					$rows[COLUMNS_COURSE_NUM], floatval($rows[COLUMNS_UNITS]), [$rows[COLUMNS_CRN]]);
+				$this->sectionId++;
 
 				foreach($rows as $k => $v){
 					if($k == $v){

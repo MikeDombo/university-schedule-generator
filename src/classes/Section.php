@@ -10,6 +10,8 @@
  * last day and time a class meets, and if the class meets on Fridays
  **/
 class Section extends Course {
+	/** @var int $id ID for the section */
+	private $id;
 	/** @var array $meetingTime stores all times and days a section meets */
 	public $meetingTime;
 	/** @var bool $preregistered true if this Section was preregistered */
@@ -42,13 +44,18 @@ class Section extends Course {
 	 * @param Integer $units
 	 * @param array|String $crn
 	 */
-	public function __construct($courseTitle, $fos, $courseNum, $units, $crn){
+	public function __construct($id, $courseTitle, $fos, $courseNum, $units, $crn){
 		parent::__construct($courseTitle, $fos, $courseNum, $units);
 		$this->meetsFriday = false;
+		$this->id = $id;
 		//iterate through all CRN(s) and push each to the crn array
 		foreach($crn as $v){
 			$this->addCRN($v);
 		}
+	}
+
+	public function getId(){
+		return $this->id;
 	}
 
 	/**
