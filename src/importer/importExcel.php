@@ -15,7 +15,7 @@ $objPHPExcel = new PHPExcel();
 
 $objReader = new PHPExcel_Reader_Excel2007();
 $objReader->setReadDataOnly(true);
-$objPHPExcel = $objReader->load(dirname(__FILE__) . '/Fall_2017.xlsx');
+$objPHPExcel = $objReader->load(dirname(__FILE__) . '/Spring_2018.xlsx');
 
 // Make database table if it does not exist
 if(!verifyDB($link)){
@@ -60,15 +60,16 @@ foreach($array_data as $k => $v){
 	if(isset($mycol[0])){
 		$mycol = $mycol[0];
 	}
+	$mycol = array_keys($mycol);
 
 	foreach($v as $column => $cell){
 		if($cell != ""){
 			$newRow = $newRow . "'" . $cell . "', ";
 			$columns = $columns . "`" . $column . "`, ";
 		}
-		if(!isset($mycol[$column])){
+		if(!in_array($column, $mycol, true)){
 			echo "Adding column: " . $column . " to database table.<br/>";
-			$q = $link->exec("ALTER TABLE `" . DB_DATABASE_TABLE . "` ADD `" . $column . "` TEXT NOT NULL");
+			$q = $link->exec("ALTER TABLE `" . DB_DATABASE_TABLE . "` ADD `" . $column . "` TEXT");
 		}
 	}
 	$newRow = substr($newRow, 0, -2);
