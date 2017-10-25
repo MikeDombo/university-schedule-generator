@@ -35,7 +35,8 @@ catch(PDOException $e){
 $ingest = new Ingest(new MySQLDAL($link), urldecode($_GET["i"]));
 $ingest->generateSections();
 
-$scheduleGenerator = new ScheduleGenerate($ingest);
+$scheduleGenerator = new ScheduleGenerateBronKerbosch($ingest);
+
 $scheduleGenerator->generateSchedules($ingest->getAllSections());
 $numSchedules = $scheduleGenerator->getNumSchedules();
 

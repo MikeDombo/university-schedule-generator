@@ -2,15 +2,15 @@
 
 class ScheduleGenerate {
 	/** @var Ingest $ingest */
-	private $ingest;
+	protected $ingest;
 	/** @var \LimitedMinHeap $schedules */
-	private $schedules;
+	protected $schedules;
 	/** @var int $numSchedules */
-	private $numSchedules = 0;
+	protected $numSchedules = 0;
 	/** @var int $sectionCount */
-	private $sectionCount = 0;
+	protected $sectionCount = 0;
 	/** @var array $conflictMatrix sparse boolean matrix true if a conflict exists */
-	private $conflictMatrix = [];
+	protected $conflictMatrix = [];
 
 	/**
 	 * ScheduleGenerate constructor.
@@ -29,7 +29,6 @@ class ScheduleGenerate {
 	 */
 	public function generateSchedules($allSections){
 		$this->sectionCount = count($allSections);
-
 		foreach($allSections as $k => $v){
 			unset($allSections[$k]);
 			if(!isset($v->meetingTime)){
@@ -39,20 +38,26 @@ class ScheduleGenerate {
 		}
 	}
 
-	private function conflictMatrixLookup(\Section $a, \Section $b){
-		if(!isset($this->conflictMatrix[$a->getId()]) || !isset($this->conflictMatrix[$a->getId()][$b->getId()])){
-			if(!isset($this->conflictMatrix[$a->getId()])){
-				$this->conflictMatrix[$a->getId()] = [];
-				$this->conflictMatrix[$b->getId()] = [];
+	protected function sectionsAreCompatible(\Section $a, \Section $b){
+		$aId = $a->getId();
+		$bId = $b->getId();
+
+		if($aId == $bId){
+			return false;
+		}
+		if(!isset($this->conflictMatrix[$aId]) || !isset($this->conflictMatrix[$aId][$bId])){
+			if(!isset($this->conflictMatrix[$aId])){
+				$this->conflictMatrix[$aId] = [];
+				$this->conflictMatrix[$bId] = [];
 			}
 
 			$conflictStatus = !$a->conflictsWith($b);
 			// Put it in both ways because there is a reciprocal relationship
-			$this->conflictMatrix[$a->getId()][$b->getId()] = $conflictStatus;
-			$this->conflictMatrix[$b->getId()][$a->getId()] = $conflictStatus;
+			$this->conflictMatrix[$aId][$bId] = $conflictStatus;
+			$this->conflictMatrix[$bId][$aId] = $conflictStatus;
 		}
 
-		return $this->conflictMatrix[$a->getId()][$b->getId()];
+		return $this->conflictMatrix[$aId][$bId];
 	}
 
 	/**
@@ -66,8 +71,8 @@ class ScheduleGenerate {
 		$curr[] = $pick;
 		$temp = $sections;
 
-		$temp = array_filter($temp, function($v) use($pick){
-			return $this->conflictMatrixLookup($v, $pick);
+		$temp = array_filter($temp, function(Section $v) use($pick){
+			return $this->sectionsAreCompatible($v, $pick);
 		});
 
 		if(count($temp) == 0){
