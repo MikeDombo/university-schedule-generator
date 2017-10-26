@@ -36,6 +36,9 @@ class ScheduleGenerateBronKerbosch extends \ScheduleGenerate {
 
 	private function run(array $r, array $p, array $x){
 		if(empty($p) && empty($x)){
+			if(count($r) == 0){
+				return;
+			}
 			$requiredCourses = 0;
 			$a = new Schedule();
 			foreach($r as $b){
