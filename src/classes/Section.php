@@ -10,6 +10,7 @@
  * last day and time a class meets, and if the class meets on Fridays
  **/
 class Section extends Course {
+	private static $currentSectionCount = 0;
 	/** @var int $id ID for the section */
 	private $id;
 	/** @var array $meetingTime stores all times and days a section meets */
@@ -44,10 +45,10 @@ class Section extends Course {
 	 * @param Integer $units
 	 * @param array|String $crn
 	 */
-	public function __construct($id, $courseTitle, $fos, $courseNum, $units, $crn){
+	public function __construct($courseTitle, $fos, $courseNum, $units, $crn){
 		parent::__construct($courseTitle, $fos, $courseNum, $units);
 		$this->meetsFriday = false;
-		$this->id = $id;
+		$this->id = self::$currentSectionCount++;
 		//iterate through all CRN(s) and push each to the crn array
 		foreach($crn as $v){
 			$this->addCRN($v);

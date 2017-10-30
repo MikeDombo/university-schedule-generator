@@ -1,8 +1,6 @@
 <?php
 
 class Ingest {
-	/** @var int $sectionId ID for the next section */
-	private $sectionId = 0;
 	/** @var array|string $requestData Store the GET request */
 	private $requestData;
 	/** @var bool $morning */
@@ -144,7 +142,7 @@ class Ingest {
 					$tempSection[$sectionNum] = $tempSec;
 				}
 				else if($multipleOptions){
-					array_push($manyOptions, $this->makeNewSection($section, $title, $rows));
+					$manyOptions[] = $this->makeNewSection($section, $title, $rows);
 				}
 			}
 
@@ -158,9 +156,8 @@ class Ingest {
 							!$v->conflictsWithTime($optionalSection)
 						){
 
-							$newSec = new Section($this->sectionId, $v->getCourseTitle(), $v->getFieldOfStudy(),
+							$newSec = new Section($v->getCourseTitle(), $v->getFieldOfStudy(),
 							$v->getCourseNumber(), $v->getNumUnits(), $v->getCRN());
-							$this->sectionId++;
 							if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
 								$newSec->setRequiredCourse(true);
 							}
@@ -213,9 +210,15 @@ class Ingest {
 	 * @return \Section
 	 */
 	private function makeNewSection($section, $title, $rows){
-		$tempSec = new Section($this->sectionId, $title, $rows[COLUMNS_FOS], $rows[COLUMNS_COURSE_NUM], floatval
+		if(!isset($rows[COLUMNS_PROF_FN])){
+			$rows[COLUMNS_PROF_FN] = "";
+		}
+		if(!isset($rows[COLUMNS_PROF_LN])){
+			$rows[COLUMNS_PROF_LN] = "";
+		}
+
+		$tempSec = new Section($title, $rows[COLUMNS_FOS], $rows[COLUMNS_COURSE_NUM], floatval
 		($rows[COLUMNS_UNITS]), [$rows[COLUMNS_CRN]]);
-		$this->sectionId++;
 
 		if(isset($section["requiredCourse"]) && $section["requiredCourse"]){
 			$tempSec->setRequiredCourse(true);
@@ -262,25 +265,12 @@ class Ingest {
 				continue;
 			}
 			foreach($result as $rows){
-				if(!isset($rows[COLUMNS_PROF_FN])){
-					$rows[COLUMNS_PROF_FN] = "";
-				}
-				if(!isset($rows[COLUMNS_PROF_LN])){
-					$rows[COLUMNS_PROF_LN] = "";
-				}
-
-				$tempSec = new Section($this->sectionId, $rows[COLUMNS_COURSE_TITLE], $rows[COLUMNS_FOS],
-					$rows[COLUMNS_COURSE_NUM], floatval($rows[COLUMNS_UNITS]), [$rows[COLUMNS_CRN]]);
-				$this->sectionId++;
-
-				foreach($rows as $k => $v){
-					if($k == $v){
-						$tempSec->addTime($v, $rows[COLUMNS_TIME_BEGIN], $rows[COLUMNS_TIME_END]);
-					}
-				}
-				$tempSec->setProf($rows[COLUMNS_PROF_FN] . " " . $rows[COLUMNS_PROF_LN]);
+				$tempSec = $this->makeNewSection([], $rows[COLUMNS_COURSE_TITLE], $rows);
 				$tempSec->setColor($this->generateColor([255, 255, 255]));
-				$preregSections[] = $tempSec;
+				if(count($tempSec->meetingTime) > 0){
+					$preregSections[] = $tempSec;
+				}
+
 			}
 		}
 
@@ -293,8 +283,7 @@ class Ingest {
 				$v = $preregSections[$i];
 				$v2 = $preregSections[$j];
 				if((similar_text($v->getCourseTitle(), $v2->getCourseTitle()) >= 10 || $v->getCourseTitle() == $v2->getCourseTitle())
-					&& $v->getCourseNumber() == $v2->getCourseNumber() && $v->getFieldOfStudy() == $v2->getFieldOfStudy()
-				){
+					&& $v->getCourseNumber() == $v2->getCourseNumber() && $v->getFieldOfStudy() == $v2->getFieldOfStudy()){
 					foreach($v2->getCRN() as $crn){
 						if(!(array_search($crn, $v->getCRN()) > -1)){
 							$v->addCRN($crn);
