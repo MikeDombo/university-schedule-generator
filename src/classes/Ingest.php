@@ -40,13 +40,17 @@ class Ingest {
 	 */
 	public function __construct(MySQLDAL $dal, $data){
 		$this->requestData = json_decode($data, true);
+
 		$this->courseInput = $this->requestData["allCourses"];
-		$this->preregistered = $this->requestData["preregistered"];
-		$this->morning = $this->requestData["timePref"];
-		$this->allowFull = $this->requestData["fullClasses"];
-		$this->startTime = strtotime($this->requestData["startTime"]);
-		$this->endTime = strtotime($this->requestData["endTime"]);
-		$this->unwantedTimes = $this->requestData["unwantedTimes"];
+		$this->preregistered = isset($this->requestData["preregistered"]) ? $this->requestData["preregistered"] : [];
+		$this->morning = isset($this->requestData["timePref"]) ? $this->requestData["timePref"] : false;
+		$this->allowFull = isset($this->requestData["fullClasses"]) ? $this->requestData["fullClasses"] : true;
+		$this->startTime = isset($this->requestData["startTime"]) ?
+			strtotime($this->requestData["startTime"]) : strtotime("8:00 AM");
+		$this->endTime = isset($this->requestData["endTime"]) ?
+			strtotime($this->requestData["endTime"]) : strtotime("10:00 PM");
+		$this->unwantedTimes = isset($this->requestData["unwantedTimes"]) ? $this->requestData["unwantedTimes"] : [];
+
 		$this->dal = $dal;
 	}
 
