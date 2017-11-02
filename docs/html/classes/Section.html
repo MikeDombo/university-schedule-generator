@@ -74,7 +74,10 @@
         <h2 id="synopsis">Synopsis</h2>
         <div class="synopsis">class Section
                 extends <a title="Course" href="../classes/Course.html">Course</a>
-            {<br/><ul class="none"><li>// members</li><li>public  <a href="#members">$meetingTime</a>;
+            {<br/><ul class="none"><li>// members</li><li>private static integer <a href="#members">$currentSectionCount</a> =
+                        0;
+                    </li><li>private  <a href="#members">$id</a>;
+                    </li><li>public  <a href="#members">$meetingTime</a>;
                     </li><li>public <span title="bool">bool</span> <a href="#members">$preregistered</a> =
                         false;
                     </li><li>private  <a href="#members">$earliestTime</a>;
@@ -88,6 +91,7 @@
                         false;
                     </li><li>private <span title="String">String</span> <a href="#members">$prof</a>;
                     </li></ul><ul class="none"><li>// methods</li><li>public void <a title="Section" href="../classes/Section/__construct.html">__construct</a>()
+                    </li><li>public void <a title="Section" href="../classes/Section/getId.html">getId</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/addCRN.html">addCRN</a>()
                     </li><li>public void <a title="Section" href="../classes/Section/addTime.html">addTime</a>()
                     </li><li>public boolean <a title="Section" href="../classes/Section/conflictsWith.html">conflictsWith</a>()
@@ -131,12 +135,18 @@
             <li id="crn"><strong>$crn</strong>
                 —
                 array</li>
+            <li id="currentSectionCount">
+              <strong>$currentSectionCount</strong>
+            </li>
             <li id="earliestTime"><strong>$earliestTime</strong>
                 —
                 array</li>
             <li id="firstTime"><strong>$firstTime</strong>
                 —
                 array</li>
+            <li id="id"><strong>$id</strong>
+                —
+                int</li>
             <li id="lastTime"><strong>$lastTime</strong>
                 —
                 array</li>
@@ -194,6 +204,9 @@
             <li id="getFirstTime">
               <a title="Section" href="../classes/Section/getFirstTime.html">getFirstTime()</a>
             </li>
+            <li id="getId">
+              <a title="Section" href="../classes/Section/getId.html">getId()</a>
+            </li>
             <li id="getLastTime">
               <a title="Section" href="../classes/Section/getLastTime.html">getLastTime()</a>
             </li>
@@ -244,6 +257,46 @@
         </div>
         <h2 id="history">History</h2>
         <ul class="styled history">
+          <li>
+            <h3>2017-10-30T23:21:27+01:00 (commit #<span title="b34735cd176b5359a12aad51d47d4fd208c97a69">b34735c</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Fix for preregistered no times</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-09-06T20:16:11+02:00 (commit #<span title="3f0040c55e0274559278fbcf96eb18f7448a6b57">3f0040c</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Memoize conflicts between sections to run faster</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-06-23T01:48:05+02:00 (commit #<span title="4e59dc4056ce8c5876a193d94ae497de2a139af5">4e59dc4</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Rearrange code for style</pre>
+            </div>
+          </li>
+          <li>
+            <h3>2017-06-22T04:23:22+02:00 (commit #<span title="6ac9abaf942b2c8b903d30b9d8ff3fd48193f92a">6ac9aba</span>)</h3>
+            <div>
+              <p>
+                        Author: Michael Dombrowski (Michael@mikedombrowski.com) /
+                        Commiter: Michael Dombrowski (Michael@mikedombrowski.com)
+                    </p>
+              <pre class="wrapped">Remove unused parameters</pre>
+            </div>
+          </li>
           <li>
             <h3>2017-06-17T07:17:19+02:00 (commit #<span title="47386104fa7df27af7eea3255a064d8733b37ebd">4738610</span>)</h3>
             <div>
@@ -298,7 +351,7 @@
       </section>
     </div>
     <footer>
-      <span>Generated using phpDox 0.9.0 - Copyright (C) 2010 - 2017 by Arne Blankerts</span>
+      <span>Generated using phpDox 0.10.1 - Copyright (C) 2010 - 2017 by Arne Blankerts and Contributors</span>
     </footer>
   </body>
 </html>
