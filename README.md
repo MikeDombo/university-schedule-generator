@@ -18,7 +18,7 @@ Although there are many customizations that are probably specific to only the Un
 5. You now have the same installation that I do. If you are running on data that is not from UR, then you may have to change some things.
 
 ## PHP API Documentation
-Available at https://md100play.github.io/university-schedule-generator/html/index.html
+Available at https://MikeDombo.github.io/university-schedule-generator/html/index.html
 
 ## Theory of Operation
 The new algorithm implemented by commit 9102865 is the Bron-Kerbosch maximal clique finding algorithm. I realized that the scheduling program could be thought of as a graph where vertices represent a section of a class and edges exist between vertices that are compatible (can be taken together).
