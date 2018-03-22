@@ -15,7 +15,7 @@ $objPHPExcel = new PHPExcel();
 
 $objReader = new PHPExcel_Reader_Excel2007();
 $objReader->setReadDataOnly(true);
-$objPHPExcel = $objReader->load(dirname(__FILE__) . '/Spring_2018.xlsx');
+$objPHPExcel = $objReader->load(dirname(__FILE__) . '/Fall_2018.xlsx');
 
 // Make database table if it does not exist
 if(!verifyDB($link)){
