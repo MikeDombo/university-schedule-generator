@@ -7,7 +7,7 @@ $optional = [];
 $preregisteredCRNs = "";
 $fullClasses = true;
 $timePref = false;
-$slider = ["start" => 480, "end" => 1320];
+$slider = ["start" => 420, "end" => 1380, "min" => 420, "max" => 1380];
 
 if(isset($_GET["i"])){
 	$get = json_decode($_GET["i"], true);

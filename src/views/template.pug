@@ -10,6 +10,9 @@ html(lang="en")
 		link(rel="stylesheet" href="public/css/bootstrap.min.css")
 		script(type="text/javascript" src="public/js/jquery.min.js")
 		script(type="text/javascript" src="public/js/bootstrap.min.js")
+		script(type="text/javascript" src="https://cdn.ravenjs.com/3.23.3/raven.min.js" crossorigin="anonymous")
+		script.
+			Raven.config('https://42d62526965b4efba858e166bc3fed8a@sentry.io/408633').install()
 		block after_head
 	body
 		block nav
