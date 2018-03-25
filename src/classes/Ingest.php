@@ -118,6 +118,11 @@ class Ingest {
 						$multipleOptions = true;
 					}
 				}
+				// Some classes now have separate sections listed as 01A, 01B, etc. This elseif counts them as
+				// separate sections instead of combining them
+				else if(substr($sectionNum, -1, 1) == "A" || substr($sectionNum, -1, 1) == "B" || substr
+					($sectionNum, -1, 1) == "C"){
+				}
 				else if(intval($sectionNum) < 10){
 					$sectionNum = "0" . intval($sectionNum);
 				}
