@@ -581,7 +581,7 @@ let initialSetSliders = (sliderMin, sliderMax) => {
         $("#block").append($cloned);
     });
 
-    $(document).ready(function () {
+    $(document).ready(() => {
             let getParameterByName = (name, url) => {
                 if (!url) {
                     url = window.location.href;

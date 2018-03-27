@@ -17,15 +17,15 @@ define("DB_HOST", "localhost");
 define("COLUMNS_CRN", "CRN");
 define("COLUMNS_COURSE_NUM", "CRSE");
 define("COLUMNS_FOS", "SUBJ");
-define("COLUMNS_UNITS", "CR");
-define("COLUMNS_TIME_BEGIN", "BEG");
+define("COLUMNS_UNITS", "UNITS");
+define("COLUMNS_TIME_BEGIN", "BEGIN");
 define("COLUMNS_TIME_END", "END");
 define("COLUMNS_ENROLLMENT_MAX", "MAX");
 define("COLUMNS_ENROLLMENT_CURRENT", "ACT");
 define("COLUMNS_COURSE_TITLE", "TITLE");
 define("COLUMNS_COURSE_SECTION", "SEC");
 define("COLUMNS_PROF_FN", "FIN2");
-define("COLUMNS_PROF_LN", "LINS");
+define("COLUMNS_PROF_LN", "LASTNAME");
 
 
 /**
