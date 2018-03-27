@@ -23,25 +23,6 @@ let isJSON = (str) => {
     return true;
 };
 
-let sliderIntToStartEndTimes = (val0, val1) => {
-    let minutes0 = parseInt(val0, 10) % 60;
-    let hours0 = Math.floor(parseInt(val0, 10) / 60) % 24;
-    let minutes1 = parseInt(val1, 10) % 60;
-    let hours1 = Math.floor(parseInt(val1, 10) / 60) % 24;
-
-    let startTime = getTime(hours0, minutes0);
-    let endTime = getTime(hours1, minutes1);
-    return startTime + " - " + endTime;
-};
-
-let setSpanTime = ($id) => {
-    let val0 = $id.slider("values", 0);
-    let val1 = $id.slider("values", 1);
-    $id.parent().children().last().text(sliderIntToStartEndTimes(val0, val1));
-};
-// Export function globally
-window.setSpanTime = setSpanTime;
-
 let getTime = (hours, minutes) => {
     let time = null;
     minutes = minutes + "";
@@ -62,6 +43,25 @@ let getTime = (hours, minutes) => {
     }
     return hours + ":" + minutes + " " + time;
 };
+
+let sliderIntToStartEndTimes = (val0, val1) => {
+    let minutes0 = parseInt(val0, 10) % 60;
+    let hours0 = Math.floor(parseInt(val0, 10) / 60) % 24;
+    let minutes1 = parseInt(val1, 10) % 60;
+    let hours1 = Math.floor(parseInt(val1, 10) / 60) % 24;
+
+    let startTime = getTime(hours0, minutes0);
+    let endTime = getTime(hours1, minutes1);
+    return startTime + " - " + endTime;
+};
+
+let setSpanTime = ($id) => {
+    let val0 = $id.slider("values", 0);
+    let val1 = $id.slider("values", 1);
+    $id.parent().children().last().text(sliderIntToStartEndTimes(val0, val1));
+};
+// Export function globally
+window.setSpanTime = setSpanTime;
 
 let slideTime = (event, ui) => {
     let val0 = ui.values[0];

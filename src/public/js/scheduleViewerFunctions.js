@@ -1,15 +1,15 @@
 let createPopover  = (element) => {
     element = $(element);
 
-    let html_encode = (value) => {
+    let htmlEncode = (value) => {
         return $("<div/>").text(value).html();
     };
 
-    let coursenum = html_encode(element.data('coursenum'));
-    let fos = html_encode(element.data('fos'));
-    let prof = html_encode(element.data('prof'));
+    let coursenum = htmlEncode(element.data('coursenum'));
+    let fos = htmlEncode(element.data('fos'));
+    let prof = htmlEncode(element.data('prof'));
     let crns = element.data('crns');
-    let coursetitle = html_encode(element.data('coursetitle'));
+    let coursetitle = htmlEncode(element.data('coursetitle'));
     let html = '<p> ' + fos + ' ' + coursenum + ' with CRN: ' + crns + '</p><p>Professor: ' + prof + '</p>';
     if (element.data('prereg') == "1") {
         html = html + "<p>You have already registered for this course</p>";
