@@ -1,4 +1,4 @@
-function createPopover (element) {
+let createPopover  = (element) => {
     element = $(element);
 
     let html_encode = (value) => {
@@ -16,7 +16,7 @@ function createPopover (element) {
     }
     let options = {placement: 'bottom', container: "body", trigger: 'manual', html: true, title: coursetitle};
     element.data('content', html).popover(options);
-}
+};
 
 $('table')
     .on('mouseenter', 'td.has-data', (e) => {

@@ -7,7 +7,7 @@ mixin course-basket(myCourse)
 
 extends template.pug
 block after_head
-    script(src="public/js/homepageFunctions.js")
+    script(src="public/js/homepageFunctions.min.js")
     script.
         if (location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
             (function (i, s, o, g, r, a, m) {
@@ -211,7 +211,7 @@ block content
                                 button.btn.btn-success.glyphicon.glyphicon-repeat.pull-right.btn-load-history(type='button', style='line-height: 1!important; margin-top:-22px;')
                             div.panel-body
                     script(type="text/javascript").
-                        $(document).ready(() => {
+                        $(document).ready(function() {
                             initialSetSliders (#{slider.min}, #{slider.max});
                             $("#slider-range").slider({
                                 range: true,

@@ -39,6 +39,8 @@ let setSpanTime = ($id) => {
     let val1 = $id.slider("values", 1);
     $id.parent().children().last().text(sliderIntToStartEndTimes(val0, val1));
 };
+// Export function globally
+window.setSpanTime = setSpanTime;
 
 let getTime = (hours, minutes) => {
     let time = null;
@@ -66,6 +68,8 @@ let slideTime = (event, ui) => {
     let val1 = ui.values[1];
     $(event.target).parent().children().last().text(sliderIntToStartEndTimes(val0, val1));
 };
+// Export function globally
+window.slideTime = slideTime;
 
 $(document).ready(() => {
     let crns = "";
@@ -562,7 +566,7 @@ $(document).ready(() => {
 
 });
 
-function initialSetSliders (sliderMin, sliderMax) {
+let initialSetSliders = (sliderMin, sliderMax) => {
     $(document).on("click", "#add-block-time", () => {
         let $cloned = $("#block-time-template").clone().removeClass("hide").removeAttr('id');
         $cloned.find(".time-slider").slider({
@@ -642,4 +646,6 @@ function initialSetSliders (sliderMin, sliderMax) {
             }
         }
     );
-}
+};
+// Export function globally
+window.initialSetSliders = initialSetSliders;

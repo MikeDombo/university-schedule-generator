@@ -150,3 +150,5 @@ let makeProgress = (count) => {
         }
     });
 };
+
+window.makeProgress = makeProgress;

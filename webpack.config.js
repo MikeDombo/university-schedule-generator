@@ -1,12 +1,13 @@
 const path = require('path');
 
-const outputPath = path.resolve(__dirname, 'public/js');
+const outputPath = path.resolve(__dirname, './src/public/js');
+const webpack = require('webpack');
 
 let webpackOptions = {
     entry: {
-        homepageFunctions: 'public/js/homepageFunctions.js',
-        progressLoaderFunctions: 'public/js/progressLoaderFunctions.js',
-        scheduleViewerFunctions: 'public/js/scheduleViewerFunctions.js',
+        homepageFunctions: './src/public/js/homepageFunctions.js',
+        progressLoaderFunctions: './src/public/js/progressLoaderFunctions.js',
+        scheduleViewerFunctions: './src/public/js/scheduleViewerFunctions.js',
     },
     output: {
         filename: '[name].min.js',
