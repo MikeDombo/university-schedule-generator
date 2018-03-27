@@ -38,7 +38,7 @@ let webpackOptions = {
         ]
     },
     plugins: [
-        new CleanWebpackPlugin(outputPath+"/*-*.min.js*"),
+        new CleanWebpackPlugin(outputPath+"/*Functions-*.min.js*"),
     ],
     stats: {
         colors: true
