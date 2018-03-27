@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3a16c5a20a5533ab57a605c9eefee80c",
+    "content-hash": "b64094067c034b5603a53d60f6a9483d",
     "packages": [
         {
             "name": "js-phpize/js-phpize",

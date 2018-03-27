@@ -9,3 +9,4 @@ build/*
 schedules-created.txt
 error_log
 *.sqlite
+/node_modules/

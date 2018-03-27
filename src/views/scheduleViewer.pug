@@ -16,57 +16,7 @@ div.col-md-12
 			h1(style='text-align:center;') View Truncated to Best 100 Schedules
 		div.col-md-4
 
-script.
-	function html_encode(value){
-		return $("<div/>").text(value).html();
-	}
-	function createPopover(element){
-		var coursenum = html_encode($(element).data('coursenum'));
-		var fos = html_encode($(element).data('fos'));
-		var prof = html_encode($(element).data('prof'));
-		var crns = $(element).data('crns');
-		var coursetitle = html_encode($(element).data('coursetitle'));
-		var html = '<p> ' + fos + ' ' + coursenum + ' with CRN: ' + crns + '</p><p>Professor: ' + prof + '</p>';
-		if($(element).data('prereg') == "1"){
-			html = html + "<p>You have already registered for this course</p>";
-		}
-		var options = {placement: 'bottom', container: "body", trigger: 'manual', html: true, title: coursetitle};
-		$(element).data('content', html).popover(options);
-	}
-	function popoverPlacementBottom(){
-		createPopover($(this));
-	}
-	var insidePopover = false;
-	function attachEvents(td){
-		$('.popover').on('mouseenter', function (){
-			insidePopover = true;
-		});
-		$('.popover').on('mouseleave', function (){
-			insidePopover = false;
-			$(td).popover('hide');
-		});
-	}
-	$('table').on('mouseenter', 'td.has-data', function (){
-		var td = $(this);
-		setTimeout(function (){
-			if(!insidePopover){
-				$(td).popover('show');
-				attachEvents(td);
-			}
-		}, 200);
-	});
-	$('table').on('mouseleave', 'td.has-data', function (){
-		var td = $(this);
-		setTimeout(function (){
-			if(!insidePopover){
-				$(td).popover('hide');
-			}
-		}, 200);
-	});
-	$('td.has-data').each(popoverPlacementBottom);
-	$(document).ready(function (){
-		$('[data-toggle="tooltip"]').tooltip();
-	});
+script(src="public/js/scheduleViewerFunctions.js")
 
 div.container-fluid(style='margin-top:30px;')
 	div.col-md-12.well.well-lg(style='text-align:center;')
