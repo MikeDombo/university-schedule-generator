@@ -103,8 +103,21 @@ if(isset($_GET["catalog-subj"]) && isset($_GET["callback"])){
 	if(isset($_GET["catalog-cn"])){
 		$level = urlencode(urldecode($_GET["catalog-cn"]));
 	}
-	$richmondURL = "http://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2017&term=&catalogtype=ug&paginate=false&subj=$subj&level=$level&keyword=";
-	echo $_GET['callback'] . file_get_contents($richmondURL) . ';';
+	$richmondURL = "https://assets.richmond.edu/catalogs/courses.php?orderby=subjnum&archiveYear=2017&term=&catalogtype=ug&paginate=false&subj=$subj&level=$level&keyword=";
+	try{
+		echo $_GET['callback'] . file_get_contents($richmondURL, false, stream_context_create(["ssl" => [
+				"verify_peer" => false,
+				"verify_peer_name" => false,
+			]])) . ';';
+	}
+	catch(\Exception $e){
+		error_log($_GET["catalog-subj"]);
+		error_log($_GET["callback"]);
+		if(isset($_GET["catalog-cn"])){
+			error_log($_GET["catalog-cn"]);
+		}
+		error_log($richmondURL);
+	}
 }
 
 function getResponseArrayFromDB($result){
