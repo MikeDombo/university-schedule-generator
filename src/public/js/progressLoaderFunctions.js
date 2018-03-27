@@ -49,6 +49,24 @@ $(document).ready(() => {
     createListeners();
 });
 
+let getParameterByName = (name, url) => {
+    if (!url) {
+        url = window.location.href;
+    }
+    name = name.replace(/[\\[\]]/g, "\\$&");
+    const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) {
+        return null;
+    }
+    if (!results[2]) {
+        return '';
+    }
+    return results[2].replace(/\\+/g, " ");
+};
+
+window.getParameterByName = getParameterByName;
+
 let makeProgress = (count) => {
     let customElement = $("<img src='loading-spinner.gif' /><h3>", {
         id: "countdown",
@@ -107,22 +125,6 @@ let makeProgress = (count) => {
             clearInterval(interval);
         }
     }, 1000);
-
-    let getParameterByName = (name, url) => {
-        if (!url) {
-            url = window.location.href;
-        }
-        name = name.replace(/[\\[\]]/g, "\\$&");
-        const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-            results = regex.exec(url);
-        if (!results) {
-            return null;
-        }
-        if (!results[2]) {
-            return '';
-        }
-        return results[2].replace(/\\+/g, " ");
-    };
 
     $.ajax({
         url: 'newSched.php',
