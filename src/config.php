@@ -40,6 +40,9 @@ function generatePug($view, $title, $options = [], $prettyPrint = false){
 		$initialOptions = [
 		'title' => $title,
 		'subdir' => SUBDIR,
+		'homepageJS' => basename(glob("public/js/homepageFunctions-*.min.js")[0]),
+		'progressLoaderJS' => basename(glob("public/js/progressLoaderFunctions-*.min.js")[0]),
+		'scheduleViewerJS' => basename(glob("public/js/scheduleViewerFunctions-*.min.js")[0])
 	];
 
 	$options = array_merge($initialOptions, $options);

@@ -1,6 +1,7 @@
 const path = require('path');
 
 const outputPath = path.resolve(__dirname, './src/public/js');
+const CleanWebpackPlugin = require('clean-webpack-plugin'); //installed via npm
 const webpack = require('webpack');
 
 let webpackOptions = {
@@ -10,7 +11,7 @@ let webpackOptions = {
         scheduleViewerFunctions: './src/public/js/scheduleViewerFunctions.js',
     },
     output: {
-        filename: '[name].min.js',
+        filename: '[name]-[hash].min.js',
         path: outputPath
     },
     module: {
@@ -36,6 +37,9 @@ let webpackOptions = {
             }
         ]
     },
+    plugins: [
+        new CleanWebpackPlugin(outputPath+"/*-*.min.js*"),
+    ],
     stats: {
         colors: true
     },
