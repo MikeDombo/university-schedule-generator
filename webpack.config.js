@@ -3,16 +3,24 @@ const path = require('path');
 const outputPath = path.resolve(__dirname, './src/public/js');
 const CleanWebpackPlugin = require('clean-webpack-plugin'); //installed via npm
 const webpack = require('webpack');
+const PolyfillInjectorPlugin = require('webpack-polyfill-injector');
 
 let webpackOptions = {
     entry: {
-        homepageFunctions: './src/public/js/homepageFunctions.js',
-        progressLoaderFunctions: './src/public/js/progressLoaderFunctions.js',
-        scheduleViewerFunctions: './src/public/js/scheduleViewerFunctions.js',
+        homepageFunctions: `webpack-polyfill-injector?${JSON.stringify({
+            modules: ['./src/public/js/homepageFunctions.js']
+        })}!`,
+        progressLoaderFunctions: `webpack-polyfill-injector?${JSON.stringify({
+            modules: ['./src/public/js/progressLoaderFunctions.js']
+        })}!`,
+        scheduleViewerFunctions: `webpack-polyfill-injector?${JSON.stringify({
+            modules: ['./src/public/js/scheduleViewerFunctions.js']
+        })}!`,
     },
     output: {
         filename: '[name]-[hash].min.js',
-        path: outputPath
+        path: outputPath,
+        publicPath: 'public/js/'
     },
     module: {
         rules: [
@@ -24,9 +32,9 @@ let webpackOptions = {
                         loader: 'babel-loader',
                         options: {
                             presets: [
-                                ['env', {
+                                ['es2015', {
                                     targets: {
-                                        browsers: ["last 2 versions", "safari >= 9"]
+                                        browsers: ["last 2 versions", "safari >= 9", "ie >= 10"]
                                     },
                                     "useBuiltIns": true
                                 }]
@@ -38,7 +46,10 @@ let webpackOptions = {
         ]
     },
     plugins: [
-        new CleanWebpackPlugin(outputPath+"/*Functions-*.min.js*"),
+        new CleanWebpackPlugin([outputPath+"/*Functions-*.min.js", outputPath+"/polyfills-*.min.*"]),
+        new PolyfillInjectorPlugin({
+            polyfills: ['String.prototype.includes']
+        })
     ],
     stats: {
         colors: true

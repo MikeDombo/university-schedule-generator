@@ -211,17 +211,19 @@ block content
                                 button.btn.btn-success.glyphicon.glyphicon-repeat.pull-right.btn-load-history(type='button', style='line-height: 1!important; margin-top:-22px;')
                             div.panel-body
                     script(type="text/javascript").
-                        $(document).ready(function() {
-                            initialSetSliders (#{slider.min}, #{slider.max});
-                            $("#slider-range").slider({
-                                range: true,
-                                min: #{slider.min},
-                                max: #{slider.max},
-                                step: 15,
-                                values: [#{slider.start}, #{slider.end}],
-                                slide: slideTime
+                        window.addEventListener("load", function () {
+                            $(document).ready(function () {
+                                initialSetSliders(#{slider.min}, #{slider.max});
+                                $("#slider-range").slider({
+                                    range: true,
+                                    min: #{slider.min},
+                                    max: #{slider.max},
+                                    step: 15,
+                                    values: [#{slider.start}, #{slider.end}],
+                                    slide: slideTime
+                                });
+                                setSpanTime($("#slider-range"));
                             });
-                            setSpanTime($("#slider-range"));
                         });
                     div.form-group
                     div.form-group

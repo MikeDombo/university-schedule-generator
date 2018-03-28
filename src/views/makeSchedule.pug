@@ -91,6 +91,6 @@ block nav
                             button.btn-listview.btn.glyphicon.glyphicon-list.btn-default(type='button') &nbsp;List View
 block content
     #results.container-fluid(style='min-height:200px;')
-    script(src="public/js/#{progressLoaderJS}")
-    script.
-        makeProgress(#{max_exec_time});
+    script(src="public/js/#{progressLoaderJS}" type="text/javascript")
+    script(type="text/javascript").
+        window.addEventListener("load", function(){makeProgress(#{max_exec_time});}, false);
