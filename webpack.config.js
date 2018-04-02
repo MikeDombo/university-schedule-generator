@@ -46,7 +46,7 @@ let webpackOptions = {
         ]
     },
     plugins: [
-        new CleanWebpackPlugin([outputPath+"/*Functions-*.min.js", outputPath+"/polyfills-*.min.*"]),
+        new CleanWebpackPlugin([outputPath+"/*Functions-*.min.js*", outputPath+"/polyfills-*.min.*"]),
         new PolyfillInjectorPlugin({
             polyfills: ['String.prototype.includes']
         })
