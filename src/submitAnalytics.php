@@ -71,7 +71,7 @@ $mycol = mysqli_fetch_array($chkcol);
 
 foreach($fos as $k => $v){
 	if(!isset($mycol[$k])){
-		mysqli_query($mysqlLink, "ALTER TABLE `byLookup` ADD `" . $k . "` INT NOT NULL");
+		mysqli_query($mysqlLink, "ALTER TABLE `byLookup` ADD `" . $k . "` INT NOT NULL DEFAULT '0'");
 	}
 	mysqli_query($mysqlLink, "UPDATE `byLookup` SET `" . $k . "`= " . $v . " WHERE `userID`= '" . $uid . "'");
 }
