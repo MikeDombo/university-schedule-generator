@@ -4,12 +4,12 @@ require_once("config.php");
 if(isset($_GET["i"])){//check if we received the correct GET request, and redirect back to the input page if not
 	$inputData = json_decode(urldecode($_GET["i"]), true);
 	if($inputData == null || !isset($inputData["allCourses"]) || count($inputData["allCourses"]) < 1){
-		echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('" . SUBDIR . "');</script>";
+		echo "<script type=\"text/javascript\">window.alert('You didn\'t enter any courses!');window.location.assign('" . SUBDIR . "');</script>";
 		exit;
 	}
 }
 else{
-	echo "<script>window.alert('You didn\'t enter any courses!');window.location.assign('" . SUBDIR . "');</script>";
+	echo "<script type=\"text/javascript\">window.alert('You didn\'t enter any courses!');window.location.assign('" . SUBDIR . "');</script>";
 	exit;
 }
 
