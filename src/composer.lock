@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b64094067c034b5603a53d60f6a9483d",
+    "content-hash": "1cde771dc3ba643ab42299acd66e6ee1",
     "packages": [
         {
             "name": "js-phpize/js-phpize",
@@ -49,16 +49,16 @@
         },
         {
             "name": "nodejs-php-fallback/nodejs-php-fallback",
-            "version": "1.3.1",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kylekatarnls/nodejs-php-fallback.git",
-                "reference": "3d034b21f16e814fd4d9b04a4f6472dc6337175a"
+                "reference": "06d5e4f0694cc6612bd25c8996441e6efd7ab766"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kylekatarnls/nodejs-php-fallback/zipball/3d034b21f16e814fd4d9b04a4f6472dc6337175a",
-                "reference": "3d034b21f16e814fd4d9b04a4f6472dc6337175a",
+                "url": "https://api.github.com/repos/kylekatarnls/nodejs-php-fallback/zipball/06d5e4f0694cc6612bd25c8996441e6efd7ab766",
+                "reference": "06d5e4f0694cc6612bd25c8996441e6efd7ab766",
                 "shasum": ""
             },
             "require": {
@@ -68,7 +68,7 @@
             "require-dev": {
                 "codeclimate/php-test-reporter": "dev-master",
                 "composer/composer": "^1.2",
-                "phpunit/phpunit": ">=4.8 <6.0"
+                "phpunit/phpunit": ">=4.8.35 <6.0"
             },
             "type": "composer-plugin",
             "extra": {
@@ -90,7 +90,7 @@
                 }
             ],
             "description": "Allow you to call node.js module or scripts throught PHP and call a fallback function if node.js is not available",
-            "time": "2017-11-03T08:55:02+00:00"
+            "time": "2018-04-05T14:25:31+00:00"
         },
         {
             "name": "pug-php/pug",
