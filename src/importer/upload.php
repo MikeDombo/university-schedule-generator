@@ -1,4 +1,5 @@
 <?php
+require_once '../config.php';
 
 $validPasswords = ["maintainer" => "*********"];
 $validUsers = array_keys($validPasswords);
@@ -29,9 +30,11 @@ else if($validated){
 			move_uploaded_file($_FILES["file"]['tmp_name'], $newFile);
 			include 'importExcel.php';
 			importExcel($newFile);
+
 			$lastUpdated = date(UPDATE_DATE_FORMAT);
 			$config = file_get_contents('../config.php');
-			mb_ereg_replace("", $lastUpdated, $config);
+			$config = preg_replace("/(define\(['\"]LAST_DATA_UPDATE['\"],\s*['\"])(.*)(['\"]\);)/m",
+				"define(\"LAST_DATA_UPDATE\", \"$lastUpdated\");", $config);
 			file_put_contents('../config.php', $config);
 		}
 	}
