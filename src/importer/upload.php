@@ -29,6 +29,10 @@ else if($validated){
 			move_uploaded_file($_FILES["file"]['tmp_name'], $newFile);
 			include 'importExcel.php';
 			importExcel($newFile);
+			$lastUpdated = date(UPDATE_DATE_FORMAT);
+			$config = file_get_contents('../config.php');
+			mb_ereg_replace("", $lastUpdated, $config);
+			file_put_contents('../config.php', $config);
 		}
 	}
 	else if($_SERVER['REQUEST_METHOD'] == "GET"){

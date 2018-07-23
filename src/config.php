@@ -27,6 +27,10 @@ define("COLUMNS_COURSE_SECTION", "SEC");
 define("COLUMNS_PROF_FN", "FIN2");
 define("COLUMNS_PROF_LN", "LASTNAME");
 
+// Update Config
+define("LAST_DATA_UPDATE", "07/19/2018");
+define("UPDATE_DATE_FORMAT", "m/d/Y");
+
 
 /**
  * Returns Pug (Jade) rendered HTML for a given view and options
