@@ -94,16 +94,16 @@
         },
         {
             "name": "pug-php/pug",
-            "version": "2.7.4",
+            "version": "2.7.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pug-php/pug.git",
-                "reference": "3f5125cf01ff91e6005594b630e20b4dab6af3ec"
+                "reference": "b102d23317e83bc473ed01341d3ff1a2f426f627"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pug-php/pug/zipball/3f5125cf01ff91e6005594b630e20b4dab6af3ec",
-                "reference": "3f5125cf01ff91e6005594b630e20b4dab6af3ec",
+                "url": "https://api.github.com/repos/pug-php/pug/zipball/b102d23317e83bc473ed01341d3ff1a2f426f627",
+                "reference": "b102d23317e83bc473ed01341d3ff1a2f426f627",
                 "shasum": ""
             },
             "require": {
@@ -254,7 +254,7 @@
                 "pug",
                 "template"
             ],
-            "time": "2017-12-12T12:50:11+00:00"
+            "time": "2018-11-28T06:52:35+00:00"
         }
     ],
     "packages-dev": [],
