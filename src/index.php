@@ -53,6 +53,7 @@ if(isset($_GET["i"])){
 }
 
 $options = ["courses" => ["required" => $required, "optional" => $optional], "preregisteredCRNs" => $preregisteredCRNs,
-	"full_classes" => $fullClasses, "time_pref" => $timePref, "slider" => $slider, "lastDateUpdated" => LAST_DATA_UPDATE];
+	"full_classes" => $fullClasses, "time_pref" => $timePref, "slider" => $slider, "lastDateUpdated" => LAST_DATA_UPDATE,
+    "lastDataForDate" => LAST_DATA_FOR_DATE];
 
 echo generatePug("views/home.pug", "Student Schedule Creator", $options);
