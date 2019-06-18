@@ -1,26 +1,19 @@
-const path = require('path');
+const path = require("path");
 
-const outputPath = path.resolve(__dirname, './src/public/js');
-const CleanWebpackPlugin = require('clean-webpack-plugin'); //installed via npm
-const webpack = require('webpack');
-const PolyfillInjectorPlugin = require('webpack-polyfill-injector');
+const outputPath = path.resolve(__dirname, "./src/public/js");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const webpack = require("webpack");
 
 let webpackOptions = {
     entry: {
-        homepageFunctions: `webpack-polyfill-injector?${JSON.stringify({
-            modules: ['./src/public/js/homepageFunctions.js']
-        })}!`,
-        progressLoaderFunctions: `webpack-polyfill-injector?${JSON.stringify({
-            modules: ['./src/public/js/progressLoaderFunctions.js']
-        })}!`,
-        scheduleViewerFunctions: `webpack-polyfill-injector?${JSON.stringify({
-            modules: ['./src/public/js/scheduleViewerFunctions.js']
-        })}!`,
+        homepageFunctions: "./src/public/js/homepageFunctions.js",
+        progressLoaderFunctions: "./src/public/js/progressLoaderFunctions.js",
+        scheduleViewerFunctions: "./src/public/js/scheduleViewerFunctions.js"
     },
     output: {
-        filename: '[name]-[hash].min.js',
+        filename: "[name]-[hash].min.js",
         path: outputPath,
-        publicPath: 'public/js/'
+        publicPath: "public/js/"
     },
     module: {
         rules: [
@@ -29,15 +22,18 @@ let webpackOptions = {
                 exclude: /(node_modules|bower_components)/,
                 use: [
                     {
-                        loader: 'babel-loader',
+                        loader: "babel-loader",
                         options: {
                             presets: [
-                                ['es2015', {
-                                    targets: {
-                                        browsers: ["last 2 versions", "safari >= 9", "ie >= 10"]
-                                    },
-                                    "useBuiltIns": true
-                                }]
+                                [
+                                    "es2015",
+                                    {
+                                        targets: {
+                                            browsers: ["last 2 versions", "safari >= 9", "ie >= 10"]
+                                        },
+                                        useBuiltIns: true
+                                    }
+                                ]
                             ]
                         }
                     }
@@ -46,9 +42,8 @@ let webpackOptions = {
         ]
     },
     plugins: [
-        new CleanWebpackPlugin([outputPath+"/*Functions-*.min.js*", outputPath+"/polyfills-*.min.*"]),
-        new PolyfillInjectorPlugin({
-            polyfills: ['String.prototype.includes']
+        new CleanWebpackPlugin({
+            cleanOnceBeforeBuildPatterns: [outputPath + "/*Functions-*.min.js*"]
         })
     ],
     stats: {
