@@ -1,5 +1,5 @@
 {
   "require": {
-    "pug-php/pug": "^2.7.4"
+    "pug-php/pug": "^3.2.0"
   }
 }
