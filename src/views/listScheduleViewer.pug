@@ -1,28 +1,28 @@
 mixin makeListView(schedule)
 	div.col-md-3
 		div.panel.panel-default
-			div.panel-heading.panel-title(data-toggle='collapse' data-target='#collapse#{schedule.num}'
+			div.panel-heading.panel-title(data-toggle='collapse' data-target='#collapse' + schedule.num
 			style={cursor:'pointer'})
-				a(data-toggle='collapse' href='#collapse#{schedule.num}') #{schedule.numClasses.num} #{schedule.numClasses.string},
+				a(data-toggle='collapse' href='#collapse' + schedule.num) #{schedule.numClasses.num} #{schedule.numClasses.string},
 					| #{schedule.numUnits.num} #{schedule.numUnits.string},
 					| with #{schedule.numCPD.num} #{schedule.numCPD.string} every #{schedule.dayCPD}
 					if schedule.hasAllClasses
 						span.glyphicon.glyphicon-ok.pull-right(style="color:#4CAF50;" data-toggle="tooltip"
 						title="Has all classes you asked for")
 			if schedule.collapse
-				div.panel-collapse.collapse.panel-body(id='collapse#{schedule.num}')
+				div.panel-collapse.collapse.panel-body(id='collapse' + schedule.num)
 					+listViewTable(schedule)
 			else
-				div.panel-collapse.collapse.panel-body.in(id='collapse#{schedule.num}')
+				div.panel-collapse.collapse.panel-body.in(id='collapse' + schedule.num)
 					+listViewTable(schedule)
 
 mixin listViewTable(schedule)
 	table.table.table-condensed.table-responsive
 		each row in schedule.rows
 			tr
-				td.has-data(style='background:rgba(#{row.color}, .60)' data-crns='#{row.crns}'
-				data-coursenum='#{row.coursenum}' data-fos='#{row.fos}' data-coursetitle='#{row.title}'
-				data-prof='#{row.prof}' data-prereg='#{row.preregistered}')
+				td.has-data(style='background:rgba(' + row.color + ', .60)' data-crns=row.crns
+				data-coursenum=row.coursenum data-fos=row.fos data-coursetitle=row.title
+				data-prof=row.prof data-prereg=row.preregistered)
 					if row.preregistered
 						em #{row.titleWithDate}
 					else

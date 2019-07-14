@@ -1,13 +1,13 @@
-mixin course-basket(myCourse)
-    li.list-group-item(data-fos="#{myCourse.FOS}" data-coursenum="#{myCourse.CourseNum}" data-coursename="#{myCourse.Title}"
-    data-displaytitle="#{myCourse.DisplayTitle}")
-        | #{myCourse.FOS} #{myCourse.CourseNum} | #{myCourse.DisplayTitle}
+mixin course-basket($myCourse)
+    li.list-group-item(data-fos=$myCourse['FOS'] data-coursenum=$myCourse.CourseNum data-coursename=$myCourse.Title
+    data-displaytitle=$myCourse.DisplayTitle)
+        | #{$myCourse['FOS']} #{$myCourse.CourseNum} | #{$myCourse.DisplayTitle}
         button.btn.btn-danger.glyphicon.glyphicon-minus.btn-remove-course.pull-right(type="button" style="line-height: 1!important;"
-        data-coursenum="#{myCourse.CourseNum}" data-fos="#{myCourse.FOS}" data-coursename="#{myCourse.Title}")
+        data-coursenum=$myCourse.CourseNum data-fos=$myCourse['FOS'] data-coursename=$myCourse.Title)
 
 extends template.pug
 block after_head
-    script(src="public/js/#{homepageJS}" type="text/javascript")
+    script(src="public/js/" + homepageJS type="text/javascript")
     script(type="text/javascript").
         if (location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
             (function (i, s, o, g, r, a, m) {
@@ -297,7 +297,7 @@ block content
                     div.form-group
                         label.control-label(for="crns") Preregistered Courses
                         input#crns.form-control(type="text" name="crns" placeholder="CRNs of Courses Already Registered"
-                        value="#{preregisteredCRNs}")
+                        value=preregisteredCRNs)
                     div.form-group
                         span#arrow.glyphicon.glyphicon-chevron-right
                         a#adv(href="#") Show Advanced Options

@@ -71,7 +71,7 @@ block nav
     nav.navbar.navbar-default.navbar-inverse
         div.container-fluid
             div.navbar-header
-                a.navbar-brand(href='#{subdir}')
+                a.navbar-brand(href=subdir)
                     div.navbar-brand-name
                         span(style='color:#ffffff') Unofficial Richmond Scheduler
                 button.navbar-toggle(type='button', data-toggle='collapse', data-target='#navbar-main')
@@ -82,7 +82,7 @@ block nav
                 ul.nav.navbar-nav.navbar-right
                     li
                         a
-                            button.btn.btn-default(type='button', onclick="window.location.href='#{subdir}/?i=#{inputDataJSON}'") Edit Courses
+                            button.btn.btn-default(type='button', onclick="window.location.href='" + subdir + "/?i=" + inputDataJSON + "'") Edit Courses
                     li
                         a
                             button.btn.btn-success.btn-expand.glyphicon.glyphicon-collapse-down(type='button') &nbsp;Expand All Schedules
@@ -91,6 +91,6 @@ block nav
                             button.btn-listview.btn.glyphicon.glyphicon-list.btn-default(type='button') &nbsp;List View
 block content
     #results.container-fluid(style='min-height:200px;')
-    script(src="public/js/#{progressLoaderJS}" type="text/javascript")
+    script(src="public/js/" + progressLoaderJS type="text/javascript")
     script(type="text/javascript").
         window.addEventListener("load", function(){makeProgress(#{max_exec_time});}, false);

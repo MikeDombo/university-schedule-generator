@@ -42,7 +42,7 @@ define("LAST_DATA_FOR_DATE", "Fall 2019");
  * @return string Pug generated HTML
  */
 function generatePug($view, $title, $options = [], $prettyPrint = false){
-		$initialOptions = [
+    $initialOptions = [
 		'title' => $title,
 		'subdir' => SUBDIR,
 		'homepageJS' => basename(glob("public/js/homepageFunctions-*.min.js")[0]),

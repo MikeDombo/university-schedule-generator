@@ -7,7 +7,7 @@ mixin makeCalendar(schedule)
 					|with #{schedule.numCPD.num} #{schedule.numCPD.string} every #{schedule.dayCPD}
 					if schedule.hasAllClasses
 						span.glyphicon.glyphicon-ok.pull-right(style="color:#4CAF50;" data-toggle="tooltip" title="Has all classes you asked for")
-			div.panel-body.table-responsive(id='calendar#{schedule.num}')
+			div.panel-body.table-responsive(id='calendar' + schedule.num)
 				table.table.table-condensed.table-bordered
 					tr
 						td
@@ -20,9 +20,9 @@ mixin makeCalendar(schedule)
 								if rowData.empty
 									td
 								else
-									td.has-data(style='background:rgba(#{rowData.color}, .60)' data-crns='#{rowData.crns}'
-									data-coursenum='#{rowData.coursenum}' data-fos='#{rowData.fos}' data-coursetitle="#{rowData.title}"
-									data-prof='#{rowData.prof}' data-prereg='#{rowData.preregistered}')
+									td.has-data(style='background:rgba(' + rowData.color + ', .60)' data-crns=rowData.crns
+									data-coursenum=rowData.coursenum data-fos=rowData.fos data-coursetitle=rowData.title
+									data-prof=rowData.prof data-prereg=rowData.preregistered)
 										if rowData.preregistered
 											em #{rowData.title}
 										else
