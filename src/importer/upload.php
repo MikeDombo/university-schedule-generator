@@ -1,7 +1,7 @@
 <?php
 require_once '../config.php';
 
-$validPasswords = ["maintainer" => "*********"];
+$validPasswords = ["maintainer" => "5AMdyuh4^BihhWWOKTuo"];
 $validUsers = array_keys($validPasswords);
 
 $user = empty($_SERVER['PHP_AUTH_USER']) ? '' : $_SERVER['PHP_AUTH_USER'];

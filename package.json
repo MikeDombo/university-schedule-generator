@@ -9,7 +9,7 @@
         "build-dev": "webpack --mode development",
         "build": "webpack --mode production",
         "webpackStats": "webpack --json --mode production | webpack-bundle-size-analyzer",
-        "sonarqube": "c:\\sonar\\sonar-scanner-3.0.3\\bin\\sonar-scanner.bat"
+        "sonarqube": "c:\\sonar\\sonar-scanner-4.0.0.1744\\bin\\sonar-scanner.bat"
     },
     "keywords": [],
     "author": "Michael Dombrowski",
@@ -23,7 +23,7 @@
         "babel-preset-env": "^1.7.0",
         "babel-preset-es2015": "^6.24.1",
         "clean-webpack-plugin": "^3.0.0",
-        "webpack": "^4.35.2",
-        "webpack-cli": "^3.3.5"
+        "webpack": "^4.35.3",
+        "webpack-cli": "^3.3.6"
     }
 }
