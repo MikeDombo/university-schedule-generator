@@ -49,23 +49,23 @@
         },
         {
             "name": "js-phpize/js-phpize-phug",
-            "version": "2.1.0",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pug-php/js-phpize-phug.git",
-                "reference": "918c94ec72f2a4c73aa6178128034bcf8d2cc0da"
+                "reference": "086536acf9d72ed8180210c3dcf1c0d248ad4f69"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pug-php/js-phpize-phug/zipball/918c94ec72f2a4c73aa6178128034bcf8d2cc0da",
-                "reference": "918c94ec72f2a4c73aa6178128034bcf8d2cc0da",
+                "url": "https://api.github.com/repos/pug-php/js-phpize-phug/zipball/086536acf9d72ed8180210c3dcf1c0d248ad4f69",
+                "reference": "086536acf9d72ed8180210c3dcf1c0d248ad4f69",
                 "shasum": ""
             },
             "require": {
                 "js-phpize/js-phpize": "^2.0.0",
                 "php": ">=7.0",
-                "phug/compiler": "^0.5.0",
-                "phug/formatter": "^0.5.43"
+                "phug/compiler": "^0.5.0 || ^1.0@dev",
+                "phug/formatter": "^0.5.43 || ^1.0@dev"
             },
             "require-dev": {
                 "codeclimate/php-test-reporter": "dev-master",
@@ -88,7 +88,7 @@
                 }
             ],
             "description": "Convert js-like syntax to standalone PHP code in Phug template.",
-            "time": "2018-11-07T17:06:05+00:00"
+            "time": "2019-09-08T19:12:39+00:00"
         },
         {
             "name": "js-transformer/js-transformer",
