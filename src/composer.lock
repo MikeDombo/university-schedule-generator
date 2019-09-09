@@ -751,16 +751,16 @@
         },
         {
             "name": "phug/renderer",
-            "version": "0.4.8",
+            "version": "0.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phug-php/renderer.git",
-                "reference": "8f4ee5043850a07b9a778e5c746f3a497d0b23f9"
+                "reference": "a5b336f01655ef941d20b1b8f329aa3cc14afd7d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phug-php/renderer/zipball/8f4ee5043850a07b9a778e5c746f3a497d0b23f9",
-                "reference": "8f4ee5043850a07b9a778e5c746f3a497d0b23f9",
+                "url": "https://api.github.com/repos/phug-php/renderer/zipball/a5b336f01655ef941d20b1b8f329aa3cc14afd7d",
+                "reference": "a5b336f01655ef941d20b1b8f329aa3cc14afd7d",
                 "shasum": ""
             },
             "require": {
@@ -772,6 +772,7 @@
             "require-dev": {
                 "cebe/markdown": "^1.1",
                 "js-phpize/js-phpize-phug": "^1.1.2",
+                "kylekatarnls/multi-tester": "^1.1",
                 "nodejs-php-fallback/coffeescript": "^1.0",
                 "nodejs-php-fallback/less": "^1.0",
                 "nodejs-php-fallback/stylus": "^1.0",
@@ -811,20 +812,20 @@
                 "template",
                 "views"
             ],
-            "time": "2019-02-08T09:45:01+00:00"
+            "time": "2019-09-08T10:49:49+00:00"
         },
         {
             "name": "phug/util",
-            "version": "0.4.16",
+            "version": "0.4.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phug-php/util.git",
-                "reference": "50f2c389c185f9140dbb7409d8eacb6623ad68af"
+                "reference": "4b781794e3fd43dae34e74f9611c93013e854155"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phug-php/util/zipball/50f2c389c185f9140dbb7409d8eacb6623ad68af",
-                "reference": "50f2c389c185f9140dbb7409d8eacb6623ad68af",
+                "url": "https://api.github.com/repos/phug-php/util/zipball/4b781794e3fd43dae34e74f9611c93013e854155",
+                "reference": "4b781794e3fd43dae34e74f9611c93013e854155",
                 "shasum": ""
             },
             "require": {
@@ -871,7 +872,7 @@
                 "util",
                 "views"
             ],
-            "time": "2018-10-25T11:50:30+00:00"
+            "time": "2019-09-06T20:01:27+00:00"
         },
         {
             "name": "psr/http-message",
