@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "js-phpize/js-phpize",
-            "version": "2.4.1",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pug-php/js-phpize.git",
-                "reference": "e41ce34728bd6bb618cc7a1a0979f467f6234d4b"
+                "reference": "ca933003a8f5ddd6cf483a2dc3e4c5b0f1bdb285"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pug-php/js-phpize/zipball/e41ce34728bd6bb618cc7a1a0979f467f6234d4b",
-                "reference": "e41ce34728bd6bb618cc7a1a0979f467f6234d4b",
+                "url": "https://api.github.com/repos/pug-php/js-phpize/zipball/ca933003a8f5ddd6cf483a2dc3e4c5b0f1bdb285",
+                "reference": "ca933003a8f5ddd6cf483a2dc3e4c5b0f1bdb285",
                 "shasum": ""
             },
             "require": {
@@ -45,7 +45,7 @@
                 }
             ],
             "description": "Convert js-like syntax to standalone PHP code.",
-            "time": "2019-06-24T07:07:05+00:00"
+            "time": "2019-09-09T15:15:58+00:00"
         },
         {
             "name": "js-phpize/js-phpize-phug",
