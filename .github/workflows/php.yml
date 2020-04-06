@@ -1,0 +1,21 @@
+name: PHP Composer
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Xdebug Action
+      uses: MilesChou/docker-xdebug@v1.1.0
+    - name: Install dependencies
+      run: composer require phpunit/phpunit:7.5.20 --working-dir=src/ --prefer-dist --no-progress && composer install --prefer-dist --no-progress --no-suggest --working-dir=src/
+    - name: Test
+      run: src/vendor/bin/phpunit --configuration phpunit.xml --coverage-text --colors=never

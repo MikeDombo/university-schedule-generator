@@ -115,11 +115,11 @@ class IngestTest extends TestCase{
 
 	public function testRemoveSectionsForTime(){
 		$ingest = new Ingest(new FakeDAL(), $this->makeTestData());
-		$section1 = new Section(0, "Title", "Subj", 100, 1, ["123456"]);
+		$section1 = new Section("Title", "Subj", 100, 1, ["123456"]);
 		$section1->addTime("M", "0800", "0930");
 		$section1->addTime("W", "0800", "0930");
 		$section1->addTime("F", "0800", "0930");
-		$section2 = new Section(0, "Title2", "Subj2", 101, 1, ["123457"]);
+		$section2 = new Section("Title2", "Subj2", 101, 1, ["123457"]);
 		$section2->addTime("R", "1600", "1730");
 
 		$allSections = [$section1, $section2];
@@ -164,7 +164,7 @@ class IngestTest extends TestCase{
 		$courseData1 = "{\"allCourses\":[{\"CourseNum\":323,\"FOS\":\"CMSC\",\"Title\":\"Design and Implementation of Programming Languages\"}],\"timePref\":false,\"fullClasses\":true,\"preregistered\":[\"\"],\"startTime\":\"8:00 AM\",\"endTime\":\"10:00 PM\",\"unwantedTimes\":[]}";
 		$ingest = new Ingest(new FakeDAL(), $courseData1);
 		$ingest->generateSections();
-		$section1 = new Section(0, "Design and Implementation of Programming Languages", "CMSC", "323", 1.0, ["10006"]);
+		$section1 = new Section("Design and Implementation of Programming Languages", "CMSC", "323", 1.0, ["10006"]);
 		$section1->addTime("F", "0900", "1015");
 		$section1->addTime("M", "0900", "1015");
 		$section1->addTime("W", "0900", "1015");
@@ -178,13 +178,13 @@ class IngestTest extends TestCase{
 		$ingest = new Ingest(new FakeDAL(), $courseData);
 		$ingest->generateSections();
 
-		$section1 = new Section(0, "Design and Implementation of Programming Languages", "CMSC", "323", 1.0, ["10006"]);
+		$section1 = new Section("Design and Implementation of Programming Languages", "CMSC", "323", 1.0, ["10006"]);
 		$section1->addTime("F", "0900", "1015");
 		$section1->addTime("M", "0900", "1015");
 		$section1->addTime("W", "0900", "1015");
 		$section1->setProf(" Charlesworth");
 
-		$section2 = new Section(0, "Introduction to Compiler Construction", "CMSC", "331", 1.0, ["17069"]);
+		$section2 = new Section("Introduction to Compiler Construction", "CMSC", "331", 1.0, ["17069"]);
 		$section2->addTime("W", "1500", "1550");
 		$section2->addTime("T", "1200", "1315");
 		$section2->addTime("R", "1200", "1315");
@@ -200,13 +200,13 @@ class IngestTest extends TestCase{
 		$courseData = "{\"allCourses\":[{\"CourseNum\":323,\"FOS\":\"CMSC\",\"Title\":\"Design and Implementation of Programming Languages\",\"displayTitle\":\"Design and Implementation of Programming Languages\"},{\"CourseNum\":331,\"FOS\":\"CMSC\",\"Title\":\"Introduction to Compiler Construction\",\"displayTitle\":\"Introduction to Compiler Construction\"},{\"CourseNum\":326,\"FOS\":\"CHEM\",\"Title\":\"Biochemistry\"}],\"timePref\":false,\"fullClasses\":true,\"preregistered\":[\"\"],\"startTime\":\"8:00 AM\",\"endTime\":\"10:00 PM\",\"unwantedTimes\":[]}";
 		$ingest = new Ingest(new FakeDAL(), $courseData);
 		$this->invokeMethod($ingest, 'generateSections', []);
-		$section3 = new Section(0, "Biochemistry", "CHEM", "326", 1.0, ["10302"]);
+		$section3 = new Section("Biochemistry", "CHEM", "326", 1.0, ["10302"]);
 		$section3->addTime("M", "0900", "1000");
 		$section3->addTime("W", "0900", "1000");
 		$section3->addTime("F", "0900", "1000");
 		$section3->setProf(" Hamm");
 
-		$section4 = new Section(0, "Biochemistry", "CHEM", "326", 1.0, ["16465"]);
+		$section4 = new Section("Biochemistry", "CHEM", "326", 1.0, ["16465"]);
 		$section4->addTime("M", "1030", "1130");
 		$section4->addTime("W", "1030", "1130");
 		$section4->addTime("F", "1030", "1130");
@@ -226,7 +226,7 @@ class IngestTest extends TestCase{
 		$ingest = new Ingest(new FakeDAL(), $courseData);
 		$ingest->generateSections();
 
-		$section1 = new Section(0, "Intensive Elementary Spanish", "LAIS", "121", 2.0, ["11254", "11311"]);
+		$section1 = new Section("Intensive Elementary Spanish", "LAIS", "121", 2.0, ["11254", "11311"]);
 		$section1->addTime("M", "1630", "1715");
 		$section1->addTime("W", "1630", "1715");
 		$section1->addTime("T", "1030", "1145");
@@ -236,7 +236,7 @@ class IngestTest extends TestCase{
 		$section1->addTime("F", "1030", "1120");
 		$section1->setMultiples(true);
 
-		$section2 = new Section(0, "Intensive Elementary Spanish", "LAIS", "121", 2.0, ["11254", "11256"]);
+		$section2 = new Section("Intensive Elementary Spanish", "LAIS", "121", 2.0, ["11254", "11256"]);
 		$section2->addTime("T", "0900", "0945");
 		$section2->addTime("R", "0900", "0945");
 		$section2->addTime("T", "1030", "1145");
@@ -260,14 +260,14 @@ class IngestTest extends TestCase{
 		$ingest = new Ingest(new FakeDAL(), $courseData);
 		$ingest->generateSections();
 
-		$section1 = new Section(0, "Design and Implementation of Programming Languages", "CMSC", "323", 1.0, ["10006"]);
+		$section1 = new Section("Design and Implementation of Programming Languages", "CMSC", "323", 1.0, ["10006"]);
 		$section1->addTime("F", "0900", "1015");
 		$section1->addTime("M", "0900", "1015");
 		$section1->addTime("W", "0900", "1015");
 		$section1->setProf(" Charlesworth");
 		$section1->setRequiredCourse(true);
 
-		$section2 = new Section(0, "Intensive Elementary Spanish", "LAIS", "121", 2.0, ["11254", "11311"]);
+		$section2 = new Section("Intensive Elementary Spanish", "LAIS", "121", 2.0, ["11254", "11311"]);
 		$section2->addTime("M", "1630", "1715");
 		$section2->addTime("W", "1630", "1715");
 		$section2->addTime("T", "1030", "1145");
@@ -277,7 +277,7 @@ class IngestTest extends TestCase{
 		$section2->addTime("F", "1030", "1120");
 		$section2->setMultiples(true);
 
-		$section3 = new Section(0, "Intensive Elementary Spanish", "LAIS", "121", 2.0, ["11254", "11256"]);
+		$section3 = new Section("Intensive Elementary Spanish", "LAIS", "121", 2.0, ["11254", "11256"]);
 		$section3->addTime("T", "0900", "0945");
 		$section3->addTime("R", "0900", "0945");
 		$section3->addTime("T", "1030", "1145");
